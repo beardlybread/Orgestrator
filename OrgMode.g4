@@ -7,7 +7,7 @@ fragment NL : '\r'? '\n' ;
 HEADER_LEVEL : '*'+ ' ' -> mode(HEADER_MODE) ;
 INDENT : ' '+ -> mode(INDENT_MODE) ;
 BEGIN_TABLE_ROW : '|' -> mode(TABLE_MODE) ;
-ULIST : UL -> mode(LINE_MODE) ;
+ULIST : [\-+] ' ' -> mode(LINE_MODE) ;
 ILIST : IL -> mode(LINE_MODE) ;
 Line : . -> more, mode(LINE_MODE) ;
 EMPTY : NL ;
@@ -20,7 +20,7 @@ HeaderMore : . -> more ;
 mode INDENT_MODE;
 
 Table : '|' -> mode(TABLE_MODE), type(BEGIN_TABLE_ROW) ;
-UList : UL -> mode(LINE_MODE), type(ULIST) ;
+UList : [\-+*] ' ' -> mode(LINE_MODE), type(ULIST) ;
 IList : IL -> mode(LINE_MODE), type(ILIST) ;
 LineIndent : . -> more, mode(LINE_MODE) ;
 
