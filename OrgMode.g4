@@ -4,7 +4,7 @@ fragment UL : [\-+] ' ' ;
 fragment IL : [0-9]+ '. ' ;
 fragment NL : '\r'? '\n' ;
 
-HEADER_LEVEL : '*'+ ' ' -> mode(HEADER_MODE) ; // 1
+HEADING_LEVEL : '*'+ ' ' -> mode(HEADING_MODE) ; // 1
 INDENT : ' '+ -> mode(INDENT_MODE) ;           // 2
 BEGIN_TABLE_ROW : '|' -> mode(TABLE_MODE) ;    // 3
 ULIST : [\-+] ' ' -> mode(LINE_MODE) ;         // 4         
@@ -12,9 +12,9 @@ ILIST : IL -> mode(LINE_MODE) ;                // 5
 Line : . -> more, mode(LINE_MODE) ;
 EMPTY : NL ;                                   // 6
 
-mode HEADER_MODE;
+mode HEADING_MODE;
 
-HEADER : '\n' -> mode(DEFAULT_MODE) ;          // 7
+HEADING : '\n' -> mode(DEFAULT_MODE) ;          // 7
 HeaderMore : . -> more ;
 
 mode INDENT_MODE;
