@@ -48,7 +48,7 @@ TIMESTAMP : '<' -> pushMode(DATE_MODE) ;
 B_timestamp : '[' -> pushMode(DATE_MODE), type(TIMESTAMP) ;
 DEADLINE : 'DEADLINE:' ;
 SCHEDULED : 'SCHEDULED:' ;
-Schedule_WS : WS -> skip ;
+Schedule_WS : WS -> skip, type(EMPTY) ;
 
 mode PROPERTIES_MODE;
 
@@ -56,7 +56,7 @@ END_PROPERTIES : ':END:' -> mode(DEFAULT_MODE) ;
 LAST_REPEAT : ':LAST_REPEAT:' [ \t]* '[' -> pushMode(DATE_MODE) ;
 PROPERTY : ':' [_A-Z]+ ':' ;
 VALUE : ~[ \t\r\n]+ ;
-Properties_WS : [ \t\r\n]+ -> skip ;
+Properties_WS : [ \t\r\n]+ -> skip, type(EMPTY) ;
 
 mode DATE_MODE;
 
@@ -65,5 +65,5 @@ DATE : DT ;
 DOW : DW ;
 TIME : TM ;
 REPEAT : [+.]? '+' [0-9]+? [hdwmy] ;
-Date_WS : WS -> skip ;
+Date_WS : WS -> skip, type(EMPTY) ;
 
