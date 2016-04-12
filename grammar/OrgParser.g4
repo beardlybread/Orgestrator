@@ -1,10 +1,11 @@
 parser grammar OrgParser;
 
-options { tokenVocab = ModeTagsLexer; }
+options { tokenVocab = OrgLexer; }
 
 file : thing* ;
 thing : line
       | headingLine
+      | todoLine
       | table
       | unenumeratedLine
       | enumeratedLine
@@ -28,7 +29,7 @@ event : scheduled | deadline | closed ;
 scheduled : INDENT SCHEDULED timestamp END_SCHEDULE ;
 deadline : INDENT DEADLINE timestamp END_SCHEDULE ;
 closed : INDENT CLOSED timestamp
-         (CLOSED_DEADLINE | CLOSED_SCHEDULED) timestamp END_SCHEDULE ;
+  ((CLOSED_DEADLINE | CLOSED_SCHEDULED) timestamp)? END_SCHEDULE ;
 timestamp : TIMESTAMP DATE DOW TIME? REPEAT? END_TIMESTAMP ; 
 
 propertyList : INDENT PROPERTIES (property)* END_PROPERTIES ;

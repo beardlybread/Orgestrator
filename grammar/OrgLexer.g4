@@ -17,7 +17,7 @@ EMPTY : NL ;
 
 mode HEADING_MODE;
 
-TODO : ('TODO'|'DONE') ' ' -> mode(LINE_MODE) ;
+TODO : ('TODO'|'DONE') ' ' -> mode(HEADING_MODE) ;
 HEADING : NL -> mode(DEFAULT_MODE) ;
 HeaderMore : . -> more ;
 
