@@ -25,11 +25,13 @@ proguard/
 # Log Files
 *.log
 
-# Android Studio Navigation editor temp files
+# Android Studio
+*.iml
+.idea/libraries
+.DS_Store
 .navigation/
-
-# Android Studio captures folder
 captures/
 
 # VIM temp files
 .*.swp
+
