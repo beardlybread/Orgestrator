@@ -27,7 +27,7 @@ proguard/
 
 # Android Studio
 *.iml
-.idea/libraries
+.idea/
 .DS_Store
 .navigation/
 captures/
