@@ -1,3 +1,4 @@
+package com.github.beardlybread.orgestrator.tree;
 
 public class OrgHeading extends BaseOrgNode {
 

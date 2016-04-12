@@ -1,3 +1,7 @@
+package com.github.beardlybread.orgestrator.tree;
+
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -73,7 +77,7 @@ public class BaseOrgNode implements OrgNode {
     }
 
     @Override
-    public void write (Writer target) {
+    public void write (Writer target) throws IOException {
         target.write(this.toString());
         for (OrgNode n: this.nodes) {
             n.write(target);

@@ -1,20 +1,21 @@
-import java.util.Collection;
-import java.util.List;
+package com.github.beardlybread.orgestrator.tree;
+
+import java.io.IOException;
+import java.io.Writer;
 
 public interface OrgNode {
 
     // Getters
-    public OrgNode get(int index)
-            throws IndexOutOfBoundsException;
-    public int indexOf(OrgNode node);
+    OrgNode get(int index) throws IndexOutOfBoundsException;
+    int indexOf(OrgNode node);
 
     // Setters
-    public void add (OrgNode node);
-    public void add (int index, OrgNode node);
-    public boolean remove (OrgNode node);
+    void add (OrgNode node);
+    void add (int index, OrgNode node);
+    boolean remove (OrgNode node);
 
     // Utility
-    public String toString ();
-    public void write (Writer target);
+    String toString ();
+    void write (Writer target) throws IOException;
 
 }
