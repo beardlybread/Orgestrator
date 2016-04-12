@@ -23,7 +23,9 @@ HeaderMore : . -> more ;
 
 mode INDENT_MODE;
 
-SCHEDULE : ('SCHEDULED'|'DEADLINE'|'CLOSED') ':' -> mode(SCHEDULE_MODE) ;
+SCHEDULED : 'SCHEDULED:' -> mode(SCHEDULE_MODE) ;
+DEADLINE : 'DEADLINE:' -> mode(SCHEDULE_MODE) ;
+CLOSED : 'CLOSED:' -> mode(SCHEDULE_MODE) ;
 PROPERTIES : ':PROPERTIES:' -> mode(PROPERTIES_MODE) ;
 Table : '|' -> mode(TABLE_MODE), type(TABLE) ;
 UList : [\-+*] ' ' -> mode(LINE_MODE), type(ULIST) ;
@@ -46,8 +48,8 @@ mode SCHEDULE_MODE;
 END_SCHEDULE : NL -> mode(DEFAULT_MODE) ;
 TIMESTAMP : '<' -> pushMode(DATE_MODE) ;
 B_timestamp : '[' -> pushMode(DATE_MODE), type(TIMESTAMP) ;
-DEADLINE : 'DEADLINE:' ;
-SCHEDULED : 'SCHEDULED:' ;
+CLOSED_DEADLINE : 'DEADLINE:' ;
+CLOSED_SCHEDULED : 'SCHEDULED:' ;
 Schedule_WS : WS -> type(EMPTY), skip ;
 
 mode PROPERTIES_MODE;
