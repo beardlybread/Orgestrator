@@ -1,7 +1,13 @@
+package com.github.beardlybread.orgestrator.parse;
+
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+
 import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Token;
 
 import java.io.StringReader;
@@ -10,12 +16,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
 public class OrgLexerTest { 
@@ -269,7 +269,6 @@ public class OrgLexerTest {
         });
     }
 
-    private String[] raw_input;
     private String label;
     private String input;
     private ArrayList<TestToken> expected;
@@ -285,8 +284,7 @@ public class OrgLexerTest {
 
     @Test
     public void tester () throws IOException {
-        StringReader r = new StringReader(input + "\n");
-        try {
+        try (StringReader r = new StringReader(input + "\n")) {
             ANTLRInputStream ais = new ANTLRInputStream(r);
             OrgLexer lexer = new OrgLexer(ais);
             CommonTokenStream cts = new CommonTokenStream(lexer);
@@ -294,12 +292,10 @@ public class OrgLexerTest {
             List<Token> toks = cts.getTokens();
             for (int i = 0; i < toks.size() - 1; i++) {
                 assertEquals(this.label, this.expected.get(i).type,
-                        lexer.VOCABULARY.getSymbolicName(toks.get(i).getType()));
+                        OrgLexer.VOCABULARY.getSymbolicName(toks.get(i).getType()));
                 assertEquals(this.label, this.expected.get(i).value,
                         toks.get(i).getText());
             }
-        } finally {
-            if (r != null) r.close();
         }
     }
 
@@ -309,17 +305,6 @@ public class OrgLexerTest {
         public TestToken (String t, String v) {
             this.type = t;
             this.value = v;
-        }
-    }
-
-    class TestCase {public String label;
-        public String input;
-        public TestToken[] expected;
-
-        public TestCase (String label, String input, TestToken[] expected) {
-            this.label = label;
-            this.input = input;
-            this.expected = expected;
         }
     }
 

@@ -9,7 +9,13 @@ public class OrgHeading extends BaseOrgNode {
     // Constructors
     ////////////////////////////////////////////////////////////////////////////
 
+    public OrgHeading () {
+        super();
+        level = -1;
+    }
+
     public OrgHeading (String rawLevel, String rawText) {
+        super();
         this.level = rawLevel.length() - 1;
         this.text = rawText.replaceAll("\\n", "");
     }

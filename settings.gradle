@@ -1,1 +1,1 @@
-include ':app'
+include ':app', ':antlr-4.5-complete', ':junit-4.12', ':hamcrest-core-1.3'

@@ -32,6 +32,5 @@ proguard/
 .navigation/
 captures/
 
-# VIM temp files
 .*.swp
-
+*.tokens
