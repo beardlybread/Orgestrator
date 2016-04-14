@@ -1,5 +1,5 @@
 // Generated from OrgLexer.g5 by ANTLR 4.5
-package com.github.beardlybread.orgestrator.parse;
+package com.github.beardlybread.orgestrator.org;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Lexer;

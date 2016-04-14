@@ -1,70 +1,53 @@
-package com.github.beardlybread.orgestrator.tree;
+package com.github.beardlybread.orgestrator.org;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Collection;
 
-public class BaseOrgNode implements OrgNode {
+public abstract class BaseTreeNode extends BaseOrgNode {
 
-    protected ArrayList<OrgNode> nodes; 
-    protected OrgNode parent; 
+    protected ArrayList<OrgNode> children = null;
+    protected BaseTreeNode parent = null;
+    protected OrgText text = null;
 
     ////////////////////////////////////////////////////////////////////////////
     // Constructors
     ////////////////////////////////////////////////////////////////////////////
 
-    public BaseOrgNode () {
-        this.nodes = new ArrayList<>();
-        this.parent = null;
-    }
-
-    public BaseOrgNode (OrgNode parent) {
-        this();
-        this.parent = parent;
-    }
-
-    public BaseOrgNode (Collection<OrgNode> nodes) {
-        this.nodes = new ArrayList<>(nodes);
-    }
-
-    public BaseOrgNode (OrgNode parent, Collection<OrgNode> nodes) {
-        this(nodes);
-        this.parent = parent;
+    public BaseTreeNode(BaseTreeNode parent) {
+        super(parent);
+        this.children = new ArrayList<>();
     }
 
     ////////////////////////////////////////////////////////////////////////////
     // Getters
     ////////////////////////////////////////////////////////////////////////////
-    
-    @Override
-    public OrgNode get (int index)
-            throws IndexOutOfBoundsException {
-        return this.nodes.get(index);
+
+
+    public OrgNode get (int index) throws IndexOutOfBoundsException {
+        return this.children.get(index);
     }
 
-    @Override
+    public OrgText getText () { return this.text; }
+
     public int indexOf (OrgNode node) {
-        return this.nodes.indexOf(node);
+        return this.children.indexOf(node);
     }
 
     ////////////////////////////////////////////////////////////////////////////
     // Setters
     ////////////////////////////////////////////////////////////////////////////
 
-    @Override
     public void add (OrgNode node) {
-        this.nodes.add(node);
+        this.children.add(node);
     }
     
-    @Override
     public void add (int index, OrgNode node) {
-        this.nodes.add(index, node);
+        this.children.add(index, node);
     }
 
-    @Override
     public boolean remove (OrgNode node) {
-        return this.nodes.remove(node);
+        return this.children.remove(node);
     } 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -72,14 +55,9 @@ public class BaseOrgNode implements OrgNode {
     ////////////////////////////////////////////////////////////////////////////
     
     @Override
-    public String toString () {
-        return "";
-    }
-
-    @Override
     public void write (Writer target) throws IOException {
         target.write(this.toString());
-        for (OrgNode n: this.nodes) {
+        for (OrgNode n: this.children) {
             n.write(target);
         }
     }

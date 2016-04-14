@@ -2,7 +2,7 @@ parser grammar OrgParser;
 
 options { tokenVocab = OrgLexer; }
 
-file : thing* ;
+file : thing* EOF ;
 thing : line
       | headingLine
       | todoLine

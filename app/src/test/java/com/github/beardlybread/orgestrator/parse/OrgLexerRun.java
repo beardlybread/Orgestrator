@@ -1,5 +1,7 @@
 package com.github.beardlybread.orgestrator.parse;
 
+import com.github.beardlybread.orgestrator.org.OrgLexer;
+
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Token;
