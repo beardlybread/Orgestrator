@@ -23,7 +23,6 @@ public abstract class BaseTreeNode extends BaseOrgNode {
     // Getters
     ////////////////////////////////////////////////////////////////////////////
 
-
     public OrgNode get (int index) throws IndexOutOfBoundsException {
         return this.children.get(index);
     }

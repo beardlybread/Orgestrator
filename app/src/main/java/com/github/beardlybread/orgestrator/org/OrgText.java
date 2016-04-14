@@ -19,7 +19,7 @@ public class OrgText extends BaseOrgNode {
 
     public OrgText (BaseTreeNode parent, String line) {
         this(parent);
-        this.overwrite(line);
+        this.add(line);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -45,20 +45,24 @@ public class OrgText extends BaseOrgNode {
     // Setters
     ////////////////////////////////////////////////////////////////////////////
 
-    public void add (String line) { this.lines.add(line); }
-
-    public void overwrite (String line) {
-        this.lines.clear();
+    public void add (String line) {
         this.lines.add(line);
         this.fresh = false;
     }
 
-    public void overwrite (int index, String line) { this.lines.set(index, line); }
-
-    public void overwrite (OrgText text) {
-        this.lines = text.lines;
+    public void add (OrgText line) {
+        this.lines.addAll(line.lines);
         this.fresh = false;
     }
 
+    public void clear () {
+        this.lines.clear();
+        this.fresh = false;
+    }
+
+    public void overwrite (int index, String line) {
+        this.lines.set(index, line);
+        this.fresh = false;
+    }
 
 }
