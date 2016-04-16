@@ -1,6 +1,6 @@
 package com.github.beardlybread.orgestrator.parse;
 
-import com.github.beardlybread.orgestrator.org.OrgLexer;
+import com.github.beardlybread.orgestrator.org.antlr.OrgLexer;
 
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
