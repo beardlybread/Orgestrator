@@ -1,6 +1,6 @@
 package com.github.beardlybread.orgestrator.org;
 
-public class OrgTable extends BaseOrgNode {
+public class OrgTable extends OrgNode {
 
     public final int rows;
     public final int cols;
@@ -18,13 +18,13 @@ public class OrgTable extends BaseOrgNode {
     // Getters
     ////////////////////////////////////////////////////////////////////////////
 
-    public String get(int row, int col) throws IndexOutOfBoundsException {
+    public String get (int row, int col) throws IndexOutOfBoundsException {
         return this.data[row][col];
     }
 
     // TODO (feature) Justify columns.
     @Override
-    public String toString() {
+    public String toString () {
         StringBuilder sb = new StringBuilder();
         for (int r = 0; r < this.rows; r++) {
             for (int c = 0; c < this.cols; c++) {
@@ -40,7 +40,7 @@ public class OrgTable extends BaseOrgNode {
     // Setters
     ////////////////////////////////////////////////////////////////////////////
 
-    public void set(int row, int col, String value) throws IndexOutOfBoundsException {
+    public void set (int row, int col, String value) throws IndexOutOfBoundsException {
         this.data[row][col] = value;
     }
 

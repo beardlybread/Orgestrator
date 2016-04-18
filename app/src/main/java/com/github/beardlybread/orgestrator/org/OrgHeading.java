@@ -1,14 +1,14 @@
 package com.github.beardlybread.orgestrator.org;
 
-public class OrgHeading extends BaseTreeNode {
+public class OrgHeading extends OrgTreeNode {
 
-    protected int level = -1;
+    public final int level;
 
     ////////////////////////////////////////////////////////////////////////////
     // Constructors
     ////////////////////////////////////////////////////////////////////////////
 
-    public OrgHeading(String rawLevel, String rawText) {
+    public OrgHeading (String rawLevel, String rawText) {
         super();
         this.level = rawLevel.trim().length();
         this.text = new OrgText(rawText.trim(), 0);
@@ -18,7 +18,6 @@ public class OrgHeading extends BaseTreeNode {
     // Getters
     ////////////////////////////////////////////////////////////////////////////
 
-    public int getLevel () { return this.level; }
 
     @Override
     public String toString () {

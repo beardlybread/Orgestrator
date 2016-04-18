@@ -2,7 +2,7 @@ package com.github.beardlybread.orgestrator.org;
 
 import java.util.ArrayList;
 
-public class OrgText extends BaseOrgNode {
+public class OrgText extends OrgNode {
 
     protected ArrayList<String> lines = null;
     private String cache = null;

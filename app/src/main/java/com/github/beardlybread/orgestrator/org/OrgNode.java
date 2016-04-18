@@ -3,20 +3,56 @@ package com.github.beardlybread.orgestrator.org;
 import java.io.IOException;
 import java.io.Writer;
 
-public interface OrgNode {
+public abstract class OrgNode {
+
+    protected OrgNode parent = null;
+    public final String type;
+    public final int indent;
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Constructors
+    ////////////////////////////////////////////////////////////////////////////
+
+    OrgNode () {
+        String type = this.getClass().getName();
+        this.type = type.substring(type.lastIndexOf(".") + 1);
+        this.indent = 0;
+    }
+
+    OrgNode (int indent) {
+        String type = this.getClass().getName();
+        this.type = type.substring(type.lastIndexOf(".") + 1);
+        this.indent = indent;
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     // Getters
     ////////////////////////////////////////////////////////////////////////////
 
-    String getType ();
-    boolean isType (String name);
-    String toString();
+    public String getType () { return this.type; }
+
+    public boolean isType (String... name) {
+        for (String t: name) {
+            if (this.type.equals(t))
+                return true;
+        }
+        return false;
+    }
+
+    public String toString () { return this.toString(); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Setters
+    ////////////////////////////////////////////////////////////////////////////
+
+    public void setParent (OrgNode parent) { this.parent = parent; }
 
     ////////////////////////////////////////////////////////////////////////////
     // Utility
     ////////////////////////////////////////////////////////////////////////////
 
-    void write (Writer target) throws IOException;
+    public void write (Writer target) throws IOException {
+        target.write(this.toString());
+    }
 
 }

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 
-public abstract class BaseTreeNode extends BaseOrgNode {
+public abstract class OrgTreeNode extends OrgNode {
 
     protected ArrayList<OrgNode> children = null;
     protected OrgText text = null;
@@ -13,12 +13,12 @@ public abstract class BaseTreeNode extends BaseOrgNode {
     // Constructors
     ////////////////////////////////////////////////////////////////////////////
 
-    public BaseTreeNode () {
+    public OrgTreeNode() {
         super();
         this.children = new ArrayList<>();
     }
 
-    public BaseTreeNode (int indent) {
+    public OrgTreeNode(int indent) {
         super(indent);
         this.children = new ArrayList<>();
     }
@@ -43,10 +43,12 @@ public abstract class BaseTreeNode extends BaseOrgNode {
 
     public void add (OrgNode node) {
         this.children.add(node);
+        node.setParent(this);
     }
     
     public void add (int index, OrgNode node) {
         this.children.add(index, node);
+        node.setParent(this);
     }
 
     public boolean remove (OrgNode node) {
