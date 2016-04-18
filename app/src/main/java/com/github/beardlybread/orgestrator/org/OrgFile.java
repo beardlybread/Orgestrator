@@ -2,12 +2,10 @@ package com.github.beardlybread.orgestrator.org;
 
 import com.github.beardlybread.orgestrator.org.antlr.*;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ErrorNode;
-import org.antlr.v4.runtime.tree.TerminalNode;
-
 import java.util.ArrayList;
 import java.util.Stack;
+
+// TODO Set up lists so that they group together lines.
 
 public class OrgFile extends OrgParserBaseListener {
 
@@ -23,10 +21,8 @@ public class OrgFile extends OrgParserBaseListener {
     // text gloms onto top text except for headings, ignoring indent
     // properties and timestamps attach to previous heading
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
+    /** Instantiate the data structures.
+     * @param ctx the parser context (unused)
      */
     @Override
     public void enterFile(OrgParser.FileContext ctx) {
@@ -34,42 +30,55 @@ public class OrgFile extends OrgParserBaseListener {
         this.lastParent = new Stack<>();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
+    /** Handle lines that do not fall into a more specific type.
+     * @param ctx the parser context
      */
     @Override
     public void enterLine(OrgParser.LineContext ctx) {
         this.current = new OrgText(ctx.LINE().getText(),
                 ctx.INDENT() == null ? 0 : ctx.INDENT().getText().length());
+        // if lastParent.empty
+        //   if last is OrgText, add to last
+        //   else add current to roots, last = current
+        // else if lastParent is heading
+        //   if last is OrgText, add to last
+        //   else add current to heading, last = current
+        // else (lastParent is list) add current to list text
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
+    /** Handle headings without 'to-do' semantics.
+     * @param ctx the parser context
      */
     @Override
     public void enterHeadingLine(OrgParser.HeadingLineContext ctx) {
         this.current = new OrgHeading(ctx.HEADING_LEVEL().getText(), ctx.HEADING().getText());
+        // if lastParent is a list
+        //   pop until heading
+        //   if lastParent is equal level, pop and parent (or roots)
+        //   else parent
+        // push current as parent, last = current
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
+    /** Handle 'to-do' headings.
+     * @param ctx the parser context
      */
     @Override
     public void enterTodoLine(OrgParser.TodoLineContext ctx) {
         this.current = new OrgToDo(ctx.HEADING_LEVEL().getText(), ctx.HEADING().getText(),
                 ctx.TODO().getText());
+        // if lastParent is a list
+        //   pop until heading
+        //   if lastParent is equal level, pop and parent (or roots)
+        //   else parent
+        // push current as parent
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
+    /** Construct table from parser context.
+     * `OrgTable` is constructed from the top level `table` rule. The table objects are fixed size
+     * for now, so constructing them from this level gives access to all the necessary size
+     * information at once. Also, this eliminates the need for more specific listeners for the rows
+     * and columns.
+     * @param ctx the parser context
      */
     @Override
     public void enterTable(OrgParser.TableContext ctx) {
@@ -85,132 +94,78 @@ public class OrgFile extends OrgParserBaseListener {
             }
             ++r;
         }
+        this.current.setParent(this.lastParent.peek());
+        this.last = this.current;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
+    /** Handle un-enumerated list line generation.
+     * @param ctx the parser context
      */
     @Override
     public void enterUnenumeratedLine(OrgParser.UnenumeratedLineContext ctx) {
         this.current = new OrgList(ctx.INDENT() == null ? 0 : ctx.INDENT().getText().length(),
                 ctx.ULIST().getText(), ctx.LINE().getText());
+        // if lastParent is a list
+        //   if indent level is the same pop until lower to parent
+        //   else use lastParent as parent
+        // else (heading) use lastParent as parent
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
+    /** Handle enumerated list line generation.
+     * @param ctx the parser context
      */
     @Override
     public void enterEnumeratedLine(OrgParser.EnumeratedLineContext ctx) {
         this.current = new OrgList(ctx.INDENT() == null ? 0 : ctx.INDENT().getText().length(),
                 ctx.ILIST().getText(), ctx.LINE().getText());
+        // if lastParent is a list
+        //   if indent level is the same pop until lower to parent
+        //   else use lastParent as parent
+        // else (heading) use lastParent as parent
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
+    /** Handle events parenting to closest heading.
+     * @param ctx the parser context
      */
     @Override
-    public void enterEvent(OrgParser.EventContext ctx) { }
+    public void enterEvent(OrgParser.EventContext ctx) {
+        if (ctx.scheduled() != null) {
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void enterScheduled(OrgParser.ScheduledContext ctx) { }
+        } else if (ctx.deadline() != null) {
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void enterDeadline(OrgParser.DeadlineContext ctx) { }
+        } else { // closed
+        }
+    }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void enterClosed(OrgParser.ClosedContext ctx) { }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void enterTimestamp(OrgParser.TimestampContext ctx) { }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
+    /** Handle properties parenting to closest heading.
+     * @param ctx the parser context
      */
     @Override
     public void enterPropertyList(OrgParser.PropertyListContext ctx) { }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void enterProperty(OrgParser.PropertyContext ctx) { }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void enterPropertyPair(OrgParser.PropertyPairContext ctx) { }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void enterLastRepeat(OrgParser.LastRepeatContext ctx) { }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void enterEveryRule(ParserRuleContext ctx) { }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void exitEveryRule(ParserRuleContext ctx) { }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void visitTerminal(TerminalNode node) { }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void visitErrorNode(ErrorNode node) { }
+// I don't think I'll need these, but just in case...
+//    /**
+//     * @param ctx the parser context
+//     */
+//    @Override
+//    public void enterEveryRule(ParserRuleContext ctx) { }
+//
+//    /**
+//     * @param ctx the parser context
+//     */
+//    @Override
+//    public void exitEveryRule(ParserRuleContext ctx) { }
+//
+//    /**
+//     * @param node a lexer terminal
+//     */
+//    @Override
+//    public void visitTerminal(TerminalNode node) { }
+//
+//    /** Handle errors.
+//     * @param node the structure containing error information
+//     */
+//    @Override
+//    public void visitErrorNode(ErrorNode node) { }
 
 }
