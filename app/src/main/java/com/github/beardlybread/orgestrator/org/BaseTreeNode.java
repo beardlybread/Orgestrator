@@ -7,15 +7,19 @@ import java.util.ArrayList;
 public abstract class BaseTreeNode extends BaseOrgNode {
 
     protected ArrayList<OrgNode> children = null;
-    protected BaseTreeNode parent = null;
     protected OrgText text = null;
 
     ////////////////////////////////////////////////////////////////////////////
     // Constructors
     ////////////////////////////////////////////////////////////////////////////
 
-    public BaseTreeNode(BaseTreeNode parent) {
-        super(parent);
+    public BaseTreeNode () {
+        super();
+        this.children = new ArrayList<>();
+    }
+
+    public BaseTreeNode (int indent) {
+        super(indent);
         this.children = new ArrayList<>();
     }
 

@@ -7,8 +7,8 @@ public class OrgTable extends BaseOrgNode {
 
     protected String[][] data = null;
 
-    OrgTable (BaseTreeNode parent, int nRows, int nCols) {
-        super(parent);
+    OrgTable (int nRows, int nCols, int indent) {
+        super(indent);
         this.rows = nRows;
         this.cols = nCols;
         this.data = new String[nRows][nCols];

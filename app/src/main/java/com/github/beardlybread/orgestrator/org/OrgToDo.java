@@ -13,8 +13,8 @@ public class OrgToDo extends OrgHeading {
     // Constructors
     ////////////////////////////////////////////////////////////////////////////
 
-    public OrgToDo(OrgHeading parent, String rawLevel, String rawText, String rawTodo) {
-        super(parent, rawLevel, rawText);
+    public OrgToDo(String rawLevel, String rawText, String rawTodo) {
+        super(rawLevel, rawText);
         this.status = rawTodo.trim().equalsIgnoreCase("DONE") ? OrgToDo.DONE : OrgToDo.TODO;
     }
 

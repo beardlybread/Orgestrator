@@ -12,13 +12,9 @@ public class OrgText extends BaseOrgNode {
     // Constructors
     ////////////////////////////////////////////////////////////////////////////
 
-    public OrgText (BaseTreeNode parent) {
-        super(parent);
+    public OrgText (String line, int indent) {
+        super(indent);
         this.lines = new ArrayList<>();
-    }
-
-    public OrgText (BaseTreeNode parent, String line) {
-        this(parent);
         this.add(line);
     }
 

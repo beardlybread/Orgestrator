@@ -5,18 +5,24 @@ import java.io.Writer;
 
 public abstract class BaseOrgNode implements OrgNode {
 
-    protected OrgNode parent = null;
+    protected BaseOrgNode parent = null;
     public final String type;
+    public final int indent;
 
     ////////////////////////////////////////////////////////////////////////////
     // Constructors
     ////////////////////////////////////////////////////////////////////////////
 
-    BaseOrgNode () { this.type = this.getClass().getName(); }
+    BaseOrgNode () {
+        String type = this.getClass().getName();
+        this.type = type.substring(type.lastIndexOf(".") + 1);
+        this.indent = 0;
+    }
 
-    BaseOrgNode (OrgNode parent) {
-        this();
-        this.parent = parent;
+    BaseOrgNode (int indent) {
+        String type = this.getClass().getName();
+        this.type = type.substring(type.lastIndexOf(".") + 1);
+        this.indent = indent;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -28,12 +34,17 @@ public abstract class BaseOrgNode implements OrgNode {
 
     @Override
     public boolean isType (String name) {
-        int i = this.type.lastIndexOf(".");
-        return this.type.equalsIgnoreCase(name) || this.type.substring(i).equalsIgnoreCase(name);
+        return this.type.equals(name);
     }
 
     @Override
     public String toString() { return this.toString(); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Setters
+    ////////////////////////////////////////////////////////////////////////////
+
+    public void setParent (BaseOrgNode parent) { this.parent = parent; }
 
     ////////////////////////////////////////////////////////////////////////////
     // Utility

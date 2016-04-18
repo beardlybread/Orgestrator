@@ -7,10 +7,14 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 public class OrgFile extends OrgParserBaseListener {
 
     protected ArrayList<OrgNode> roots = null;
+    protected Stack<BaseTreeNode> lastParent = null;
+    protected BaseOrgNode last = null;
+    protected BaseOrgNode current = null;
 
     // Listener as input
     // on all exits, record last processed thing/indent level (stack) list and heading stack?
@@ -25,7 +29,10 @@ public class OrgFile extends OrgParserBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
- public void enterFile(OrgParser.FileContext ctx) { }
+    public void enterFile(OrgParser.FileContext ctx) {
+        this.roots = new ArrayList<>();
+        this.lastParent = new Stack<>();
+    }
 
     /**
      * {@inheritDoc}
@@ -33,7 +40,10 @@ public class OrgFile extends OrgParserBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
- public void exitThing(OrgParser.ThingContext ctx) { }
+    public void enterLine(OrgParser.LineContext ctx) {
+        this.current = new OrgText(ctx.LINE().getText(),
+                ctx.INDENT() == null ? 0 : ctx.INDENT().getText().length());
+    }
 
     /**
      * {@inheritDoc}
@@ -41,7 +51,9 @@ public class OrgFile extends OrgParserBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
- public void enterLine(OrgParser.LineContext ctx) { }
+    public void enterHeadingLine(OrgParser.HeadingLineContext ctx) {
+        this.current = new OrgHeading(ctx.HEADING_LEVEL().getText(), ctx.HEADING().getText());
+    }
 
     /**
      * {@inheritDoc}
@@ -49,7 +61,10 @@ public class OrgFile extends OrgParserBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
- public void enterHeadingLine(OrgParser.HeadingLineContext ctx) { }
+    public void enterTodoLine(OrgParser.TodoLineContext ctx) {
+        this.current = new OrgToDo(ctx.HEADING_LEVEL().getText(), ctx.HEADING().getText(),
+                ctx.TODO().getText());
+    }
 
     /**
      * {@inheritDoc}
@@ -57,7 +72,20 @@ public class OrgFile extends OrgParserBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
- public void enterTodoLine(OrgParser.TodoLineContext ctx) { }
+    public void enterTable(OrgParser.TableContext ctx) {
+        OrgParser.TableRowContext top = ctx.tableRow(0);
+        this.current = new OrgTable(ctx.tableRow().size(), top.tableCol().size(),
+                top.INDENT() == null ? 0 : top.INDENT().getText().length());
+        int r = 0;
+        for (OrgParser.TableRowContext rc: ctx.tableRow()) {
+            int c = 0;
+            for (OrgParser.TableColContext cc: rc.tableCol()) {
+                ((OrgTable)this.current).set(r, c, cc.TABLE_COL().getText());
+                ++c;
+            }
+            ++r;
+        }
+    }
 
     /**
      * {@inheritDoc}
@@ -65,7 +93,10 @@ public class OrgFile extends OrgParserBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
- public void enterTable(OrgParser.TableContext ctx) { }
+    public void enterUnenumeratedLine(OrgParser.UnenumeratedLineContext ctx) {
+        this.current = new OrgList(ctx.INDENT() == null ? 0 : ctx.INDENT().getText().length(),
+                ctx.ULIST().getText(), ctx.LINE().getText());
+    }
 
     /**
      * {@inheritDoc}
@@ -73,7 +104,10 @@ public class OrgFile extends OrgParserBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
- public void enterTableRow(OrgParser.TableRowContext ctx) { }
+    public void enterEnumeratedLine(OrgParser.EnumeratedLineContext ctx) {
+        this.current = new OrgList(ctx.INDENT() == null ? 0 : ctx.INDENT().getText().length(),
+                ctx.ILIST().getText(), ctx.LINE().getText());
+    }
 
     /**
      * {@inheritDoc}
@@ -81,7 +115,7 @@ public class OrgFile extends OrgParserBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
- public void enterTableCol(OrgParser.TableColContext ctx) { }
+    public void enterEvent(OrgParser.EventContext ctx) { }
 
     /**
      * {@inheritDoc}
@@ -89,7 +123,7 @@ public class OrgFile extends OrgParserBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
- public void enterUnenumeratedLine(OrgParser.UnenumeratedLineContext ctx) { }
+    public void enterScheduled(OrgParser.ScheduledContext ctx) { }
 
     /**
      * {@inheritDoc}
@@ -97,7 +131,7 @@ public class OrgFile extends OrgParserBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
- public void enterEnumeratedLine(OrgParser.EnumeratedLineContext ctx) { }
+    public void enterDeadline(OrgParser.DeadlineContext ctx) { }
 
     /**
      * {@inheritDoc}
@@ -105,7 +139,7 @@ public class OrgFile extends OrgParserBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
- public void enterEvent(OrgParser.EventContext ctx) { }
+    public void enterClosed(OrgParser.ClosedContext ctx) { }
 
     /**
      * {@inheritDoc}
@@ -113,7 +147,7 @@ public class OrgFile extends OrgParserBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
- public void enterScheduled(OrgParser.ScheduledContext ctx) { }
+    public void enterTimestamp(OrgParser.TimestampContext ctx) { }
 
     /**
      * {@inheritDoc}
@@ -121,7 +155,7 @@ public class OrgFile extends OrgParserBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
- public void enterDeadline(OrgParser.DeadlineContext ctx) { }
+    public void enterPropertyList(OrgParser.PropertyListContext ctx) { }
 
     /**
      * {@inheritDoc}
@@ -129,7 +163,7 @@ public class OrgFile extends OrgParserBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
- public void enterClosed(OrgParser.ClosedContext ctx) { }
+    public void enterProperty(OrgParser.PropertyContext ctx) { }
 
     /**
      * {@inheritDoc}
@@ -137,7 +171,7 @@ public class OrgFile extends OrgParserBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
- public void enterTimestamp(OrgParser.TimestampContext ctx) { }
+    public void enterPropertyPair(OrgParser.PropertyPairContext ctx) { }
 
     /**
      * {@inheritDoc}
@@ -145,7 +179,7 @@ public class OrgFile extends OrgParserBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
- public void enterPropertyList(OrgParser.PropertyListContext ctx) { }
+    public void enterLastRepeat(OrgParser.LastRepeatContext ctx) { }
 
     /**
      * {@inheritDoc}
@@ -153,7 +187,7 @@ public class OrgFile extends OrgParserBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
- public void enterProperty(OrgParser.PropertyContext ctx) { }
+    public void enterEveryRule(ParserRuleContext ctx) { }
 
     /**
      * {@inheritDoc}
@@ -161,7 +195,7 @@ public class OrgFile extends OrgParserBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
- public void enterPropertyPair(OrgParser.PropertyPairContext ctx) { }
+    public void exitEveryRule(ParserRuleContext ctx) { }
 
     /**
      * {@inheritDoc}
@@ -169,7 +203,7 @@ public class OrgFile extends OrgParserBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
- public void enterLastRepeat(OrgParser.LastRepeatContext ctx) { }
+    public void visitTerminal(TerminalNode node) { }
 
     /**
      * {@inheritDoc}
@@ -177,30 +211,6 @@ public class OrgFile extends OrgParserBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override
- public void enterEveryRule(ParserRuleContext ctx) { }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
- public void exitEveryRule(ParserRuleContext ctx) { }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
- public void visitTerminal(TerminalNode node) { }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
- public void visitErrorNode(ErrorNode node) { }
+    public void visitErrorNode(ErrorNode node) { }
 
 }

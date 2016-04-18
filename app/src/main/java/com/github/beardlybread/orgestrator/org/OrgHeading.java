@@ -8,11 +8,10 @@ public class OrgHeading extends BaseTreeNode {
     // Constructors
     ////////////////////////////////////////////////////////////////////////////
 
-    public OrgHeading(OrgHeading parent, String rawLevel, String rawText) {
-        super(parent);
+    public OrgHeading(String rawLevel, String rawText) {
+        super();
         this.level = rawLevel.trim().length();
-        this.text = new OrgText(this, rawText.trim());
-        this.parent = parent;
+        this.text = new OrgText(rawText.trim(), 0);
     }
 
     ////////////////////////////////////////////////////////////////////////////
