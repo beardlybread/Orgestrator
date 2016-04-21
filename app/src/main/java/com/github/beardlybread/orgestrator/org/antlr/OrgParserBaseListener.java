@@ -240,6 +240,18 @@ public class OrgParserBaseListener implements OrgParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitLastRepeat(OrgParser.LastRepeatContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterEmpty(OrgParser.EmptyContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitEmpty(OrgParser.EmptyContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

@@ -220,4 +220,6 @@ public class OrgFile extends OrgParserBaseListener {
 //    @Override
 //    public void visitErrorNode(ErrorNode node) { }
 
+    @Override
+    public void enterEmpty (OrgParser.EmptyContext ctx) { }
 }

@@ -1,6 +1,7 @@
 package com.github.beardlybread.orgestrator.org.antlr;
 
 // Generated from OrgParser.g4 by ANTLR 4.5
+import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -198,4 +199,14 @@ public interface OrgParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitLastRepeat(OrgParser.LastRepeatContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link OrgParser#empty}.
+	 * @param ctx the parse tree
+	 */
+	void enterEmpty(OrgParser.EmptyContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link OrgParser#empty}.
+	 * @param ctx the parse tree
+	 */
+	void exitEmpty(OrgParser.EmptyContext ctx);
 }

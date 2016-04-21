@@ -11,6 +11,7 @@ thing : line
       | enumeratedLine
       | event
       | propertyList
+      | empty
       ;
 
 line : INDENT? LINE | EMPTY ;
@@ -37,3 +38,4 @@ property : propertyPair | lastRepeat ;
 propertyPair : PROPERTY VALUE? ;
 lastRepeat : LAST_REPEAT DATE DOW TIME END_TIMESTAMP ;
 
+empty : EMPTY ;
