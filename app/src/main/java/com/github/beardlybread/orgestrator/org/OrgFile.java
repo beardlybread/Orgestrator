@@ -222,4 +222,6 @@ public class OrgFile extends OrgParserBaseListener {
 
     @Override
     public void enterEmpty (OrgParser.EmptyContext ctx) { }
+
+    public ArrayList<OrgNode> getRoots () { return this.roots; }
 }

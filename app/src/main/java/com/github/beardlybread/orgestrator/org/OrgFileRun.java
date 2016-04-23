@@ -13,30 +13,34 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+
+// TODO Text should split across empties.
 
 public class OrgFileRun {
 
     public static void main (String[] args) throws IOException {
-        InputStream inStream = OrgFileRun.handleArgs(args);
+        ParseTree tree = initialize(args.length < 1 ? System.in : new FileInputStream(args[0]));
+        OrgFile file = new OrgFile();
+        ParseTreeWalker walker = new ParseTreeWalker();
+        walker.walk(file, tree);
+        OutputStreamWriter outStream = new OutputStreamWriter(System.out);
+        for (OrgNode n: file.getRoots()) {
+            n.write(outStream);
+        }
+        outStream.flush();
+            // something something
+            // go crazy?
+            // don't mind if I do
+    }
+
+    public static ParseTree initialize (InputStream inStream) throws IOException {
         try (InputStreamReader r = new InputStreamReader(inStream)) {
             OrgLexer lexer = new OrgLexer(null);
             ANTLRInputStream ais = new ANTLRInputStream(r);
             lexer.setInputStream(ais);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
-            OrgParser parser = new OrgParser(tokens);
-            ParseTree tree = parser.file();
-            OrgFile file = new OrgFile();
-            ParseTreeWalker walker = new ParseTreeWalker();
-            walker.walk(file, tree);
-            // something something
-            // go crazy?
-            // don't mind if I do
+            return (new OrgParser(tokens)).file();
         }
-    }
-
-    public static InputStream handleArgs (String[] args) throws IOException {
-        if (args.length < 1)
-            return System.in;
-        return new FileInputStream(args[0]);
     }
 }

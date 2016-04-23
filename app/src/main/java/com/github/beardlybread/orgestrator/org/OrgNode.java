@@ -39,7 +39,8 @@ public abstract class OrgNode {
         return false;
     }
 
-    public String toString () { return this.toString(); }
+    @Override
+    public String toString () { return super.toString(); }
 
     ////////////////////////////////////////////////////////////////////////////
     // Setters
@@ -52,7 +53,8 @@ public abstract class OrgNode {
     ////////////////////////////////////////////////////////////////////////////
 
     public void write (Writer target) throws IOException {
-        target.write(this.toString());
+        target.append(this.type + ": ");
+        target.append(this.toString());
     }
 
 }
