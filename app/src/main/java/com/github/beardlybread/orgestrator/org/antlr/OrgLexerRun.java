@@ -4,7 +4,6 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Token;
 
-import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.util.List;
@@ -13,8 +12,7 @@ import java.util.List;
 public class OrgLexerRun {
 
     public static void main (String[] args) throws IOException {
-        FileInputStream fileStream = OrgLexerRun.handleArgs(args);
-        try (InputStreamReader r = new InputStreamReader(fileStream)) {
+        try (InputStreamReader r = new InputStreamReader(System.in)) {
             OrgLexer lexer = new OrgLexer(null);
             ANTLRInputStream ais = new ANTLRInputStream(r);
             lexer.setInputStream(ais);
@@ -26,12 +24,6 @@ public class OrgLexerRun {
                         OrgLexer.VOCABULARY.getSymbolicName(tok.getType()),
                         tok.getText().replace("\n", "\\n"));
             }
-        } finally {
-            if (fileStream != null) fileStream.close();
         }
-    }
-
-    public static FileInputStream handleArgs (String[] args) {
-
     }
 }

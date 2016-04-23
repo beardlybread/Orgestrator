@@ -9,14 +9,16 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class OrgFileRun {
 
     public static void main (String[] args) throws IOException {
-        try (InputStreamReader r = new InputStreamReader(System.in)) {
+        InputStream inStream = OrgFileRun.handleArgs(args);
+        try (InputStreamReader r = new InputStreamReader(inStream)) {
             OrgLexer lexer = new OrgLexer(null);
             ANTLRInputStream ais = new ANTLRInputStream(r);
             lexer.setInputStream(ais);
@@ -30,6 +32,11 @@ public class OrgFileRun {
             // go crazy?
             // don't mind if I do
         }
+    }
 
+    public static InputStream handleArgs (String[] args) throws IOException {
+        if (args.length < 1)
+            return System.in;
+        return new FileInputStream(args[0]);
     }
 }
