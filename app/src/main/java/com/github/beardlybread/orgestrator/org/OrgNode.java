@@ -29,8 +29,6 @@ public abstract class OrgNode {
     // Getters
     ////////////////////////////////////////////////////////////////////////////
 
-    public String getType () { return this.type; }
-
     public boolean isType (String... name) {
         for (String t: name) {
             if (this.type.equals(t))
@@ -53,7 +51,6 @@ public abstract class OrgNode {
     ////////////////////////////////////////////////////////////////////////////
 
     public void write (Writer target) throws IOException {
-        target.append(this.type + ": ");
         target.append(this.toString());
     }
 

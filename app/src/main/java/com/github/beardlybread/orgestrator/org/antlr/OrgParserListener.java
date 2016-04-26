@@ -160,6 +160,16 @@ public interface OrgParserListener extends ParseTreeListener {
 	 */
 	void exitTimestamp(OrgParser.TimestampContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link OrgParser#date}.
+	 * @param ctx the parse tree
+	 */
+	void enterDate(OrgParser.DateContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link OrgParser#date}.
+	 * @param ctx the parse tree
+	 */
+	void exitDate(OrgParser.DateContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link OrgParser#propertyList}.
 	 * @param ctx the parse tree
 	 */

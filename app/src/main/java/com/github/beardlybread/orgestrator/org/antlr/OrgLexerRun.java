@@ -4,6 +4,7 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Token;
 
+import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.util.List;
@@ -12,7 +13,8 @@ import java.util.List;
 public class OrgLexerRun {
 
     public static void main (String[] args) throws IOException {
-        try (InputStreamReader r = new InputStreamReader(System.in)) {
+        try (InputStreamReader r = new InputStreamReader(
+                args.length < 1 ? System.in : new FileInputStream(args[0]))) {
             OrgLexer lexer = new OrgLexer(null);
             ANTLRInputStream ais = new ANTLRInputStream(r);
             lexer.setInputStream(ais);

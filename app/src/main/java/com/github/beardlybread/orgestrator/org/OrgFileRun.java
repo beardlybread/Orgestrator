@@ -25,9 +25,7 @@ public class OrgFileRun {
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(file, tree);
         OutputStreamWriter outStream = new OutputStreamWriter(System.out);
-        for (OrgNode n: file.getRoots()) {
-            n.write(outStream);
-        }
+        file.write(outStream);
         outStream.flush();
             // something something
             // go crazy?

@@ -28,8 +28,11 @@ public class OrgText extends OrgNode {
     public String toString () {
         if (!fresh) {
             StringBuilder sb = new StringBuilder();
-            for (String l: this.lines) {
-                sb.append(l);
+            sb.append(this.lines.get(0));
+            for (int l = 1; l < this.lines.size(); ++l) {
+                for (int i = 0; i < this.indent; ++i)
+                    sb.append(" ");
+                sb.append(this.lines.get(l)).append("\n");
             }
             this.cache = sb.toString();
             this.fresh = true;

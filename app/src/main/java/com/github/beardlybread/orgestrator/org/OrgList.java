@@ -1,5 +1,7 @@
 package com.github.beardlybread.orgestrator.org;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 
 public class OrgList extends OrgTreeNode {
@@ -23,7 +25,7 @@ public class OrgList extends OrgTreeNode {
             default:
                 this.listType = OrgList.ENUMERATED;
         }
-        this.text = new OrgText(rawText, 0);
+        this.text = new OrgText(rawText, this.indent + 2);
     }
 
     public void addSibling (OrgList sibling) {
@@ -37,4 +39,25 @@ public class OrgList extends OrgTreeNode {
 
     public void addText (OrgText text) { this.text.add(text); }
 
+    @Override
+    public String toString () {
+        return this.marker + " " + this.text.toString();
+    }
+
+    @Override
+    public void write (Writer target) throws IOException {
+        super.write(target);
+        if (this.siblings != null) {
+            for (OrgList l : this.siblings) {
+                this.writeSibling(l, target);
+            }
+        }
+    }
+
+    public void writeSibling (OrgList list, Writer target) throws IOException {
+        target.append(list.toString());
+        for (OrgNode n: list.children) {
+            n.write(target);
+        }
+    }
 }

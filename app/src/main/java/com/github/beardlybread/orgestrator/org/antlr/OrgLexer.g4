@@ -12,8 +12,8 @@ INDENT : ' '+ -> mode(INDENT_MODE) ;
 TABLE : '|' -> mode(TABLE_MODE) ;
 ULIST : [\-+] ' ' -> mode(LINE_MODE) ;
 ILIST : IL -> mode(LINE_MODE) ;
-Line : . -> more, mode(LINE_MODE) ;
 EMPTY : NL ;
+Line : . -> more, mode(LINE_MODE) ;
 
 mode HEADING_MODE;
 
@@ -54,7 +54,7 @@ Schedule_WS : WS -> type(EMPTY), skip ;
 
 mode PROPERTIES_MODE;
 
-END_PROPERTIES : ':END:' -> mode(DEFAULT_MODE) ;
+END_PROPERTIES : ':END:' [ \t]* '\n' -> mode(DEFAULT_MODE) ;
 LAST_REPEAT : ':LAST_REPEAT:' [ \t]* '[' -> pushMode(DATE_MODE) ;
 PROPERTY : ':' [_A-Z]+ ':' ;
 VALUE : ~[ \t\r\n]+ ;

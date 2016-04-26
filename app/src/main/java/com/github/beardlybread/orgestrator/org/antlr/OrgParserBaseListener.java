@@ -3,6 +3,7 @@ package com.github.beardlybread.orgestrator.org.antlr;
 // Generated from OrgParser.g4 by ANTLR 4.5
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -192,6 +193,18 @@ public class OrgParserBaseListener implements OrgParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitTimestamp(OrgParser.TimestampContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterDate(OrgParser.DateContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDate(OrgParser.DateContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

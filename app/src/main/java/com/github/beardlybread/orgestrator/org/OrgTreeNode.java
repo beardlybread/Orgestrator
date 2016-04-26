@@ -61,8 +61,7 @@ public abstract class OrgTreeNode extends OrgNode {
     
     @Override
     public void write (Writer target) throws IOException {
-        target.append(this.type + ": ");
-        target.append(this.toString());
+        super.write(target);
         for (OrgNode n: this.children) {
             n.write(target);
         }

@@ -2,6 +2,8 @@ package com.github.beardlybread.orgestrator.org;
 
 import com.github.beardlybread.orgestrator.org.antlr.*;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -10,6 +12,26 @@ public class OrgFile extends OrgParserBaseListener {
     protected ArrayList<OrgNode> roots = null;
     protected Stack<OrgTreeNode> lastParent = null;
     protected OrgNode last = null;
+
+
+    /** Return the contents of the OrgFile.
+     * @return the raw contents of this object
+     */
+    public ArrayList<OrgNode> getRoots () { return this.roots; }
+
+    /** Write the data to a Writer in proper org file format.
+     * @param target the output object for constructing the text
+     * @throws IOException
+     */
+    public void write (Writer target) throws IOException {
+        for (OrgNode n: this.roots) {
+            n.write(target);
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Listener callbacks
+    ////////////////////////////////////////////////////////////////////////////
 
     /** Instantiate the data structures.
      * @param ctx the parser context (unused)
@@ -25,21 +47,33 @@ public class OrgFile extends OrgParserBaseListener {
      */
     @Override
     public void enterLine (OrgParser.LineContext ctx) {
-        OrgText current = new OrgText(
-                ctx.LINE().getText(),
-                ctx.INDENT() == null ? 0 : ctx.INDENT().getText().length());
+        String text = ctx.LINE() == null ? "" : ctx.LINE().getText().trim();
+        if (text.equals(""))
+            System.out.println("BOO!");
+        int indent = ctx.INDENT() == null ? 0 : ctx.INDENT().getText().length();
+        // if the text is empty, current is empty
+        OrgNode current = text.length() > 0 ? new OrgText(text, indent) : new OrgEmpty();
         if (this.last != null && this.last.isType("OrgText")) {
             // text appends to previous
-            ((OrgText)this.last).add(current);
+            ((OrgText)this.last).add((OrgText)current);
         } else if (this.lastParent.empty()) {
             // top level
             this.roots.add(current);
             this.last = current;
         } else if (this.lastParent.peek().isType("OrgHeading", "OrgToDo")) {
             this.lastParent.peek().add(current);
+            this.last = current;
+        } else if (current.isType("OrgEmpty")) {
+            // TODO empty nodes should NOT split lists, but for now...
+            this.popToHeading();
+            if (this.lastParent.empty()) {
+                this.roots.add(current);
+            } else {
+                this.lastParent.peek().add(current);
+            }
         } else {
             // parent is list
-            ((OrgList)this.lastParent.peek()).addText(current);
+            ((OrgList)this.lastParent.peek()).addText((OrgText)current);
         }
     }
 
@@ -64,31 +98,6 @@ public class OrgFile extends OrgParserBaseListener {
                 ctx.HEADING().getText(),
                 ctx.TODO().getText());
         this.handleToDoOrHeading(current);
-    }
-
-    /** Place to-do and heading objects into the file forest.
-     * @param current the heading/to-do being parsed
-     */
-    public void handleToDoOrHeading (OrgHeading current) {
-        if (this.last == null) {
-            // first line
-            this.roots.add(current);
-        } else {
-            // Headings are children of the last parent that was a heading or top level.
-            while (!this.lastParent.empty()
-                    && !this.lastParent.peek().isType("OrgHeading", "OrgToDo")
-                    && ((OrgHeading)this.lastParent.peek()).level >= current.level) {
-                this.lastParent.pop();
-            }
-            if (this.lastParent.empty()) {
-                // top level
-                this.roots.add(current);
-            } else {
-                this.lastParent.peek().add(current);
-            }
-        }
-        this.lastParent.push(current);
-        this.last = current;
     }
 
     /** Construct table from parser context.
@@ -142,6 +151,48 @@ public class OrgFile extends OrgParserBaseListener {
         this.handleList(current);
     }
 
+    /** Handle events parenting to closest heading.
+     * @param ctx the parser context
+     */
+    @Override
+    public void enterEvent(OrgParser.EventContext ctx) {
+        System.out.print("Event: " + ctx.getText());
+        if (ctx.scheduled() != null) {
+            System.out.println("scheduled");
+        } else if (ctx.deadline() != null) {
+            System.out.println("deadline");
+        } else {
+            System.out.println("closed");
+        }
+    }
+
+    /** Handle properties parenting to closest heading.
+     * @param ctx the parser context
+     */
+    @Override
+    public void enterPropertyList(OrgParser.PropertyListContext ctx) {
+        System.out.print("Property: " + ctx.getText());
+    }
+
+    /** Add empty nodes to correcty space write output.
+     * @param ctx the parser context (unused)
+     */
+    @Override
+    public void enterEmpty (OrgParser.EmptyContext ctx) {
+        this.popToHeading();
+        OrgEmpty current = new OrgEmpty();
+        if (this.lastParent.empty()) {
+            this.roots.add(current);
+        } else {
+            this.lastParent.peek().add(current);
+        }
+        this.last = current;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Helpers
+    ////////////////////////////////////////////////////////////////////////////
+
     /** Place list objects into the file forest.
      * @param current the list item being parsed
      */
@@ -158,7 +209,7 @@ public class OrgFile extends OrgParserBaseListener {
                 // parent found
                 parent.add(current);
             } else if (((OrgList)parent).listType == current.listType
-                       && ((OrgList)parent).marker.equals(current.marker)) {
+                    && ((OrgList)parent).marker.equals(current.marker)) {
                 // sibling found
                 ((OrgList)parent).addSibling(current);
                 this.lastParent.pop(); // so we can just pop once in else case
@@ -175,53 +226,37 @@ public class OrgFile extends OrgParserBaseListener {
         this.last = current;
     }
 
-    /** Handle events parenting to closest heading.
-     * @param ctx the parser context
+    /** Place to-do and heading objects into the file forest.
+     * @param current the heading/to-do being parsed
      */
-    @Override
-    public void enterEvent(OrgParser.EventContext ctx) {
-        if (ctx.scheduled() != null) {
-
-        } else if (ctx.deadline() != null) {
-
+    public void handleToDoOrHeading (OrgHeading current) {
+        if (this.last == null) {
+            // first line
+            this.roots.add(current);
         } else {
-            // closed
+            // Headings are children of the last parent that was a heading or top level.
+            this.popToHeading();
+            while (!this.lastParent.empty()
+                    && ((OrgHeading)this.lastParent.peek()).level >= current.level) {
+                this.lastParent.pop();
+            }
+            if (this.lastParent.empty()) {
+                // top level
+                this.roots.add(current);
+            } else {
+                this.lastParent.peek().add(current);
+            }
         }
+        this.lastParent.push(current);
+        this.last = current;
     }
 
-    /** Handle properties parenting to closest heading.
-     * @param ctx the parser context
+    /** Remove parents to the first heading.
      */
-    @Override
-    public void enterPropertyList(OrgParser.PropertyListContext ctx) { }
-
-// I don't think I'll need these, but just in case...
-//    /**
-//     * @param ctx the parser context
-//     */
-//    @Override
-//    public void enterEveryRule(ParserRuleContext ctx) { }
-//
-//    /**
-//     * @param ctx the parser context
-//     */
-//    @Override
-//    public void exitEveryRule(ParserRuleContext ctx) { }
-//
-//    /**
-//     * @param node a lexer terminal
-//     */
-//    @Override
-//    public void visitTerminal(TerminalNode node) { }
-//
-//    /** Handle errors.
-//     * @param node the structure containing error information
-//     */
-//    @Override
-//    public void visitErrorNode(ErrorNode node) { }
-
-    @Override
-    public void enterEmpty (OrgParser.EmptyContext ctx) { }
-
-    public ArrayList<OrgNode> getRoots () { return this.roots; }
+    private void popToHeading () {
+        while (!this.lastParent.empty()
+                && !this.lastParent.peek().isType("OrgHeading", "OrgToDo")) {
+            this.lastParent.pop();
+        }
+    }
 }

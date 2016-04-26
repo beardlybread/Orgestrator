@@ -18,7 +18,6 @@ public class OrgHeading extends OrgTreeNode {
     // Getters
     ////////////////////////////////////////////////////////////////////////////
 
-
     @Override
     public String toString () {
         String prefix = "*";
