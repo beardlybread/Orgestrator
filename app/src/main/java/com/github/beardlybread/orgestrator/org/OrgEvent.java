@@ -1,5 +1,7 @@
 package com.github.beardlybread.orgestrator.org;
 
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 public class OrgEvent extends OrgNode {
 
     public static final int UNDEFINED = -1;
@@ -12,12 +14,14 @@ public class OrgEvent extends OrgNode {
     protected OrgDate current = null;
     protected OrgDate previous = null;
 
-    public OrgEvent (int status, OrgDate currentTimestamp) {
+    public OrgEvent (TerminalNode indent, int status, OrgDate currentTimestamp) {
+        super(indent);
         this.eventType = this.status = status;
         this.current = currentTimestamp;
     }
 
-    public OrgEvent (int type, OrgDate current, OrgDate previous) {
+    public OrgEvent (TerminalNode indent, int type, OrgDate current, OrgDate previous) {
+        super(indent);
         this.eventType = type;
         this.status = OrgEvent.CLOSED;
         this.current = current;

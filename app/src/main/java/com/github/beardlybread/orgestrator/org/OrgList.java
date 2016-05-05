@@ -57,7 +57,11 @@ public class OrgList extends OrgTreeNode {
 
     @Override
     public String toString () {
-        return this.marker + " " + this.text.toString();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < this.indent; ++i)
+            sb.append(" ");
+        sb.append(this.marker).append(" ").append(this.text);
+        return sb.toString();
     }
 
     @Override

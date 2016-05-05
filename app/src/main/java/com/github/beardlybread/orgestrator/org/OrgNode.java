@@ -1,6 +1,5 @@
 package com.github.beardlybread.orgestrator.org;
 
-import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.io.IOException;
@@ -47,7 +46,12 @@ public abstract class OrgNode {
     }
 
     @Override
-    public String toString () { return super.toString(); }
+    public String toString () {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < this.indent; ++i)
+            sb.append(" ");
+        return sb.append(super.toString()).append("\n").toString();
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     // Setters

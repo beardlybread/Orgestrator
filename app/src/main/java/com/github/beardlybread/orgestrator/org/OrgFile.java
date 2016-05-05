@@ -48,8 +48,6 @@ public class OrgFile extends OrgParserBaseListener {
     @Override
     public void enterLine (OrgParser.LineContext ctx) {
         String text = ctx.LINE() == null ? "" : ctx.LINE().getText().trim();
-        if (text.equals(""))
-            System.out.println("BOO!");
         int indent = ctx.INDENT() == null ? 0 : ctx.INDENT().getText().length();
         // if the text is empty, current is empty
         OrgNode current = text.length() > 0 ? new OrgText(text, indent) : new OrgEmpty();
@@ -82,9 +80,7 @@ public class OrgFile extends OrgParserBaseListener {
      */
     @Override
     public void enterHeadingLine (OrgParser.HeadingLineContext ctx) {
-        OrgHeading current = new OrgHeading(
-                ctx.HEADING_LEVEL().getText(),
-                ctx.HEADING().getText());
+        OrgHeading current = new OrgHeading(ctx.HEADING_LEVEL().getText(), ctx.HEADING().getText());
         this.handleToDoOrHeading(current);
     }
 
@@ -93,10 +89,8 @@ public class OrgFile extends OrgParserBaseListener {
      */
     @Override
     public void enterTodoLine (OrgParser.TodoLineContext ctx) {
-        OrgToDo current = new OrgToDo(
-                ctx.HEADING_LEVEL().getText(),
-                ctx.HEADING().getText(),
-                ctx.TODO().getText());
+        OrgToDo current = new OrgToDo(ctx.HEADING_LEVEL().getText(), ctx.HEADING().getText(),
+                                      ctx.TODO().getText());
         this.handleToDoOrHeading(current);
     }
 
@@ -110,10 +104,7 @@ public class OrgFile extends OrgParserBaseListener {
     @Override
     public void enterTable (OrgParser.TableContext ctx) {
         OrgParser.TableRowContext top = ctx.tableRow(0);
-        OrgTable current = new OrgTable(
-                ctx.tableRow().size(),
-                top.tableCol().size(),
-                top.INDENT() == null ? 0 : top.INDENT().getText().length());
+        OrgTable current = new OrgTable(ctx.tableRow().size(), top.tableCol().size(), top.INDENT());
         int r = 0;
         for (OrgParser.TableRowContext rc: ctx.tableRow()) {
             int c = 0;
@@ -153,24 +144,29 @@ public class OrgFile extends OrgParserBaseListener {
         OrgEvent current;
         if (ctx.scheduled() != null) {
             current = new OrgEvent(
+                    ctx.scheduled().INDENT(),
                     OrgEvent.SCHEDULED,
                     new OrgDate(ctx.scheduled().timestamp().date()));
         } else if (ctx.deadline() != null) {
             current = new OrgEvent(
+                    ctx.deadline().INDENT(),
                     OrgEvent.DEADLINE,
                     new OrgDate(ctx.deadline().timestamp().date()));
         } else if (ctx.closed().CLOSED_SCHEDULED() != null) {
             current = new OrgEvent(
+                    ctx.closed().INDENT(),
                     OrgEvent.SCHEDULED,
                     new OrgDate(ctx.closed().timestamp(0).date()),
                     new OrgDate(ctx.closed().timestamp(1).date()));
         } else if (ctx.closed().CLOSED_DEADLINE() != null) {
             current = new OrgEvent(
+                    ctx.closed().INDENT(),
                     OrgEvent.DEADLINE,
                     new OrgDate(ctx.closed().timestamp(0).date()),
                     new OrgDate(ctx.closed().timestamp(1).date()));
         } else {
             current = new OrgEvent(
+                    ctx.closed().INDENT(),
                     OrgEvent.CLOSED,
                     new OrgDate(ctx.closed().timestamp(0).date()));
         }

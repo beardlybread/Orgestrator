@@ -2,8 +2,12 @@ package com.github.beardlybread.orgestrator.org;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.util.regex.Pattern;
+
+
 public class OrgTable extends OrgNode {
 
+    public static final Pattern MATCH_SEPARATOR = Pattern.compile("(-+\\+)*-+");
     public final int rows;
     public final int cols;
 
@@ -36,11 +40,14 @@ public class OrgTable extends OrgNode {
     public String toString () {
         StringBuilder sb = new StringBuilder();
         for (int r = 0; r < this.rows; r++) {
+            boolean isSeparator = MATCH_SEPARATOR.matcher(this.data[r][0]).matches();
             for (int c = 0; c < this.cols; c++) {
-                sb.append(c == 0 ? "| " : " | ");
+                if (isSeparator && c > 0)
+                    break;
+                sb.append("|");
                 sb.append(this.data[r][c]);
             }
-            sb.append(" |\n");
+            sb.append("|\n");
         }
         return sb.toString();
     }
