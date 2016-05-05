@@ -132,10 +132,7 @@ public class OrgFile extends OrgParserBaseListener {
      */
     @Override
     public void enterUnenumeratedLine (OrgParser.UnenumeratedLineContext ctx) {
-        OrgList current = new OrgList(
-                ctx.INDENT() == null ? 0 : ctx.INDENT().getText().length(),
-                ctx.ULIST().getText(),
-                ctx.LINE().getText());
+        OrgList current = new OrgList(ctx.INDENT(), ctx.ULIST().getText(), ctx.LINE().getText());
         this.handleList(current);
     }
 
@@ -144,10 +141,7 @@ public class OrgFile extends OrgParserBaseListener {
      */
     @Override
     public void enterEnumeratedLine (OrgParser.EnumeratedLineContext ctx) {
-        OrgList current = new OrgList(
-                ctx.INDENT() == null ? 0 : ctx.INDENT().getText().length(),
-                ctx.ILIST().getText(),
-                ctx.LINE().getText());
+        OrgList current = new OrgList(ctx.INDENT(), ctx.ILIST().getText(), ctx.LINE().getText());
         this.handleList(current);
     }
 
@@ -156,14 +150,37 @@ public class OrgFile extends OrgParserBaseListener {
      */
     @Override
     public void enterEvent(OrgParser.EventContext ctx) {
-        System.out.print("Event: " + ctx.getText());
+        OrgEvent current;
         if (ctx.scheduled() != null) {
-            System.out.println("scheduled");
+            current = new OrgEvent(
+                    OrgEvent.SCHEDULED,
+                    new OrgDate(ctx.scheduled().timestamp().date()));
         } else if (ctx.deadline() != null) {
-            System.out.println("deadline");
+            current = new OrgEvent(
+                    OrgEvent.DEADLINE,
+                    new OrgDate(ctx.deadline().timestamp().date()));
+        } else if (ctx.closed().CLOSED_SCHEDULED() != null) {
+            current = new OrgEvent(
+                    OrgEvent.SCHEDULED,
+                    new OrgDate(ctx.closed().timestamp(0).date()),
+                    new OrgDate(ctx.closed().timestamp(1).date()));
+        } else if (ctx.closed().CLOSED_DEADLINE() != null) {
+            current = new OrgEvent(
+                    OrgEvent.DEADLINE,
+                    new OrgDate(ctx.closed().timestamp(0).date()),
+                    new OrgDate(ctx.closed().timestamp(1).date()));
         } else {
-            System.out.println("closed");
+            current = new OrgEvent(
+                    OrgEvent.CLOSED,
+                    new OrgDate(ctx.closed().timestamp(0).date()));
         }
+        this.popToHeading();
+        if (this.lastParent.empty()) {
+            this.roots.add(current);
+        } else {
+            this.lastParent.peek().add(current);
+        }
+        this.last = current;
     }
 
     /** Handle properties parenting to closest heading.
@@ -171,7 +188,23 @@ public class OrgFile extends OrgParserBaseListener {
      */
     @Override
     public void enterPropertyList(OrgParser.PropertyListContext ctx) {
-        System.out.print("Property: " + ctx.getText());
+        OrgProperty current = new OrgProperty(ctx.INDENT());
+        for (OrgParser.PropertyContext pc: ctx.property()) {
+            if (pc.lastRepeat() != null) {
+                current.setLastRepeat(new OrgDate(pc.lastRepeat().date()));
+            } else {
+                String prop = pc.propertyPair().PROPERTY().getText();
+                String val = pc.propertyPair().VALUE() == null ? ""
+                        : pc.propertyPair().VALUE().getText();
+                current.put(prop, val);
+            }
+        }
+        this.popToHeading();
+        if (this.lastParent.empty()) {
+            this.roots.add(current);
+        } else {
+            this.lastParent.peek().add(current);
+        }
     }
 
     /** Add empty nodes to correcty space write output.

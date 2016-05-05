@@ -1,5 +1,8 @@
 package com.github.beardlybread.orgestrator.org;
 
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -19,6 +22,11 @@ public abstract class OrgTreeNode extends OrgNode {
     }
 
     public OrgTreeNode(int indent) {
+        super(indent);
+        this.children = new ArrayList<>();
+    }
+
+    public OrgTreeNode(TerminalNode indent) {
         super(indent);
         this.children = new ArrayList<>();
     }

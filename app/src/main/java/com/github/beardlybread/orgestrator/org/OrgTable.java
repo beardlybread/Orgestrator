@@ -1,5 +1,7 @@
 package com.github.beardlybread.orgestrator.org;
 
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 public class OrgTable extends OrgNode {
 
     public final int rows;
@@ -7,7 +9,14 @@ public class OrgTable extends OrgNode {
 
     protected String[][] data = null;
 
-    OrgTable (int nRows, int nCols, int indent) {
+    public OrgTable (int nRows, int nCols, int indent) {
+        super(indent);
+        this.rows = nRows;
+        this.cols = nCols;
+        this.data = new String[nRows][nCols];
+    }
+
+    public OrgTable (int nRows, int nCols, TerminalNode indent) {
         super(indent);
         this.rows = nRows;
         this.cols = nCols;

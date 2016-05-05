@@ -1,5 +1,7 @@
 package com.github.beardlybread.orgestrator.org;
 
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -13,7 +15,21 @@ public class OrgList extends OrgTreeNode {
     public final int listType;
     public final String marker;
 
-    public OrgList (int indent, String rawMarker, String rawText) {
+    public OrgList (int indent, String rawMarker) {
+        super(indent);
+        this.marker = rawMarker.trim();
+        switch (this.marker) {
+            case "-":
+            case "+":
+            case "*":
+                this.listType = OrgList.UNENUMERATED;
+                break;
+            default:
+                this.listType = OrgList.ENUMERATED;
+        }
+    }
+
+    public OrgList (TerminalNode indent, String rawMarker, String rawText) {
         super(indent);
         this.marker = rawMarker.trim();
         switch (this.marker) {

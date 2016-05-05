@@ -1,5 +1,8 @@
 package com.github.beardlybread.orgestrator.org;
 
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 import java.io.IOException;
 import java.io.Writer;
 
@@ -13,16 +16,22 @@ public abstract class OrgNode {
     // Constructors
     ////////////////////////////////////////////////////////////////////////////
 
-    OrgNode () {
+    public OrgNode () {
         String type = this.getClass().getName();
         this.type = type.substring(type.lastIndexOf(".") + 1);
         this.indent = 0;
     }
 
-    OrgNode (int indent) {
+    public OrgNode (int indent) {
         String type = this.getClass().getName();
         this.type = type.substring(type.lastIndexOf(".") + 1);
         this.indent = indent;
+    }
+
+    public OrgNode (TerminalNode indent) {
+        String type = this.getClass().getName();
+        this.type = type.substring(type.lastIndexOf(".") + 1);
+        this.indent = indent == null ? 0 : indent.getText().length();
     }
 
     ////////////////////////////////////////////////////////////////////////////
