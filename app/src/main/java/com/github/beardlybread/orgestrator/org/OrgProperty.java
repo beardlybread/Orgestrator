@@ -21,4 +21,20 @@ public class OrgProperty extends OrgNode {
     public void put (String key, String value) {
         this.properties.put(key, value);
     }
+
+    public String toString () {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < this.indent; ++i)
+            sb.append(" ");
+        String indent = sb.toString();
+        sb.delete(0, sb.length());
+        sb.append(indent).append(":PROPERTIES:\n");
+        for (String k: this.properties.keySet())
+            sb.append(indent).append(k).append(" ").append(this.properties.get(k)).append("\n");
+        if (this.lastRepeat != null) {
+            sb.append(indent).append(":LAST_REPEAT: [").append(this.lastRepeat).append("]\n");
+        }
+        sb.append(indent).append(":END:\n");
+        return sb.toString();
+    }
 }

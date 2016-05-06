@@ -27,4 +27,31 @@ public class OrgEvent extends OrgNode {
         this.current = current;
         this.previous = previous;
     }
+
+    @Override
+    public String toString () {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < this.indent; ++i) {
+            sb.append(" ");
+        }
+        switch (this.status) {
+            case OrgEvent.CLOSED:
+                sb.append("CLOSED: [").append(this.current).append("]");
+                if (this.eventType == OrgEvent.SCHEDULED) {
+                    sb.append(" SCHEDULED: <").append(this.previous).append(">");
+                } else if (this.eventType == OrgEvent.DEADLINE) {
+                    sb.append(" DEADLINE: <").append(this.previous).append(">");
+                }
+                sb.append("\n");
+                break;
+            case OrgEvent.SCHEDULED:
+                sb.append("SCHEDULED: <").append(this.current).append(">\n");
+                break;
+            case OrgEvent.DEADLINE:
+                sb.append("DEADLINE: <").append(this.current).append(">\n");
+                break;
+        }
+        return sb.toString();
+    }
+
 }

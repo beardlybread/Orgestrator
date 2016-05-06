@@ -2,6 +2,7 @@ package com.github.beardlybread.orgestrator.org;
 
 import com.github.beardlybread.orgestrator.org.antlr.OrgParser;
 
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,6 +30,7 @@ public class OrgDate extends GregorianCalendar {
     protected int repeatTime = -1;
     protected int repeatUnit = REPEAT.NONE;
     protected int repeatType = REPEAT.NONE;
+    protected boolean hasTime = false;
 
     public OrgDate() { super(); }
 
@@ -55,6 +57,7 @@ public class OrgDate extends GregorianCalendar {
         if (ctx.TIME() != null) {
             Matcher t = MATCH_TIME.matcher(ctx.TIME().getText());
             if (t.matches()) {
+                this.hasTime = true;
                 hour = Integer.parseInt(t.group(1));
                 minute = Integer.parseInt(t.group(2));
             }
@@ -76,7 +79,6 @@ public class OrgDate extends GregorianCalendar {
                     default:
                         this.repeatType = REPEAT.NONE;
                 }
-                this.repeatType = REPEAT.NONE;
                 this.repeatTime = Integer.parseInt(r.group(2));
                 switch (r.group(3)) {
                     case "h":
@@ -102,4 +104,96 @@ public class OrgDate extends GregorianCalendar {
 
     }
 
+    @Override
+    public String toString () {
+        StringBuilder sb = new StringBuilder();
+        this.dateString(sb);
+        sb.append(" ");
+        this.dowString(sb);
+        if (this.hasTime) {
+            sb.append(" ");
+            this.timeString(sb);
+        }
+        if (this.repeatType != REPEAT.NONE) {
+            sb.append(" ");
+            this.repeatString(sb);
+        }
+        return sb.toString();
+    }
+
+    private void dateString (StringBuilder sb) {
+        sb.append(this.get(Calendar.YEAR)).append("-");
+        int month = this.get(Calendar.MONTH) + 1;
+        sb.append(month < 10 ? "0" : "").append(month).append("-");
+        int day = this.get(Calendar.DAY_OF_MONTH);
+        sb.append(day < 10 ? "0" : "").append(day);
+    }
+
+    private void dowString (StringBuilder sb) {
+        switch (this.get(Calendar.DAY_OF_WEEK)) {
+            case Calendar.SUNDAY:
+                sb.append("Sun");
+                break;
+            case Calendar.MONDAY:
+                sb.append("Mon");
+                break;
+            case Calendar.TUESDAY:
+                sb.append("Tue");
+                break;
+            case Calendar.WEDNESDAY:
+                sb.append("Wed");
+                break;
+            case Calendar.THURSDAY:
+                sb.append("Thu");
+                break;
+            case Calendar.FRIDAY:
+                sb.append("Fri");
+                break;
+            case Calendar.SATURDAY:
+                sb.append("Sat");
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void timeString (StringBuilder sb) {
+        int hour = this.get(Calendar.HOUR_OF_DAY);
+        sb.append(hour < 10 ? "0" : "").append(hour).append(":");
+        int minute = this.get(Calendar.MINUTE);
+        sb.append(minute < 10 ? "0" : "").append(minute);
+    }
+
+    private void repeatString (StringBuilder sb) {
+        switch (this.repeatType) {
+            case REPEAT.NOW:
+                sb.append(".");
+                break;
+            case REPEAT.NEXT_UNTIL_NOW:
+                sb.append("+");
+                break;
+            default:
+                break;
+        }
+        sb.append("+").append(this.repeatTime);
+        switch (this.repeatUnit) {
+            case REPEAT.HOUR:
+                sb.append("h");
+                break;
+            case REPEAT.DAY:
+                sb.append("d");
+                break;
+            case REPEAT.WEEK:
+                sb.append("w");
+                break;
+            case REPEAT.MONTH:
+                sb.append("m");
+                break;
+            case REPEAT.YEAR:
+                sb.append("y");
+                break;
+            default:
+                break;
+        }
+    }
 }
