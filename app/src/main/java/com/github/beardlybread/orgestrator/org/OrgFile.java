@@ -1,6 +1,7 @@
 package com.github.beardlybread.orgestrator.org;
 
 import com.github.beardlybread.orgestrator.org.antlr.*;
+import com.github.beardlybread.orgestrator.util.Predicate;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -13,11 +14,37 @@ public class OrgFile extends OrgParserBaseListener {
     protected Stack<OrgTreeNode> lastParent = null;
     protected OrgNode last = null;
 
-
     /** Return the contents of the OrgFile.
      * @return the raw contents of this object
      */
     public ArrayList<OrgNode> getRoots () { return this.roots; }
+
+    /** Return a list of nodes matching the predicate.
+     * @param pred an implementation of Predicate<> to filter the contents
+     * @return a list of nodes matching the predicate defined in pred
+     */
+    public ArrayList<OrgNode> search (Predicate<OrgNode> pred) {
+        ArrayList<OrgNode> out = new ArrayList<>();
+        for (OrgNode n: this.roots) {
+            this.searchNode(n, pred, out);
+        }
+        return out;
+    }
+
+    /** Collect search results for public search() method.
+     * @param node the location to search
+     * @param predicate the filtering predicate
+     * @param acc the accumulator
+     */
+    private void searchNode (OrgNode node, Predicate<OrgNode> predicate, ArrayList<OrgNode> acc) {
+        if (predicate.call(node))
+            acc.add(node);
+        if (node instanceof OrgTreeNode) {
+            for (OrgNode c: ((OrgTreeNode) node).getChildren()) {
+                searchNode(c, predicate, acc);
+            }
+        }
+    }
 
     /** Write the data to a Writer in proper org file format.
      * @param target the output object for constructing the text

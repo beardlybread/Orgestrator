@@ -39,6 +39,8 @@ public abstract class OrgTreeNode extends OrgNode {
         return this.children.get(index);
     }
 
+    public ArrayList<OrgNode> getChildren () { return this.children; }
+
     public OrgText getText () { return this.text; }
 
     public int indexOf (OrgNode node) {

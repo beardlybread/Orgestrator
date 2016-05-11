@@ -1,0 +1,57 @@
+This is some text that should be parented to the root of the
+file. Sentences that carry over shouldn't be treated as a new text
+object.
+
+* Top
+** DONE Finish writing this dummy file.
+   CLOSED: [2016-05-11 Wed 12:19] DEADLINE: <2016-05-12 Thu>
+** TODO Set up a simple Activity to test this file.
+   DEADLINE: <2016-05-11 Wed>
+** Level 2
+- a deer, a female deer
+- a drop of golden sun
+- a name I call myself
+- a long, long way to run
+- a needle pulling thread
+- a note to follow so
+- a drink with jam and bread
+- see: a deer...
+  This line should be connected to "see: a deer..."
+*** TODO something I must do weekly on a certain day
+    DEADLINE: <2016-05-18 Wed +1w>
+    :PROPERTIES:
+    :LAST_REPEAT: [2016-05-11 Wed 12:20]
+    :END:
+    - State "DONE"       from "TODO"       [2016-05-11 Wed 12:20]
+*** TODO something I try to complete weekly on a particular day
+    DEADLINE: <2016-05-18 Wed ++1w>
+    :PROPERTIES:
+    :LAST_REPEAT: [2016-05-11 Wed 12:20]
+    :END:
+    - State "DONE"       from "TODO"       [2016-05-11 Wed 12:20]
+*** TODO something I will do within a week or less
+    DEADLINE: <2016-05-18 Wed .+1w>
+    :PROPERTIES:
+    :LAST_REPEAT: [2016-05-11 Wed 12:20]
+    :END:
+    - State "DONE"       from "TODO"       [2016-05-11 Wed 12:20]
+*** Level 3
+| Name  | Value |
+|-------+-------|
+| one   |     1 |
+| two   |     2 |
+| three |     3 |
+| four  |     4 |
+| five  |     5 |
+
+1. A list can hold other lists.
+  - This list item should be the child of 1.
+  - So should this one.
+    + But this should be even further down the hierarchy.
+
+Some text content here should not be connected to the lists above.
+
+I think we're done here. I still need to be sure that wrapping the
+content into the next line doesn't break this text object, though, so
+I am still typing. Also I wanted to be sure that the line between this
+paragraph and the previous one are generating two objects.
