@@ -32,7 +32,7 @@ public class Orgestrator {
         private OrgFile file = null;
 
         // TODO Some sort of path/id should be stored for the resource.
-        public void OrgData (InputStream inStream, String resourcePath, int resourceType)
+        public OrgData (InputStream inStream, String resourcePath, int resourceType)
                 throws IOException {
             this.resourcePath = resourcePath;
             this.resourceType = resourceType;
