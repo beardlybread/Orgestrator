@@ -39,7 +39,7 @@ public class OrgToDo extends OrgHeading {
     ////////////////////////////////////////////////////////////////////////////
 
     public boolean toggle () {
-        // TODO adjust children
+        // TODO Adjust children to reflect state change.
         this.status = !this.status;
         return this.status;
     }

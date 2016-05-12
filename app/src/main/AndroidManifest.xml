@@ -25,8 +25,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".FindToDoActivity" />
-        <activity android:name=".RawFileLinesActivity"></activity>
+        <activity android:name=".RawFileLinesActivity" />
+        <activity android:name=".FindToDoActivity"></activity>
     </application>
 
 </manifest>

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 // TODO Get paragraph breaking spaces to print on output.
+// TODO Sort out what's going on with the un-enumerated list in the middle of the test data.
 public class OrgFile extends OrgParserBaseListener {
 
     protected ArrayList<OrgNode> roots = null;
@@ -90,7 +91,7 @@ public class OrgFile extends OrgParserBaseListener {
             this.lastParent.peek().add(current);
             this.last = current;
         } else if (current.isType("OrgEmpty")) {
-            // TODO empty nodes should NOT split lists, but for now...
+            // TODO Empty nodes should NOT split lists.
             this.popToHeading();
             if (this.lastParent.empty()) {
                 this.roots.add(current);

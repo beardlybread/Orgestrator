@@ -22,10 +22,31 @@ public class Orgestrator {
     public static final int OTHER_RESOURCE = 2;
 
     private ArrayList<OrgData> data = null;
+    private Exception err = null;
 
     public Orgestrator () { this.data = new ArrayList<>(); }
 
-    private class OrgData {
+    public boolean add (InputStream inStream, String path, int type) {
+        try {
+            this.data.add(new OrgData(inStream, path, type));
+        } catch (IOException e) {
+            this.err = e;
+            return false;
+        }
+        return true;
+    }
+
+    public OrgData getData (int index) {
+        return this.data.get(index);
+    }
+
+    public Exception clearError (){
+        Exception e = this.err;
+        this.err = null;
+        return e;
+    }
+
+    public class OrgData {
 
         private String resourcePath = null;
         private int resourceType = Orgestrator.UNKNOWN_SOURCE;
@@ -48,6 +69,10 @@ public class Orgestrator {
             ParseTreeWalker walker = new ParseTreeWalker();
             walker.walk(file, tree);
         }
+
+        public OrgFile getFile () { return this.file; }
+        public String getResourcePath () { return this.resourcePath; }
+        public int getResourceType () { return this.resourceType; }
     }
 
 }
