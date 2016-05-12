@@ -2,6 +2,7 @@ package com.github.beardlybread.orgestrator.org;
 
 import com.github.beardlybread.orgestrator.org.antlr.OrgLexer;
 import com.github.beardlybread.orgestrator.org.antlr.OrgParser;
+import com.github.beardlybread.orgestrator.util.Predicate;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -22,9 +23,34 @@ public class Orgestrator {
     public static final int OTHER_RESOURCE = 2;
 
     private ArrayList<OrgData> data = null;
-    private Exception err = null;
+    private IOException err = null;
 
-    public Orgestrator () { this.data = new ArrayList<>(); }
+    private Orgestrator () { this.data = new ArrayList<>(); }
+    private static final Orgestrator theInstance = new Orgestrator();
+    public static Orgestrator getInstance () { return theInstance; }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Getters
+    ////////////////////////////////////////////////////////////////////////////
+
+    public boolean isEmpty () { return this.data.isEmpty(); }
+
+    public IOException getError () { return this.err; }
+    public OrgFile getFile (int index) { return this.data.get(index).file; }
+    public String getResourcePath (int index) { return this.data.get(index).resourcePath; }
+    public int getResourceType (int index) { return this.data.get(index).resourceType; }
+
+    public ArrayList<OrgNode> search (Predicate<OrgNode> predicate) {
+        ArrayList<OrgNode> out = new ArrayList<>();
+        for (OrgData d: this.data) {
+            out.addAll(d.file.search(predicate));
+        }
+        return out;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Setters
+    ////////////////////////////////////////////////////////////////////////////
 
     public boolean add (InputStream inStream, String path, int type) {
         try {
@@ -36,17 +62,13 @@ public class Orgestrator {
         return true;
     }
 
-    public OrgData getData (int index) {
-        return this.data.get(index);
-    }
-
-    public Exception clearError (){
-        Exception e = this.err;
+    public void clearError () {
         this.err = null;
-        return e;
     }
 
-    public class OrgData {
+    /** Connect OrgFile access information to the object.
+     */
+    private class OrgData {
 
         private String resourcePath = null;
         private int resourceType = Orgestrator.UNKNOWN_SOURCE;
@@ -70,9 +92,6 @@ public class Orgestrator {
             walker.walk(file, tree);
         }
 
-        public OrgFile getFile () { return this.file; }
-        public String getResourcePath () { return this.resourcePath; }
-        public int getResourceType () { return this.resourceType; }
     }
 
 }
