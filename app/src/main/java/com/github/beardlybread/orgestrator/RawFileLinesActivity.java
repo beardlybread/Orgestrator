@@ -8,7 +8,6 @@ import com.github.beardlybread.orgestrator.org.OrgFile;
 import com.github.beardlybread.orgestrator.org.Orgestrator;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringWriter;
 
 public class RawFileLinesActivity extends AppCompatActivity {
@@ -18,10 +17,10 @@ public class RawFileLinesActivity extends AppCompatActivity {
     @Override
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.loadTestFile();
-        OrgFile file = this.org.getFile(0);
-        Log.i("RAW", "resource path: " + this.org.getResourcePath(0));
-        Log.i("RAW", "resource type: " + this.org.getResourceType(0));
+        Orgestrator org = Orgestrator.getInstance();
+        OrgFile file = org.getFile(0);
+        Log.i("getResourcePath()", org.getResourcePath(0));
+        Log.i("getResourceType()", "" + org.getResourceType(0));
         StringWriter w = new StringWriter();
         try {
             file.write(w);
@@ -33,14 +32,4 @@ public class RawFileLinesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_raw_file_lines);
     }
 
-    private void loadTestFile () {
-        this.org = Orgestrator.getInstance();
-        if (this.org.isEmpty()) {
-            InputStream inStream = getResources().openRawResource(R.raw.org_test_file);
-            if (!this.org.add(inStream, "org_test_file", Orgestrator.RAW_RESOURCE)) {
-                Log.e("Orgestrator.add()", this.org.getError().getMessage());
-                this.org.clearError();
-            }
-        }
-    }
 }
