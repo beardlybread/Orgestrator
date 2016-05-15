@@ -37,6 +37,8 @@ public abstract class OrgNode {
     // Getters
     ////////////////////////////////////////////////////////////////////////////
 
+    public OrgNode getParent () { return this.parent; }
+
     public boolean isType (String... name) {
         for (String t: name) {
             if (this.type.equals(t))
@@ -50,7 +52,7 @@ public abstract class OrgNode {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < this.indent; ++i)
             sb.append(" ");
-        return sb.append(super.toString()).append("\n").toString();
+        return sb.append(super.toString()).toString();
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -65,6 +67,7 @@ public abstract class OrgNode {
 
     public void write (Writer target) throws IOException {
         target.append(this.toString());
+        // target.append("type: " + this.type + "\n\n");
     }
 
 }

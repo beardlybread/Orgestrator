@@ -47,6 +47,7 @@ public class OrgList extends OrgTreeNode {
     public void addSibling (OrgList sibling) {
         if (this.siblings == null) {
             this.siblings = new ArrayList<>();
+            this.siblings.add(this);
             sibling.siblings = this.siblings;
         }
         this.siblings.add(sibling);
@@ -64,20 +65,23 @@ public class OrgList extends OrgTreeNode {
         return sb.toString();
     }
 
-    @Override
-    public void write (Writer target) throws IOException {
-        super.write(target);
-        if (this.siblings != null) {
-            for (OrgList l : this.siblings) {
-                this.writeSibling(l, target);
-            }
-        }
-    }
-
-    public void writeSibling (OrgList list, Writer target) throws IOException {
-        target.append(list.toString());
-        for (OrgNode n: list.children) {
-            n.write(target);
-        }
-    }
+//    @Override
+//    public void write (Writer target) throws IOException {
+//        super.write(target);
+//        if (this.siblings != null) {
+//            for (OrgList l : this.siblings) {
+//                if (l != this)
+//                    this.writeSibling(l, target);
+//            }
+//        }
+//    }
+//
+//    public void writeSibling (OrgList list, Writer target) throws IOException {
+//        target.append("length: " + this.siblings.size() + ": ")
+//            .append("parent: " + (this.parent == null ? "null" : this.parent));
+//        target.append(list.toString());
+//        for (OrgNode n: list.children) {
+//            n.write(target);
+//        }
+    //}
 }

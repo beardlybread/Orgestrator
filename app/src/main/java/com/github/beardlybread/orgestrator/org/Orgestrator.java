@@ -74,7 +74,6 @@ public class Orgestrator {
         private int resourceType = Orgestrator.UNKNOWN_SOURCE;
         private OrgFile file = null;
 
-        // TODO Some sort of path/id should be stored for the resource.
         public OrgData (InputStream inStream, String resourcePath, int resourceType)
                 throws IOException {
             this.resourcePath = resourcePath;

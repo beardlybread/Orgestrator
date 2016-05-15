@@ -32,7 +32,7 @@ public class OrgText extends OrgNode {
             for (int l = 1; l < this.lines.size(); ++l) {
                 for (int i = 0; i < this.indent; ++i)
                     sb.append(" ");
-                sb.append(this.lines.get(l)).append("\n");
+                sb.append(this.lines.get(l));
             }
             this.cache = sb.toString();
             this.fresh = true;

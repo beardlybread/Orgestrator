@@ -8,8 +8,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Stack;
 
-// TODO Get paragraph breaking spaces to print on output.
-// TODO Sort out what's going on with the un-enumerated list in the middle of the test data.
 public class OrgFile extends OrgParserBaseListener {
 
     protected ArrayList<OrgNode> roots = null;
@@ -76,13 +74,13 @@ public class OrgFile extends OrgParserBaseListener {
      */
     @Override
     public void enterLine (OrgParser.LineContext ctx) {
-        String text = ctx.LINE() == null ? "" : ctx.LINE().getText().trim();
+        String text = ctx.LINE() == null ? "" : ctx.LINE().getText();
         int indent = ctx.INDENT() == null ? 0 : ctx.INDENT().getText().length();
         // if the text is empty, current is empty
         OrgNode current = text.length() > 0 ? new OrgText(text, indent) : new OrgEmpty();
         if (this.last != null && this.last.isType("OrgText")) {
             // text appends to previous
-            ((OrgText)this.last).add((OrgText)current);
+            ((OrgText) this.last).add((OrgText) current);
         } else if (this.lastParent.empty()) {
             // top level
             this.roots.add(current);
@@ -100,7 +98,7 @@ public class OrgFile extends OrgParserBaseListener {
             }
         } else {
             // parent is list
-            ((OrgList)this.lastParent.peek()).addText((OrgText)current);
+            ((OrgList) this.lastParent.peek()).addText((OrgText) current);
         }
     }
 
@@ -266,10 +264,17 @@ public class OrgFile extends OrgParserBaseListener {
             if (parent.isType("OrgHeading", "OrgToDo") || parent.indent < current.indent) {
                 // parent found
                 parent.add(current);
-            } else if (((OrgList)parent).listType == current.listType
-                    && ((OrgList)parent).marker.equals(current.marker)) {
-                // sibling found
-                ((OrgList)parent).addSibling(current);
+            } else if (((OrgList) parent).listType == current.listType
+                    && ((OrgList) parent).marker.equals(current.marker)) {
+                // sibling found (real parent is parent of "parent" variable)
+                current.setParent(parent.getParent());
+                // If the sibling found is top level, its parent will be null.
+                if (current.getParent() != null) {
+                    ((OrgTreeNode) parent.getParent()).add(current);
+                } else {
+                    this.roots.add(current);
+                }
+                ((OrgList) parent).addSibling(current);
                 this.lastParent.pop(); // so we can just pop once in else case
             } else {
                 // same indent list of different type found
@@ -295,7 +300,7 @@ public class OrgFile extends OrgParserBaseListener {
             // Headings are children of the last parent that was a heading or top level.
             this.popToHeading();
             while (!this.lastParent.empty()
-                    && ((OrgHeading)this.lastParent.peek()).level >= current.level) {
+                    && ((OrgHeading) this.lastParent.peek()).level >= current.level) {
                 this.lastParent.pop();
             }
             if (this.lastParent.empty()) {
