@@ -47,8 +47,7 @@ public abstract class OrgNode {
         return false;
     }
 
-    @Override
-    public String toString () {
+    public String toOrgString () {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < this.indent; ++i)
             sb.append(" ");
@@ -66,7 +65,7 @@ public abstract class OrgNode {
     ////////////////////////////////////////////////////////////////////////////
 
     public void write (Writer target) throws IOException {
-        target.append(this.toString());
+        target.append(this.toOrgString());
         // target.append("type: " + this.type + "\n\n");
     }
 

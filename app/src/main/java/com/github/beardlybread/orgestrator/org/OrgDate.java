@@ -104,8 +104,7 @@ public class OrgDate extends GregorianCalendar {
 
     }
 
-    @Override
-    public String toString () {
+    public String toOrgString () {
         StringBuilder sb = new StringBuilder();
         this.dateString(sb);
         sb.append(" ");

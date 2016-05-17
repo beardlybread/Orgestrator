@@ -45,13 +45,18 @@ public class OrgToDo extends OrgHeading {
     public boolean getStatus () { return this.status; }
 
     @Override
-    public String toString () {
+    public String toOrgString () {
         String prefix = "*";
         for (int i = 1; i < this.level; i++) {
             prefix += "*";
         }
         String status = this.status ? "TODO" : "DONE";
-        return prefix + " " + status + " " + this.text.toString() + "\n";
+        return prefix + " " + status + " " + this.text.toOrgString() + "\n";
+    }
+
+    @Override
+    public String toString () {
+        return this.text.toString();
     }
 
     ////////////////////////////////////////////////////////////////////////////

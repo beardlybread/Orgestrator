@@ -2,7 +2,34 @@ This is some text that should be parented to the root of the
 file. Sentences that carry over shouldn't be treated as a new text
 object.
 
-* Top
+* Project
+** Requirements/Restrictions
+- Limit the initial features to only deal with to-do options.
+  + App should list all to-do items across potentially multiple files.
+  + Path to the to-do (file and parents) should be available to view.
+  + When an item is checked, it should be marked DONE in the underlying file.
+  + When an item is checked and repeatable, the times should be adjusted accordingly.
+  + If an item is unchecked, it will revert to TODO. No support for other options for now.
+  + If an item is unchecked, repeatable items should roll back to previous LAST_REPEAT.
+- Adding and modifying items outside of marking DONE must be done in Emacs.
+- Files must be kept on Google Drive.
+- Nothing but to-do items is visible from the app.
+** Steps
+*** DONE to-do item text into a list view
+    CLOSED: [2016-05-17 Tue 13:22]
+**** DONE Refactor toString methods called by write so that toString works well with to-dos
+     CLOSED: [2016-05-17 Tue 15:03]
+**** TODO Implement toString for all OrgNodes.
+*** TODO checkbox per item controlling TODO/DONE
+*** TODO make OrgToDo list sortable/filterable by OrgDate
+*** TODO convenience methods for changing OrgDate
+*** TODO convenience methods for changing date in OrgToDo
+*** TODO display date in list view, adjusting repeats
+*** TODO should search return Adapter objects?
+** Features
+*** TODO Empty lines should not split lists.
+*** TODO Justify columns of tables.
+* Test
 ** DONE Finish writing this dummy file.
    CLOSED: [2016-05-11 Wed 12:19] DEADLINE: <2016-05-12 Thu>
 ** TODO Set up a simple Activity to test this file.

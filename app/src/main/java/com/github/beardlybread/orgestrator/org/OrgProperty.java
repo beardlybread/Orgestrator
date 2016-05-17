@@ -22,7 +22,8 @@ public class OrgProperty extends OrgNode {
         this.properties.put(key, value);
     }
 
-    public String toString () {
+    @Override
+    public String toOrgString () {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < this.indent; ++i)
             sb.append(" ");
@@ -32,7 +33,8 @@ public class OrgProperty extends OrgNode {
         for (String k: this.properties.keySet())
             sb.append(indent).append(k).append(" ").append(this.properties.get(k)).append("\n");
         if (this.lastRepeat != null) {
-            sb.append(indent).append(":LAST_REPEAT: [").append(this.lastRepeat).append("]\n");
+            sb.append(indent).append(":LAST_REPEAT: [").append(this.lastRepeat.toOrgString());
+            sb.append("]\n");
         }
         sb.append(indent).append(":END:\n");
         return sb.toString();

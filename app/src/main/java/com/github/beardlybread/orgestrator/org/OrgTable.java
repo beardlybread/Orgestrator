@@ -37,7 +37,7 @@ public class OrgTable extends OrgNode {
 
     // TODO (feature) Justify columns.
     @Override
-    public String toString () {
+    public String toOrgString () {
         StringBuilder sb = new StringBuilder();
         for (int r = 0; r < this.rows; r++) {
             boolean isSeparator = MATCH_SEPARATOR.matcher(this.data[r][0]).matches();

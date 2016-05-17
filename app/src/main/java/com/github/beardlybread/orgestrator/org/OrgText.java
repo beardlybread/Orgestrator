@@ -6,6 +6,7 @@ public class OrgText extends OrgNode {
 
     protected ArrayList<String> lines = null;
     private String cache = null;
+    private String orgCache = null;
     private boolean fresh = false;
 
     ////////////////////////////////////////////////////////////////////////////
@@ -22,22 +23,34 @@ public class OrgText extends OrgNode {
     // Getters
     ////////////////////////////////////////////////////////////////////////////
 
-    public int indexOf (String line) { return this.lines.indexOf(line); }
+    @Override
+    public String toOrgString () {
+        if (!this.fresh)
+            this.refreshStrings();
+        return this.orgCache;
+    }
 
     @Override
     public String toString () {
-        if (!fresh) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(this.lines.get(0));
-            for (int l = 1; l < this.lines.size(); ++l) {
-                for (int i = 0; i < this.indent; ++i)
-                    sb.append(" ");
-                sb.append(this.lines.get(l));
-            }
-            this.cache = sb.toString();
-            this.fresh = true;
-        }
+        if (!this.fresh)
+            this.refreshStrings();
         return this.cache;
+    }
+
+    private void refreshStrings () {
+        StringBuilder rawString = new StringBuilder();
+        StringBuilder orgString = new StringBuilder();
+        rawString.append(this.lines.get(0).trim());
+        orgString.append(this.lines.get(0));
+        for (int l = 1; l < this.lines.size(); ++l) {
+            rawString.append(" ").append(this.lines.get(l).trim());
+            for (int i = 0; i < this.indent; ++i)
+                orgString.append(" ");
+            orgString.append(this.lines.get(l));
+        }
+        this.cache = rawString.toString();
+        this.orgCache = orgString.toString();
+        this.fresh = true;
     }
 
     ////////////////////////////////////////////////////////////////////////////

@@ -19,12 +19,12 @@ public class OrgHeading extends OrgTreeNode {
     ////////////////////////////////////////////////////////////////////////////
 
     @Override
-    public String toString () {
+    public String toOrgString () {
         String prefix = "*";
         for (int i = 1; i < this.level; i++) {
             prefix += "*";
         }
-        return prefix + " " + this.text.toString() + "\n";
+        return prefix + " " + this.text.toOrgString() + "\n";
     }
 
     ////////////////////////////////////////////////////////////////////////////

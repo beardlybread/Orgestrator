@@ -31,11 +31,21 @@ public class StartActivity extends AppCompatActivity {
         startActivity(new Intent(this, FindToDoActivity.class));
     }
 
+
+    public void startToDoListActivity (View v) {
+        startActivity(new Intent(this, ToDoListActivity.class));
+    }
+
     private void loadTestFile () {
         Orgestrator org = Orgestrator.getInstance();
         if (org.isEmpty()) {
             InputStream inStream = getResources().openRawResource(R.raw.org_test_file);
             if (!org.add(inStream, "org_test_file", Orgestrator.RAW_RESOURCE)) {
+                Log.e("Orgestrator.add()", org.getError().getMessage());
+                org.clearError();
+            }
+            inStream = getResources().openRawResource(R.raw.other_org_test_file);
+            if (!org.add(inStream, "other_org_test_file", Orgestrator.RAW_RESOURCE)) {
                 Log.e("Orgestrator.add()", org.getError().getMessage());
                 org.clearError();
             }

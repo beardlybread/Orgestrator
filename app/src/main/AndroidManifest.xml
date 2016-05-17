@@ -26,7 +26,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".RawFileLinesActivity" />
-        <activity android:name=".FindToDoActivity"></activity>
+        <activity android:name=".FindToDoActivity" />
+        <activity android:name=".ToDoListActivity" />
     </application>
 
 </manifest>

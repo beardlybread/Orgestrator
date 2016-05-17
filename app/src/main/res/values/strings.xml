@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Orgestrator</string>
-    <string name="title_activity_connect_drive">ConnectDrive</string>
     <string name="find_todos">Find TODOs</string>
     <string name="raw_file_lines">Raw File Lines</string>
+    <string name="to_do_list_activity">To-do List Activity</string>
 </resources>
