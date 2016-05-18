@@ -27,7 +27,7 @@
         </activity>
         <activity android:name=".RawFileLinesActivity" />
         <activity android:name=".FindToDoActivity" />
-        <activity android:name=".ToDoListActivity" />
+        <activity android:name=".ToDoTextListActivity" />
     </application>
 
 </manifest>

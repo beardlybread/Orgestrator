@@ -33,7 +33,7 @@ public class StartActivity extends AppCompatActivity {
 
 
     public void startToDoListActivity (View v) {
-        startActivity(new Intent(this, ToDoListActivity.class));
+        startActivity(new Intent(this, ToDoTextListActivity.class));
     }
 
     private void loadTestFile () {
