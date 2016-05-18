@@ -26,6 +26,7 @@ object.
 *** TODO convenience methods for changing date in OrgToDo
 *** TODO display date in list view, adjusting repeats
 *** TODO should search return Adapter objects?
+*** TODO model-view abstraction at the Orgestrator object level?
 ** Features
 *** TODO Empty lines should not split lists.
 *** TODO Justify columns of tables.

@@ -25,9 +25,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RawFileLinesActivity" />
+        <activity android:name=".RawFileActivity" />
         <activity android:name=".FindToDoActivity" />
-        <activity android:name=".ToDoTextListActivity" />
+        <activity android:name=".TextListActivity" />
+        <activity android:name=".CheckedListActivity"></activity>
     </application>
 
 </manifest>

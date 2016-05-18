@@ -24,7 +24,7 @@ public class StartActivity extends AppCompatActivity {
     }
 
     public void startRawFileLines (View v) {
-        startActivity(new Intent(this, RawFileLinesActivity.class));
+        startActivity(new Intent(this, RawFileActivity.class));
     }
 
     public void startFindToDos (View v) {
@@ -32,8 +32,8 @@ public class StartActivity extends AppCompatActivity {
     }
 
 
-    public void startToDoListActivity (View v) {
-        startActivity(new Intent(this, ToDoTextListActivity.class));
+    public void startTextListActivity(View v) {
+        startActivity(new Intent(this, TextListActivity.class));
     }
 
     private void loadTestFile () {

@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Orgestrator</string>
-    <string name="find_todos">Find TODOs</string>
-    <string name="raw_file_lines">Raw File Lines</string>
-    <string name="to_do_list_activity">To-do List Activity</string>
+    <string name="find_to_do_activity">Log To-do Search</string>
+    <string name="raw_file_activity">Log Raw File Output</string>
+    <string name="text_list_activity">Plain Text To-do List</string>
 </resources>

@@ -10,7 +10,7 @@ import com.github.beardlybread.orgestrator.org.Orgestrator;
 import java.io.IOException;
 import java.io.StringWriter;
 
-public class RawFileLinesActivity extends AppCompatActivity {
+public class RawFileActivity extends AppCompatActivity {
 
     private Orgestrator org = null;
 
@@ -29,7 +29,7 @@ public class RawFileLinesActivity extends AppCompatActivity {
         } catch (IOException e) {
             Log.e("OrgFile.write()", "file failed to write or Writer failed to close");
         }
-        setContentView(R.layout.activity_raw_file_lines);
+        setContentView(R.layout.activity_raw_file);
     }
 
 }

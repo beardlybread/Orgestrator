@@ -9,6 +9,13 @@ public class OrgToDo extends OrgHeading {
     public static final boolean TODO = true;
     public static final boolean DONE = false;
 
+    public static final Predicate<OrgNode> all = new Predicate<OrgNode>() {
+        @Override
+        public boolean call(OrgNode input) {
+            return input.isType("OrgToDo");
+        }
+    };
+
     public static final Predicate<OrgNode> complete = new Predicate<OrgNode>() {
         @Override
         public boolean call(OrgNode input) {
