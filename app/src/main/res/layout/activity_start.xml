@@ -25,7 +25,14 @@
         android:layout_height="wrap_content"
         android:text="@string/text_list_activity"
         android:id="@+id/text_list_activity"
-        android:onClick="startTextListActivity" />
+        android:onClick="startTextList" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/checked_list_activity"
+        android:id="@+id/checked_list_activity"
+        android:onClick="startCheckedList" />
 
 </LinearLayout>
 

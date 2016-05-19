@@ -6,8 +6,8 @@ import com.github.beardlybread.orgestrator.util.Predicate;
 
 public class OrgToDo extends OrgHeading {
 
-    public static final boolean TODO = true;
-    public static final boolean DONE = false;
+    public static final boolean TODO = false;
+    public static final boolean DONE = true;
 
     public static final Predicate<OrgNode> all = new Predicate<OrgNode>() {
         @Override
@@ -19,18 +19,14 @@ public class OrgToDo extends OrgHeading {
     public static final Predicate<OrgNode> complete = new Predicate<OrgNode>() {
         @Override
         public boolean call(OrgNode input) {
-            if (input.isType("OrgToDo") && !((OrgToDo) input).getStatus())
-                return true;
-            return false;
+            return input.isType("OrgToDo") && ((OrgToDo) input).getStatus();
         }
     };
 
     public static final Predicate<OrgNode> incomplete = new Predicate<OrgNode>() {
         @Override
         public boolean call(OrgNode input) {
-            if (input.isType("OrgToDo") && ((OrgToDo) input).getStatus())
-                return true;
-            return false;
+            return input.isType("OrgToDo") && !((OrgToDo) input).getStatus();
         }
     };
 
@@ -57,7 +53,7 @@ public class OrgToDo extends OrgHeading {
         for (int i = 1; i < this.level; i++) {
             prefix += "*";
         }
-        String status = this.status ? "TODO" : "DONE";
+        String status = this.status ? "DONE" : "TODO";
         return prefix + " " + status + " " + this.text.toOrgString() + "\n";
     }
 

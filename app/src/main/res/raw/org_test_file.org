@@ -20,7 +20,8 @@ object.
 **** DONE Refactor toString methods called by write so that toString works well with to-dos
      CLOSED: [2016-05-17 Tue 15:03]
 **** TODO Implement toString for all OrgNodes.
-*** TODO checkbox per item controlling TODO/DONE
+*** DONE checkbox per item controlling TODO/DONE
+    CLOSED: [2016-05-18 Wed 22:30]
 *** TODO make OrgToDo list sortable/filterable by OrgDate
 *** TODO convenience methods for changing OrgDate
 *** TODO convenience methods for changing date in OrgToDo

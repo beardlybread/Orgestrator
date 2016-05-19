@@ -31,8 +31,11 @@ public class StartActivity extends AppCompatActivity {
         startActivity(new Intent(this, FindToDoActivity.class));
     }
 
+    public void startCheckedList (View v) {
+        startActivity(new Intent(this, CheckedListActivity.class));
+    }
 
-    public void startTextListActivity(View v) {
+    public void startTextList(View v) {
         startActivity(new Intent(this, TextListActivity.class));
     }
 

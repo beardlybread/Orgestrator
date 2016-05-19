@@ -3,4 +3,5 @@
     <string name="find_to_do_activity">Log To-do Search</string>
     <string name="raw_file_activity">Log Raw File Output</string>
     <string name="text_list_activity">Plain Text To-do List</string>
+    <string name="checked_list_activity">Checked To-do List</string>
 </resources>
