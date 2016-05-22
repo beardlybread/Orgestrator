@@ -40,6 +40,7 @@ public class OrgTable extends OrgNode {
     public String toOrgString () {
         StringBuilder sb = new StringBuilder();
         for (int r = 0; r < this.rows; r++) {
+            this.doIndent(sb);
             boolean isSeparator = MATCH_SEPARATOR.matcher(this.data[r][0]).matches();
             for (int c = 0; c < this.cols; c++) {
                 if (isSeparator && c > 0)
@@ -50,6 +51,11 @@ public class OrgTable extends OrgNode {
             sb.append("|\n");
         }
         return sb.toString();
+    }
+
+    @Override
+    public String toString () {
+        return this.toOrgString();
     }
 
     ////////////////////////////////////////////////////////////////////////////

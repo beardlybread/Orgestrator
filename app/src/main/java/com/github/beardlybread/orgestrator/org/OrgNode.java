@@ -49,8 +49,7 @@ public abstract class OrgNode {
 
     public String toOrgString () {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < this.indent; ++i)
-            sb.append(" ");
+        this.doIndent(sb);
         return sb.append(super.toString()).toString();
     }
 
@@ -63,6 +62,11 @@ public abstract class OrgNode {
     ////////////////////////////////////////////////////////////////////////////
     // Utility
     ////////////////////////////////////////////////////////////////////////////
+
+    public void doIndent (StringBuilder sb) {
+        for (int i = 0; i < this.indent; ++i)
+            sb.append(" ");
+    }
 
     public void write (Writer target) throws IOException {
         target.append(this.toOrgString());

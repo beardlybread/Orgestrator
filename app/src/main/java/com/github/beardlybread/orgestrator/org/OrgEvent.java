@@ -31,9 +31,7 @@ public class OrgEvent extends OrgNode {
     @Override
     public String toOrgString () {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < this.indent; ++i) {
-            sb.append(" ");
-        }
+        this.doIndent(sb);
         switch (this.status) {
             case OrgEvent.CLOSED:
                 sb.append("CLOSED: [").append(this.current.toOrgString()).append("]");
@@ -52,6 +50,23 @@ public class OrgEvent extends OrgNode {
                 break;
         }
         return sb.toString();
+    }
+
+    @Override
+    public String toString () {
+        StringBuilder sb = new StringBuilder();
+        switch (this.status) {
+            case OrgEvent.CLOSED:
+                sb.append("Closed: ");
+                break;
+            case OrgEvent.DEADLINE:
+                sb.append("Deadline: ");
+                break;
+            case OrgEvent.SCHEDULED:
+                sb.append("Scheduled: ");
+                break;
+        }
+        return sb.append(this.current.toString()).toString();
     }
 
 }

@@ -27,6 +27,11 @@ public class OrgHeading extends OrgTreeNode {
         return prefix + " " + this.text.toOrgString() + "\n";
     }
 
+    @Override
+    public String toString () {
+        return this.text.toString();
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     // Setters
     ////////////////////////////////////////////////////////////////////////////

@@ -2,6 +2,7 @@ package com.github.beardlybread.orgestrator.org;
 
 import com.github.beardlybread.orgestrator.org.antlr.OrgParser;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
@@ -22,6 +23,13 @@ public class OrgDate extends GregorianCalendar {
         public static final int MONTH = 3;
         public static final int YEAR = 4;
     }
+
+    public static final SimpleDateFormat DEFAULT_DATE_FORMAT =
+            new SimpleDateFormat("yyyy/MM/dd");
+    public static final SimpleDateFormat DEFAULT_TIME_FORMAT =
+            new SimpleDateFormat("HH:mm:ss");
+    public static final SimpleDateFormat DEFAULT_DATETIME_FORMAT =
+            new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
     public static final Pattern MATCH_DATE = Pattern.compile("(\\d{4})-(\\d{2})-(\\d{2})");
     public static final Pattern MATCH_TIME = Pattern.compile("(\\d{2}):(\\d{2})");
@@ -118,6 +126,11 @@ public class OrgDate extends GregorianCalendar {
             this.repeatString(sb);
         }
         return sb.toString();
+    }
+
+    @Override
+    public String toString () {
+        return OrgDate.DEFAULT_DATETIME_FORMAT.format(this.getTime());
     }
 
     private void dateString (StringBuilder sb) {

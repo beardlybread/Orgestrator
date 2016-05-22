@@ -57,10 +57,13 @@ public class OrgList extends OrgTreeNode {
     @Override
     public String toOrgString () {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < this.indent; ++i)
-            sb.append(" ");
+        this.doIndent(sb);
         sb.append(this.marker).append(" ").append(this.text.toOrgString());
         return sb.toString();
     }
 
+    @Override
+    public String toString () {
+        return this.text.toString();
+    }
 }

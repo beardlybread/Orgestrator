@@ -25,8 +25,7 @@ public class OrgProperty extends OrgNode {
     @Override
     public String toOrgString () {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < this.indent; ++i)
-            sb.append(" ");
+        this.doIndent(sb);
         String indent = sb.toString();
         sb.delete(0, sb.length());
         sb.append(indent).append(":PROPERTIES:\n");
@@ -39,4 +38,10 @@ public class OrgProperty extends OrgNode {
         sb.append(indent).append(":END:\n");
         return sb.toString();
     }
+
+    @Override
+    public String toString () {
+        return this.toOrgString();
+    }
+
 }
