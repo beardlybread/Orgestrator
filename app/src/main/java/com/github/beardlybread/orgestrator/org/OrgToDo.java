@@ -1,7 +1,5 @@
 package com.github.beardlybread.orgestrator.org;
 
-// TODO Add convenience methods for modifying/adding timestamps.
-
 import com.github.beardlybread.orgestrator.util.Predicate;
 
 public class OrgToDo extends OrgHeading {
@@ -30,6 +28,7 @@ public class OrgToDo extends OrgHeading {
         }
     };
 
+    private OrgEvent cachedEvent = null;
     protected boolean status = OrgToDo.TODO;
 
     ////////////////////////////////////////////////////////////////////////////
@@ -38,7 +37,8 @@ public class OrgToDo extends OrgHeading {
 
     public OrgToDo (String rawLevel, String rawText, String rawTodo) {
         super(rawLevel, rawText);
-        this.status = rawTodo.trim().equalsIgnoreCase("DONE") ? OrgToDo.DONE : OrgToDo.TODO;
+        this.status = (rawTodo.trim().equalsIgnoreCase("DONE"))
+                ? OrgToDo.DONE : OrgToDo.TODO;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -46,6 +46,20 @@ public class OrgToDo extends OrgHeading {
     ////////////////////////////////////////////////////////////////////////////
 
     public boolean getStatus () { return this.status; }
+
+    public OrgEvent getEvent () {
+        if (this.cachedEvent == null) {
+            for (OrgNode n: this.getChildren()) {
+                if (n.isType("OrgEvent")) {
+                    this.cachedEvent = (OrgEvent) n;
+                    break;
+                }
+            }
+            this.cachedEvent = (this.cachedEvent == null)
+                    ? OrgEvent.NO_EVENT : this.cachedEvent;
+        }
+        return this.cachedEvent;
+    }
 
     @Override
     public String toOrgString () {
@@ -67,8 +81,16 @@ public class OrgToDo extends OrgHeading {
     ////////////////////////////////////////////////////////////////////////////
 
     public boolean toggle () {
-        // TODO Adjust children to reflect state change.
         this.status = !this.status;
+        if (this.getEvent() == OrgEvent.NO_EVENT) {
+            this.cachedEvent = new OrgEvent(this);
+            this.getChildren().add(0, this.cachedEvent);
+        }
+        if (this.status) { // DONE
+            this.cachedEvent.setClosed();
+        } else {
+            this.cachedEvent.undoClosed();
+        }
         return this.status;
     }
 }

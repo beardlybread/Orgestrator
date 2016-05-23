@@ -18,9 +18,9 @@ public class Orgestrator {
 
     // These can be extended later if I want to add other targets to get the files.
     public static final int UNKNOWN_SOURCE = -1;
-    public static final int RAW_RESOURCE = 0;
-    public static final int DRIVE_RESOURCE = 1;
-    public static final int OTHER_RESOURCE = 2;
+    public static final int OTHER_RESOURCE = 0;
+    public static final int RAW_RESOURCE = 1;
+    public static final int DRIVE_RESOURCE = 2;
 
     private ArrayList<OrgData> data = null;
     private IOException err = null;
@@ -68,7 +68,7 @@ public class Orgestrator {
 
     /** Connect OrgFile access information to the object.
      */
-    private class OrgData {
+    public class OrgData {
 
         private String resourcePath = null;
         private int resourceType = Orgestrator.UNKNOWN_SOURCE;

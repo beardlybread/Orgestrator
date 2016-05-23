@@ -26,18 +26,23 @@ object.
      CLOSED: [2016-05-23 Mon 10:18]
 *** DONE checkbox per item controlling TODO/DONE
     CLOSED: [2016-05-18 Wed 22:30]
+*** TODO make OrgData items accessible from search results
+*** DONE adjust event timestamps based on OrgToDo event state
+    CLOSED: [2016-05-23 Mon 17:27]
 *** TODO display path of to-do in list view
 *** TODO display date in list view
 *** TODO convenience methods for advancing repeatable OrgDate
 *** TODO convenience methods for advancing date in OrgToDo
 *** TODO make repeats adjust on checking complete/incomplete
-*** TODO make OrgToDo list sortable/filterable by OrgDate
 ** Questions
 *** TODO should search return Adapter objects?
+*** TODO is it ok to leave OrgEvents as only children of OrgToDo? 
 *** TODO model-view abstraction at the Orgestrator object level?
 ** Features
+*** TODO make OrgToDo list sortable/filterable by OrgDate
 *** TODO Empty lines should not split lists.
 *** TODO Justify columns of tables.
+*** TODO Add locale and timezone settings to dates.
 * Test
 ** DONE Finish writing this dummy file.
    CLOSED: [2016-05-11 Wed 12:19] DEADLINE: <2016-05-12 Thu>

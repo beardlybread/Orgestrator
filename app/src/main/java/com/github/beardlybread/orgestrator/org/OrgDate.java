@@ -27,9 +27,9 @@ public class OrgDate extends GregorianCalendar {
     public static final SimpleDateFormat DEFAULT_DATE_FORMAT =
             new SimpleDateFormat("yyyy/MM/dd");
     public static final SimpleDateFormat DEFAULT_TIME_FORMAT =
-            new SimpleDateFormat("HH:mm:ss");
+            new SimpleDateFormat("HH:mm");
     public static final SimpleDateFormat DEFAULT_DATETIME_FORMAT =
-            new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            new SimpleDateFormat("yyyy/MM/dd HH:mm");
 
     public static final Pattern MATCH_DATE = Pattern.compile("(\\d{4})-(\\d{2})-(\\d{2})");
     public static final Pattern MATCH_TIME = Pattern.compile("(\\d{2}):(\\d{2})");

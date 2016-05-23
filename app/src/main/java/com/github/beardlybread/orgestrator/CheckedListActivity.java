@@ -8,9 +8,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 
+import com.github.beardlybread.orgestrator.org.OrgNode;
 import com.github.beardlybread.orgestrator.org.OrgToDo;
 import com.github.beardlybread.orgestrator.org.Orgestrator;
 import com.github.beardlybread.orgestrator.ui.ToDoAdapter;
+
+import java.util.ArrayList;
 
 public class CheckedListActivity extends AppCompatActivity {
 
@@ -32,16 +35,19 @@ public class CheckedListActivity extends AppCompatActivity {
         this.view.setLayoutManager(this.layoutManager);
 
         Orgestrator org = Orgestrator.getInstance();
-        this.adapter = new ToDoAdapter(org.search(OrgToDo.all));
+        ArrayList<OrgNode> todos = org.search(OrgToDo.incomplete);
+        todos.addAll(org.search(OrgToDo.complete));
+        this.adapter = new ToDoAdapter(todos);
         this.view.setAdapter(this.adapter);
     }
 
     public void toggleToDo (View v) {
         OrgToDo todo = this.adapter.get(v.getId());
-        Log.d("toggleToDo", "text    : " + todo.toString());
-        Log.d("toggleToDo", "checkbox: " + ((CheckBox) v).isChecked());
-        Log.d("toggleToDo", "before  : " + todo.getStatus());
+        Log.d("toggleToDo", "text     : " + todo.toString());
+        Log.d("toggleToDo", "checkbox : " + ((CheckBox) v).isChecked());
+        Log.d("toggleToDo", "before   : " + todo.getStatus());
         todo.toggle();
-        Log.d("toggleToDo", "after   : " + todo.getStatus());
+        Log.d("toggleToDo", "after    : " + todo.getStatus());
+        Log.d("toggleToDo", "timestamp: " + todo.getEvent().toString());
     }
 }
