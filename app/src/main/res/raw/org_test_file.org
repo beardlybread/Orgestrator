@@ -4,28 +4,35 @@ object.
 
 * Project
 ** Requirements/Restrictions
-- Limit the initial features to only deal with to-do options.
-  + App should list all to-do items across potentially multiple files.
-  + Path to the to-do (file and parents) should be available to view.
-  + When an item is checked, it should be marked DONE in the underlying file.
-  + When an item is checked and repeatable, the times should be adjusted accordingly.
-  + If an item is unchecked, it will revert to TODO. No support for other options for now.
-  + If an item is unchecked, repeatable items should roll back to previous LAST_REPEAT.
-- Adding and modifying items outside of marking DONE must be done in Emacs.
-- Files must be kept on Google Drive.
-- Nothing but to-do items is visible from the app.
+*** Constraints
+**** Limit the initial features to only deal with to-do lists.
+**** Adding and modifying items outside of marking "DONE" must be done in Emacs.
+**** Files must be kept on Google Drive.
+**** Nothing but to-do items is visible from the app.
+**** To-do list length will not change after creation.
+*** Requirements
+**** When an item is checked, it should be marked "DONE" in the underlying file.
+**** When an item is unchecked, it should be marked "TODO" in the underlying file.
+**** When an item is repeatable and checked/unchecked, the time should be updated.
+**** App should list all to-do items across all files.
+**** The path to each item will be available in the app list.
+**** Any deadline or schedule time will be visible for the item.
 ** Steps
 *** DONE to-do item text into a list view
     CLOSED: [2016-05-17 Tue 13:22]
 **** DONE Refactor toString methods called by write so that toString works well with to-dos
      CLOSED: [2016-05-17 Tue 15:03]
-**** TODO Implement toString for all OrgNodes.
+**** DONE Implement toString for all OrgNodes.
+     CLOSED: [2016-05-23 Mon 10:18]
 *** DONE checkbox per item controlling TODO/DONE
     CLOSED: [2016-05-18 Wed 22:30]
+*** TODO display path of to-do in list view
+*** TODO display date in list view
+*** TODO convenience methods for advancing repeatable OrgDate
+*** TODO convenience methods for advancing date in OrgToDo
+*** TODO make repeats adjust on checking complete/incomplete
 *** TODO make OrgToDo list sortable/filterable by OrgDate
-*** TODO convenience methods for changing OrgDate
-*** TODO convenience methods for changing date in OrgToDo
-*** TODO display date in list view, adjusting repeats
+** Questions
 *** TODO should search return Adapter objects?
 *** TODO model-view abstraction at the Orgestrator object level?
 ** Features
