@@ -2,6 +2,9 @@ package com.github.beardlybread.orgestrator.org;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 public class OrgEvent extends OrgNode {
 
     public static final int UNDEFINED = -1;
@@ -26,9 +29,7 @@ public class OrgEvent extends OrgNode {
         super(indent);
         // If the status is closed but no previous type was defined, its type is undefined.
         // Otherwise, the type is just the status.
-        this.eventType = (this.status == OrgEvent.CLOSED)
-                ? OrgEvent.UNDEFINED : this.status;
-        this.status = status;
+        this.eventType = this.status = status;
         this.current = current;
     }
 
@@ -41,6 +42,7 @@ public class OrgEvent extends OrgNode {
     }
 
     public int getEventType () { return this.eventType; }
+    public int getStatus () { return this.status; }
 
     public void setClosed () {
         this.previous = this.current;
@@ -88,17 +90,29 @@ public class OrgEvent extends OrgNode {
 
     @Override
     public String toString () {
-        StringBuilder sb = new StringBuilder();
         switch (this.status) {
             case OrgEvent.CLOSED:
-                return sb.append("Closed: ").append(this.current.toString()).toString();
+                return this.current.toString();
             case OrgEvent.DEADLINE:
-                return sb.append("Deadline: ").append(this.current.toString()).toString();
             case OrgEvent.SCHEDULED:
-                return sb.append("Scheduled: ").append(this.current.toString()).toString();
+                OrgDate cur = this.current;
+                if (cur.get(Calendar.HOUR_OF_DAY) == 0
+                        && cur.get(Calendar.MINUTE) == 0)
+                    return this.current.toDateString();
+                return this.current.toString();
             default:
                 return ""; // An undone simple closed event should be the empty string.
         }
+    }
+
+    public boolean isLate () {
+        return (this.status == OrgEvent.SCHEDULED || this.status == OrgEvent.DEADLINE)
+                && this.current.compareTo(new GregorianCalendar()) < 0;
+    }
+
+    public boolean isToday () {
+        return (this.status == OrgEvent.SCHEDULED || this.status == OrgEvent.DEADLINE)
+                && this.current.isToday();
     }
 
 }

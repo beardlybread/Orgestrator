@@ -2,8 +2,8 @@ package com.github.beardlybread.orgestrator.ui;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 
 import com.github.beardlybread.orgestrator.BuildConfig;
 import com.github.beardlybread.orgestrator.R;
@@ -27,16 +27,16 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder> {
 
     @Override
     public ViewHolder onCreateViewHolder (ViewGroup parent, int viewType) {
-        CheckBox cb = (CheckBox) LayoutInflater.from(parent.getContext())
+        ToDoView v = (ToDoView) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.to_do_item, parent, false);
-        return new ViewHolder(cb);
+        return new ViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder (ViewHolder holder, int position) {
-        holder.view.setId(position);
-        holder.view.setText(this.items.get(position).toString());
-        holder.view.setChecked(this.items.get(position).getStatus());
+        ToDoView v = holder.view;
+        v.setToDo(this.get(position));
+        v.invalidate();
     }
 
     @Override
@@ -49,8 +49,8 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder> {
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public CheckBox view;
-        public ViewHolder (CheckBox v) {
+        public ToDoView view;
+        public ViewHolder (ToDoView v) {
             super(v);
             this.view = v;
         }

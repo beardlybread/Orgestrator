@@ -12,6 +12,7 @@ import com.github.beardlybread.orgestrator.org.OrgNode;
 import com.github.beardlybread.orgestrator.org.OrgToDo;
 import com.github.beardlybread.orgestrator.org.Orgestrator;
 import com.github.beardlybread.orgestrator.ui.ToDoAdapter;
+import com.github.beardlybread.orgestrator.ui.ToDoView;
 
 import java.util.ArrayList;
 
@@ -31,6 +32,7 @@ public class CheckedListActivity extends AppCompatActivity {
         } else {
             throw new NullPointerException("the_recycler_view");
         }
+        this.view.setBackgroundColor(0);
         this.layoutManager = new LinearLayoutManager(this);
         this.view.setLayoutManager(this.layoutManager);
 
@@ -42,12 +44,6 @@ public class CheckedListActivity extends AppCompatActivity {
     }
 
     public void toggleToDo (View v) {
-        OrgToDo todo = this.adapter.get(v.getId());
-        Log.d("toggleToDo", "text     : " + todo.toString());
-        Log.d("toggleToDo", "checkbox : " + ((CheckBox) v).isChecked());
-        Log.d("toggleToDo", "before   : " + todo.getStatus());
-        todo.toggle();
-        Log.d("toggleToDo", "after    : " + todo.getStatus());
-        Log.d("toggleToDo", "timestamp: " + todo.getEvent().toString());
+        ((ToDoView) v).toggle();
     }
 }

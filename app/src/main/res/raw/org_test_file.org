@@ -31,7 +31,8 @@ object.
 *** DONE adjust event timestamps based on OrgToDo event state
     CLOSED: [2016-05-23 Mon 17:27]
 *** TODO display path of to-do in list view
-*** TODO display date in list view
+*** DONE display date in list view
+    CLOSED: [2016-05-25 Wed 16:24]
 *** TODO convenience methods for advancing repeatable OrgDate
 *** TODO convenience methods for advancing date in OrgToDo
 *** TODO make repeats adjust on checking complete/incomplete

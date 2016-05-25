@@ -3,4 +3,10 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="todo_default">#FFF</color>
+    <color name="todo_open">#FFB</color>
+    <color name="todo_closed">#EEE</color>
+    <color name="todo_early">#BFA</color>
+    <color name="todo_today">#E8E8A0</color>
+    <color name="todo_late">#FAA</color>
 </resources>

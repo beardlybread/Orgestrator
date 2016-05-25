@@ -58,7 +58,7 @@ public class OrgDate extends GregorianCalendar {
         int year = 0, month = 0, day = 0, hour = 0, minute = 0;
         if (d.matches()) {
             year = Integer.parseInt(d.group(1));
-            month = Integer.parseInt(d.group(2));
+            month = Integer.parseInt(d.group(2)) - 1;
             day = Integer.parseInt(d.group(3));
         }
         // ignore DOW
@@ -110,6 +110,10 @@ public class OrgDate extends GregorianCalendar {
             }
         }
 
+    }
+
+    public String toDateString () {
+        return OrgDate.DEFAULT_DATE_FORMAT.format(this.getTime());
     }
 
     public String toOrgString () {
@@ -207,5 +211,11 @@ public class OrgDate extends GregorianCalendar {
             default:
                 break;
         }
+    }
+
+    public boolean isToday () {
+        GregorianCalendar today = new GregorianCalendar();
+        return today.get(Calendar.YEAR) == this.get(Calendar.YEAR)
+                && today.get(Calendar.DAY_OF_YEAR) == this.get(Calendar.DAY_OF_YEAR);
     }
 }
