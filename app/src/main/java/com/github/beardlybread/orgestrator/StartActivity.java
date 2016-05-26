@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.github.beardlybread.orgestrator.org.OrgFile;
 import com.github.beardlybread.orgestrator.org.Orgestrator;
 
 import java.io.InputStream;
@@ -43,12 +44,12 @@ public class StartActivity extends AppCompatActivity {
         Orgestrator org = Orgestrator.getInstance();
         if (org.isEmpty()) {
             InputStream inStream = getResources().openRawResource(R.raw.org_test_file);
-            if (!org.add(inStream, "org_test_file", Orgestrator.RAW_RESOURCE)) {
+            if (!org.add(inStream, "org_test_file", OrgFile.RAW_RESOURCE)) {
                 Log.e("Orgestrator.add()", org.getError().getMessage());
                 org.clearError();
             }
             inStream = getResources().openRawResource(R.raw.other_org_test_file);
-            if (!org.add(inStream, "other_org_test_file", Orgestrator.RAW_RESOURCE)) {
+            if (!org.add(inStream, "other_org_test_file", OrgFile.RAW_RESOURCE)) {
                 Log.e("Orgestrator.add()", org.getError().getMessage());
                 org.clearError();
             }

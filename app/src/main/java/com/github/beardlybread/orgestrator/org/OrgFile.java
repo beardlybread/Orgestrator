@@ -10,9 +10,28 @@ import java.util.Stack;
 
 public class OrgFile extends OrgParserBaseListener {
 
-    protected ArrayList<OrgNode> roots = null;
-    protected Stack<OrgTreeNode> lastParent = null;
-    protected OrgNode last = null;
+    // These can be extended later if I want to add other targets to get the files.
+    public static final int UNKNOWN_SOURCE = -1;
+    public static final int OTHER_RESOURCE = 0;
+    public static final int RAW_RESOURCE = 1;
+    public static final int DRIVE_RESOURCE = 2;
+
+    private ArrayList<OrgNode> roots = null;
+    private Stack<OrgTreeNode> lastParent = null;
+    private OrgNode last = null;
+    private String resourcePath = null;
+    private int resourceType = OrgFile.UNKNOWN_SOURCE;
+
+    public OrgFile () { super(); }
+
+    public OrgFile (String path, int type) {
+        super();
+        this.resourcePath = path;
+        this.resourceType = type;
+    }
+
+    public String getResourcePath () { return this.resourcePath; }
+    public int getResourceType () { return this.resourceType; }
 
     /** Return the contents of the OrgFile.
      * @return the raw contents of this object
@@ -84,6 +103,7 @@ public class OrgFile extends OrgParserBaseListener {
         } else if (this.lastParent.empty()) {
             // top level
             this.roots.add(current);
+            current.setParent(this);
             this.last = current;
         } else if (this.lastParent.peek().isType("OrgHeading", "OrgToDo")) {
             this.lastParent.peek().add(current);
@@ -93,6 +113,7 @@ public class OrgFile extends OrgParserBaseListener {
             this.popToHeading();
             if (this.lastParent.empty()) {
                 this.roots.add(current);
+                current.setParent(this);
             } else {
                 this.lastParent.peek().add(current);
             }
@@ -200,6 +221,7 @@ public class OrgFile extends OrgParserBaseListener {
         this.popToHeading();
         if (this.lastParent.empty()) {
             this.roots.add(current);
+            current.setParent(this);
         } else {
             this.lastParent.peek().add(current);
         }
@@ -225,6 +247,7 @@ public class OrgFile extends OrgParserBaseListener {
         this.popToHeading();
         if (this.lastParent.empty()) {
             this.roots.add(current);
+            current.setParent(this);
         } else {
             this.lastParent.peek().add(current);
         }
@@ -239,6 +262,7 @@ public class OrgFile extends OrgParserBaseListener {
         OrgEmpty current = new OrgEmpty();
         if (this.lastParent.empty()) {
             this.roots.add(current);
+            current.setParent(this);
         } else {
             this.lastParent.peek().add(current);
         }
@@ -256,6 +280,7 @@ public class OrgFile extends OrgParserBaseListener {
         if (this.last == null || this.lastParent.empty()) {
             // top level
             this.roots.add(current);
+            current.setParent(this);
         } else if (this.lastParent.peek().isType("OrgList")) {
             while (this.lastParent.peek().indent > current.indent) {
                 this.lastParent.pop();
@@ -268,11 +293,12 @@ public class OrgFile extends OrgParserBaseListener {
                     && ((OrgList) parent).marker.equals(current.marker)) {
                 // sibling found (real parent is parent of "parent" variable)
                 current.setParent(parent.getParent());
-                // If the sibling found is top level, its parent will be null.
-                if (current.getParent() != null) {
+                // If the sibling found is top level, its parent will be this.
+                if (current.getParent() != this) {
                     ((OrgTreeNode) parent.getParent()).add(current);
                 } else {
                     this.roots.add(current);
+                    current.setParent(this);
                 }
                 ((OrgList) parent).addSibling(current);
                 this.lastParent.pop(); // so we can just pop once in else case
@@ -296,6 +322,7 @@ public class OrgFile extends OrgParserBaseListener {
         if (this.last == null) {
             // first line
             this.roots.add(current);
+            current.setParent(this);
         } else {
             // Headings are children of the last parent that was a heading or top level.
             this.popToHeading();
@@ -306,6 +333,7 @@ public class OrgFile extends OrgParserBaseListener {
             if (this.lastParent.empty()) {
                 // top level
                 this.roots.add(current);
+                current.setParent(this);
             } else {
                 this.lastParent.peek().add(current);
             }

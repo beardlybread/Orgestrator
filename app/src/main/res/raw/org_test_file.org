@@ -26,11 +26,13 @@ object.
      CLOSED: [2016-05-23 Mon 10:18]
 *** DONE checkbox per item controlling TODO/DONE
     CLOSED: [2016-05-18 Wed 22:30]
-*** TODO make OrgData items accessible from search results
+*** DONE make OrgData items accessible from search results
+    CLOSED: [2016-05-26 Thu 01:26]
 *** TODO ensure that cacheEvent works correctly on NO_EVENT case
 *** DONE adjust event timestamps based on OrgToDo event state
     CLOSED: [2016-05-23 Mon 17:27]
-*** TODO display path of to-do in list view
+*** DONE display path of to-do in list view
+    CLOSED: [2016-05-26 Thu 01:27]
 *** DONE display date in list view
     CLOSED: [2016-05-25 Wed 16:24]
 *** TODO convenience methods for advancing repeatable OrgDate

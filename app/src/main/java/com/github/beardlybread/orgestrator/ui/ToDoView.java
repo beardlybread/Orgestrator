@@ -76,7 +76,7 @@ public class ToDoView extends LinearLayout {
         this.getMessage().setText(this.todo.toString());
         this.getCheckBox().setChecked(this.todo.getStatus());
         this.getDate().setText(this.todo.getEvent().toString());
-        // TODO set path
+        this.getPath().setText(this.todo.getFullPath());
         this.updateColors();
         super.invalidate();
     }
@@ -84,22 +84,19 @@ public class ToDoView extends LinearLayout {
     public void updateColors () {
         int mainBackground = (this.todo.getStatus()) // DONE if true
                 ? R.color.todo_closed : R.color.todo_open;
-        int dateBackground = mainBackground;
         switch (this.todo.getEvent().getStatus()) {
             case OrgEvent.CLOSED:
-                dateBackground = R.color.todo_closed;
                 break;
             case OrgEvent.DEADLINE:
             case OrgEvent.SCHEDULED:
-                dateBackground = R.color.todo_early;
+                mainBackground = R.color.todo_early;
                 if (this.todo.getEvent().isToday()) {
-                    dateBackground = R.color.todo_today;
+                    mainBackground = R.color.todo_today;
                 } else if (this.todo.getEvent().isLate()) {
-                    dateBackground = R.color.todo_late;
+                    mainBackground = R.color.todo_late;
                 }
         }
         this.setBackgroundResource(mainBackground);
-        this.getDate().setBackgroundResource(dateBackground);
     }
 
 }

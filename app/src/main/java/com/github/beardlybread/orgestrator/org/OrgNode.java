@@ -4,12 +4,15 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 
 public abstract class OrgNode {
 
     protected OrgNode parent = null;
     public final String type;
     public final int indent;
+
+    private String cachedFullPath = null;
 
     ////////////////////////////////////////////////////////////////////////////
     // Constructors
@@ -36,6 +39,30 @@ public abstract class OrgNode {
     ////////////////////////////////////////////////////////////////////////////
     // Getters
     ////////////////////////////////////////////////////////////////////////////
+
+    public String getFullPath () {
+        if (this.cachedFullPath == null) {
+            if (this.parent == null)
+                return "";
+            if (this.isType("OrgFile"))
+                return ((OrgFile) this).getResourcePath();
+            if (this.parent.isType("OrgFile"))
+                return ((OrgFile) this.parent).getResourcePath();
+            StringBuilder buf = new StringBuilder();
+            OrgNode p = this.parent;
+            while (!p.isType("OrgFile")) {
+                while (!p.isType("OrgHeading", "OrgToDo", "OrgFile"))
+                    p = p.parent;
+                if (p.isType("OrgFile"))
+                    continue;
+                buf.insert(0, p.toString()).insert(0, "/");
+                p = p.parent;
+            }
+            buf.insert(0, ((OrgFile) p).getResourcePath());
+            this.cachedFullPath = buf.toString();
+        }
+        return this.cachedFullPath;
+    }
 
     public OrgNode getParent () { return this.parent; }
 

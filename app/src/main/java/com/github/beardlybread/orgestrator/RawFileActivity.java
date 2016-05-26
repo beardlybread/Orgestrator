@@ -19,8 +19,8 @@ public class RawFileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Orgestrator org = Orgestrator.getInstance();
         OrgFile file = org.getFile(0);
-        Log.i("getResourcePath()", org.getResourcePath(0));
-        Log.i("getResourceType()", "" + org.getResourceType(0));
+        Log.i("getResourcePath()", file.getResourcePath());
+        Log.i("getResourceType()", "" + file.getResourceType());
         StringWriter w = new StringWriter();
         try {
             file.write(w);
