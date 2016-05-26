@@ -15,36 +15,53 @@
 
 
     <LinearLayout
+        android:id="@+id/to_do_content"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical" >
+        android:gravity="center_vertical"
+        android:background="@color/todo_default" >
 
         <TextView
             android:id="@+id/to_do_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginBottom="3dp"
             android:padding="10dp"
-            android:textSize="10pt" />
+            android:textSize="10pt"
+            android:text="message"
+            android:background="@color/todo_default" />
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginBottom="6dp" >
 
             <TextView
                 android:id="@+id/to_do_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="6dp"
                 android:padding="5dp"
-                android:gravity="center" />
+                android:gravity="center_vertical"
+                android:text="date"
+                android:background="@color/todo_default" />
 
             <TextView
                 android:id="@+id/to_do_path"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
-                android:gravity="right" />
+                android:gravity="right"
+                android:text="path"
+                android:background="@color/todo_default" />
 
         </LinearLayout>
 

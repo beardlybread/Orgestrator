@@ -1,5 +1,7 @@
 package com.github.beardlybread.orgestrator.org;
 
+import android.util.Log;
+
 import com.github.beardlybread.orgestrator.util.Predicate;
 
 public class OrgToDo extends OrgHeading {
@@ -85,6 +87,7 @@ public class OrgToDo extends OrgHeading {
         if (this.getEvent() == OrgEvent.NO_EVENT) {
             this.cachedEvent = new OrgEvent(this);
             this.getChildren().add(0, this.cachedEvent);
+            Log.d("OrgToDo", "Event added: " + this);
         }
         if (this.status) { // DONE
             this.cachedEvent.setClosed();

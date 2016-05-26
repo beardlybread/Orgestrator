@@ -28,7 +28,8 @@ object.
     CLOSED: [2016-05-18 Wed 22:30]
 *** DONE make OrgData items accessible from search results
     CLOSED: [2016-05-26 Thu 01:26]
-*** TODO ensure that cacheEvent works correctly on NO_EVENT case
+*** DONE ensure that cacheEvent works correctly on NO_EVENT case
+    CLOSED: [2016-05-26 Thu 10:43]
 *** DONE adjust event timestamps based on OrgToDo event state
     CLOSED: [2016-05-23 Mon 17:27]
 *** DONE display path of to-do in list view
@@ -36,6 +37,7 @@ object.
 *** DONE display date in list view
     CLOSED: [2016-05-25 Wed 16:24]
 *** TODO convenience methods for advancing repeatable OrgDate
+    DEADLINE: <2016-05-26 Thu>
 *** TODO convenience methods for advancing date in OrgToDo
 *** TODO make repeats adjust on checking complete/incomplete
 ** Questions
