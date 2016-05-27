@@ -10,7 +10,7 @@ import com.github.beardlybread.orgestrator.org.OrgNode;
 import com.github.beardlybread.orgestrator.org.OrgToDo;
 import com.github.beardlybread.orgestrator.org.Orgestrator;
 
-public class TextListActivity extends ListActivity {
+public class TextList extends ListActivity {
 
     // This is the Adapter being used to display the list's data
     private ArrayAdapter<OrgNode> adapter;

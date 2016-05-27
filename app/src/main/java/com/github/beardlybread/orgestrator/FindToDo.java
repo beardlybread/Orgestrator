@@ -11,7 +11,7 @@ import com.github.beardlybread.orgestrator.util.Predicate;
 
 import java.util.ArrayList;
 
-public class FindToDoActivity extends AppCompatActivity {
+public class FindToDo extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -13,7 +13,7 @@ import java.io.InputStream;
 
 // TODO Add Orgestrator file saving to one of the onAction callbacks.
 
-public class StartActivity extends AppCompatActivity {
+public class Start extends AppCompatActivity {
 
     private Orgestrator org = null;
 
@@ -24,20 +24,24 @@ public class StartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_start);
     }
 
-    public void startRawFileLines (View v) {
-        startActivity(new Intent(this, RawFileActivity.class));
+    public void startRawFile (View v) {
+        startActivity(new Intent(this, RawFile.class));
     }
 
-    public void startFindToDos (View v) {
-        startActivity(new Intent(this, FindToDoActivity.class));
+    public void startFindToDo (View v) {
+        startActivity(new Intent(this, FindToDo.class));
     }
 
     public void startCheckedList (View v) {
-        startActivity(new Intent(this, CheckedListActivity.class));
+        startActivity(new Intent(this, CheckedList.class));
     }
 
-    public void startTextList(View v) {
-        startActivity(new Intent(this, TextListActivity.class));
+    public void startTextList (View v) {
+        startActivity(new Intent(this, TextList.class));
+    }
+
+    public void startTestGoogleDrive (View v) {
+        startActivity(new Intent(this, TestGoogleDrive.class));
     }
 
     private void loadTestFile () {

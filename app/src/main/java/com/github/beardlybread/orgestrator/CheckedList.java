@@ -16,7 +16,7 @@ import com.github.beardlybread.orgestrator.ui.ToDoView;
 
 import java.util.ArrayList;
 
-public class CheckedListActivity extends AppCompatActivity {
+public class CheckedList extends AppCompatActivity {
 
     private RecyclerView view = null;
     private ToDoAdapter adapter = null;

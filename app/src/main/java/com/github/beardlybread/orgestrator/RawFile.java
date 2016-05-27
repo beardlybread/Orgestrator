@@ -10,7 +10,7 @@ import com.github.beardlybread.orgestrator.org.Orgestrator;
 import java.io.IOException;
 import java.io.StringWriter;
 
-public class RawFileActivity extends AppCompatActivity {
+public class RawFile extends AppCompatActivity {
 
     private Orgestrator org = null;
 

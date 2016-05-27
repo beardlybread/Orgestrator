@@ -7,32 +7,39 @@
     android:orientation="vertical">
 
     <Button
+        android:id="@+id/raw_file_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/raw_file_activity"
-        android:id="@+id/raw_file_activity"
-        android:onClick="startRawFileLines" />
+        android:onClick="startRawFile" />
 
     <Button
+        android:id="@+id/find_to_do_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/find_to_do_activity"
-        android:id="@+id/find_to_do_activity"
-        android:onClick="startFindToDos" />
+        android:onClick="startFindToDo" />
 
     <Button
+        android:id="@+id/text_list_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/text_list_activity"
-        android:id="@+id/text_list_activity"
         android:onClick="startTextList" />
 
     <Button
+        android:id="@+id/checked_list_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/checked_list_activity"
-        android:id="@+id/checked_list_activity"
         android:onClick="startCheckedList" />
+
+    <Button
+        android:id="@+id/test_google_drive_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/test_google_drive_activity"
+        android:onClick="startTestGoogleDrive" />
 
 </LinearLayout>
 

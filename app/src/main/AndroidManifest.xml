@@ -17,7 +17,7 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".StartActivity"
+            android:name=".Start"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,10 +25,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RawFileActivity" />
-        <activity android:name=".FindToDoActivity" />
-        <activity android:name=".TextListActivity" />
-        <activity android:name=".CheckedListActivity"></activity>
+        <activity android:name=".RawFile" />
+        <activity android:name=".FindToDo" />
+        <activity android:name=".TextList" />
+        <activity android:name=".CheckedList" />
+        <activity android:name=".TestGoogleDrive"></activity>
     </application>
 
 </manifest>
