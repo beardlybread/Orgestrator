@@ -35,11 +35,11 @@
         android:onClick="startCheckedList" />
 
     <Button
-        android:id="@+id/test_google_drive_button"
+        android:id="@+id/drive_list_files_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/test_google_drive_activity"
-        android:onClick="startTestGoogleDrive" />
+        android:text="@string/drive_api_quickstart_activity"
+        android:onClick="startDriveAPIQuickstart" />
 
 </LinearLayout>
 

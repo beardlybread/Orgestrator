@@ -40,8 +40,8 @@ public class Start extends AppCompatActivity {
         startActivity(new Intent(this, TextList.class));
     }
 
-    public void startTestGoogleDrive (View v) {
-        startActivity(new Intent(this, TestGoogleDrive.class));
+    public void startDriveAPIQuickstart (View v) {
+        startActivity(new Intent(this, DriveAPIQuickstart.class));
     }
 
     private void loadTestFile () {

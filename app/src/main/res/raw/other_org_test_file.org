@@ -3,4 +3,110 @@ into the Orgestrator object and handled correctly.
 
 * TODO This item from the other file should be in the list.
   SCHEDULED: <2018-01-01 Mon>
-* DONE This completed item from the other file should be in the list too.
+* TODO This completed item from the other file should be in the list too.
+
+05-28 02:17:38.681 16112-16112/ W/System: ClassLoader referenced unknown path: /data/app/com.github.beardlybread.orgestrator-1/lib/arm64
+05-28 02:17:39.039 16112-16112/ W/System: ClassLoader referenced unknown path: /data/app/com.github.beardlybread.orgestrator-1/lib/arm64
+05-28 02:17:39.079 16112-16112/ I/FirebaseInitProvider: FirebaseApp initialization unsuccessful
+05-28 02:17:39.304 16112-16112/ I/art: Rejecting re-init on previously-failed class java.lang.Class<org.antlr.v4.runtime.tree.gui.TreeViewer>
+05-28 02:17:39.439 16112-16112/ W/art: Before Android 4.1, method android.graphics.PorterDuffColorFilter android.support.graphics.drawable.VectorDrawableCompat.updateTintFilter(android.graphics.PorterDuffColorFilter, android.content.res.ColorStateList, android.graphics.PorterDuff$Mode) would have incorrectly overridden the package-private method in android.graphics.drawable.Drawable
+05-28 02:17:39.498 16112-16148/ D/OpenGLRenderer: Use EGL_SWAP_BEHAVIOR_PRESERVED: true
+05-28 02:17:39.571 16112-16148/ I/Adreno: QUALCOMM build                   : 63c06b2, I8366cd0437
+                                          Build Date                       : 12/06/15
+                                          OpenGL ES Shader Compiler Version: XE031.05.13.02
+                                          Local Branch                     : mybranch17112971
+                                          Remote Branch                    : quic/LA.BF64.1.2.9_v2
+                                          Remote Branch                    : NONE
+                                          Reconstruct Branch               : NOTHING
+05-28 02:17:39.588 16112-16148/ I/OpenGLRenderer: Initialized EGL, version 1.4
+05-28 02:17:42.185 16112-16148/ D/OpenGLRenderer: endAllStagingAnimators on 0x7f67272400 (RippleDrawable) with handle 0x7f737da120
+05-28 02:17:43.816 16112-16112/ V/GoogleSignatureVerifier: com.google.android.gms signature not valid.  Found:
+
+05-28 02:17:44.018 16112-16225/ W/art: Unresolved exception class when finding catch block: com.google.android.gms.auth.GooglePlayServicesAvailabilityException
+05-28 02:17:44.020 16112-16225/ W/art: Unresolved exception class when finding catch block: com.google.android.gms.auth.UserRecoverableAuthException
+05-28 02:17:44.022 16112-16225/ W/art: Unresolved exception class when finding catch block: com.google.android.gms.auth.GoogleAuthException
+
+--------- beginning of crash
+05-28 02:17:44.025 16112-16225/ E/AndroidRuntime: FATAL EXCEPTION: AsyncTask #1
+  Process: com.github.beardlybread.orgestrator, PID: 16112
+  java.lang.RuntimeException: An error occurred while executing doInBackground()
+      at android.os.AsyncTask$3.done(AsyncTask.java:309)
+      at java.util.concurrent.FutureTask.finishCompletion(FutureTask.java:354)
+      at java.util.concurrent.FutureTask.setException(FutureTask.java:223)
+      at java.util.concurrent.FutureTask.run(FutureTask.java:242)
+      at android.os.AsyncTask$SerialExecutor$1.run(AsyncTask.java:234)
+      at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1113)
+      at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:588)
+      at java.lang.Thread.run(Thread.java:818)
+   Caused by: java.lang.NoClassDefFoundError: Failed resolution of: Lcom/google/android/gms/auth/GoogleAuthUtil;
+      at com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential.getToken(GoogleAccountCredential.java:255)
+      at com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential$RequestHandler.intercept(GoogleAccountCredential.java:279)
+      at com.google.api.client.http.HttpRequest.execute(HttpRequest.java:859)
+      at com.google.api.client.googleapis.services.AbstractGoogleClientRequest.executeUnparsed(AbstractGoogleClientRequest.java:419)
+      at com.google.api.client.googleapis.services.AbstractGoogleClientRequest.executeUnparsed(AbstractGoogleClientRequest.java:352)
+      at com.google.api.client.googleapis.services.AbstractGoogleClientRequest.execute(AbstractGoogleClientRequest.java:469)
+      at com.github.beardlybread.orgestrator.DriveAPIQuickstart$MakeRequestTask.getDataFromApi(DriveAPIQuickstart.java:359)
+      at com.github.beardlybread.orgestrator.DriveAPIQuickstart$MakeRequestTask.doInBackground(DriveAPIQuickstart.java:339)
+      at com.github.beardlybread.orgestrator.DriveAPIQuickstart$MakeRequestTask.doInBackground(DriveAPIQuickstart.java:319)
+      at android.os.AsyncTask$2.call(AsyncTask.java:295)
+      at java.util.concurrent.FutureTask.run(FutureTask.java:237)
+      at android.os.AsyncTask$SerialExecutor$1.run(AsyncTask.java:234) 
+      at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1113) 
+      at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:588) 
+      at java.lang.Thread.run(Thread.java:818) 
+  Caused by: java.lang.ClassNotFoundException: Didn't find class "com.google.android.gms.auth.GoogleAuthUtil" on path: DexPathList[[dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-support-annotations-23.4.0_13a53efdbd234c7e2e4985a5cab95e98e3a7cc90-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_9-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_8-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_7-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_6-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_5-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_4-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_3-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_2-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_1-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_0-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-pub.devrel-easypermissions-0.1.6_cfd7f57a81909ec66a0137010f743816bba4d242-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-jsr305-1.3.9_60517c58c6f3e6a0c1ade0b5938b61f00309e62f-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-jackson-core-2.1.3_f5ce932f04a7dab0556c1be5a7900d2a1ee73379-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-internal_impl-23.4.0_75127a246e586956d3a4cfc23ce42265ee9369fc-classes.dex", dex file "/data/data/com.g
+05-28 02:17:44.029 16112-16225/com.github.beardlybread.orgestrator D/Error: ERR: exClass=java.lang.ClassNotFoundException
+05-28 02:17:44.029 16112-16225/com.github.beardlybread.orgestrator D/Error: ERR: exMsg=Didn't find class "com.google.android.gms.auth.GoogleAuthUtil" on path: DexPathList[[dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-support-annotations-23.4.0_13a53efdbd234c7e2e4985a5cab95e98e3a7cc90-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_9-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_8-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_7-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_6-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_5-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_4-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_3-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_2-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_1-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_0-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-pub.devrel-easypermissions-0.1.6_cfd7f57a81909ec66a0137010f743816bba4d242-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-jsr305-1.3.9_60517c58c6f3e6a0c1ade0b5938b61f00309e62f-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-jackson-core-2.1.3_f5ce932f04a7dab0556c1be5a7900d2a1ee73379-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-internal_impl-23.4.0_75127a246e586956d3a4cfc23ce42265ee9369fc-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-guava-jdk5-13.0_53b3f9181019b6e0b6ba32d0330829dcef86947d-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-google-oauth-client-1.20.0_606ae9a5e3f05399df8bb2c9ee9470af07985ffd-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-google-http-client-jackson2-1.20.0_5f9d6abe574bb8cf23ed98ced69945af1c73daf4-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-google-http-client-android-1.20.0_93f377135c02976128f431a90febdfb0463bfdf3-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-google-http-client-1.20.0_992d4ae8ec4763e0451d8e882e28f9846b2201b7-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-google-api-services-drive-v3-rev6-1.20.0_a66b56ef614535b1582e75e5f44dd40895ba3a40-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-google-api-client-android-1.20.0_598b5471b94363c77e9ee8c0eac33cb6263f788b-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-google-api-client-1.20.0_5da20c4962301ae56f2ca852ff3b58cd8c071a4a-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-com.google.firebase-firebase-common-9.0.1_925f9ace32e868877fed423d29c6ef97f7425768-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-com.google.android.gms-play-services-tasks-9.0.1_40946e23f7b9d5e1cac46ae1560b09b2823b9ed7-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-com.google.android.gms-play-services-identity-9.0.1_9bf3d66e313db6e2cb2c6549bcdf493fb60b5de2-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-com.google.android.gms-play-services-basement-9.0.1_825a7a9d7edb6da31663b7a32cd14916
+05-28 02:17:44.031 16112-16225/com.github.beardlybread.orgestrator D/Error: ERR: file=BaseDexClassLoader.java
+05-28 02:17:44.032 16112-16225/com.github.beardlybread.orgestrator D/Error: ERR: class=dalvik.system.BaseDexClassLoader
+05-28 02:17:44.032 16112-16225/com.github.beardlybread.orgestrator D/Error: ERR: method=findClass line=56
+05-28 02:17:44.033 16112-16225/com.github.beardlybread.orgestrator D/Error: ERR: stack=java.lang.RuntimeException: An error occurred while executing doInBackground()
+                                                                                at android.os.AsyncTask$3.done(AsyncTask.java:309)
+                                                                                at java.util.concurrent.FutureTask.finishCompletion(FutureTask.java:354)
+                                                                                at java.util.concurrent.FutureTask.setException(FutureTask.java:223)
+                                                                                at java.util.concurrent.FutureTask.run(FutureTask.java:242)
+                                                                                at android.os.AsyncTask$SerialExecutor$1.run(AsyncTask.java:234)
+                                                                                at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1113)
+                                                                                at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:588)
+                                                                                at java.lang.Thread.run(Thread.java:818)
+                                                                             Caused by: java.lang.NoClassDefFoundError: Failed resolution of: Lcom/google/android/gms/auth/GoogleAuthUtil;
+                                                                                at com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential.getToken(GoogleAccountCredential.java:255)
+                                                                                at com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential$RequestHandler.intercept(GoogleAccountCredential.java:279)
+                                                                                at com.google.api.client.http.HttpRequest.execute(HttpRequest.java:859)
+                                                                                at com.google.api.client.googleapis.services.AbstractGoogleClientRequest.executeUnparsed(AbstractGoogleClientRequest.java:419)
+                                                                                at com.google.api.client.googleapis.services.AbstractGoogleClientRequest.executeUnparsed(AbstractGoogleClientRequest.java:352)
+                                                                                at com.google.api.client.googleapis.services.AbstractGoogleClientRequest.execute(AbstractGoogleClientRequest.java:469)
+                                                                                at com.github.beardlybread.orgestrator.DriveAPIQuickstart$MakeRequestTask.getDataFromApi(DriveAPIQuickstart.java:359)
+                                                                                at com.github.beardlybread.orgestrator.DriveAPIQuickstart$MakeRequestTask.doInBackground(DriveAPIQuickstart.java:339)
+                                                                                at com.github.beardlybread.orgestrator.DriveAPIQuickstart$MakeRequestTask.doInBackground(DriveAPIQuickstart.java:319)
+                                                                                at android.os.AsyncTask$2.call(AsyncTask.java:295)
+                                                                                at java.util.concurrent.FutureTask.run(FutureTask.java:237)
+                                                                                at android.os.AsyncTask$SerialExecutor$1.run(AsyncTask.java:234) 
+                                                                                at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1113) 
+                                                                                at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:588) 
+                                                                                at java.lang.Thread.run(Thread.java:818) 
+                                                                             Caused by: java.lang.ClassNotFoundException: Didn't find class "com.google.android.gms.auth.GoogleAuthUtil" on path: DexPathList[[dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-support-annotations-23.4.0_13a53efdbd234c7e2e4985a5cab95e98e3a7cc90-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_9-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_8-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_7-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_6-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_5-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_4-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_3-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_2-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_1-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-slice_0-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-pub.devrel-easypermissions-0.1.6_cfd7f57a81909ec66a0137010f743816bba4d242-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-jsr305-1.3.9_60517c58c6f3e6a0c1ade0b5938b61f00309e62f-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-jackson-core-2.1.3_f5ce932f04a7dab0556c1be5a7900d2a1ee73379-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-internal_impl-23.4.0_75127a246e586956d3a4cfc23ce42265ee9369fc-classes.dex", dex file "/data/data/com.github.beardlybread.orgestrator/files/instant-run/dex/slice-guava-jdk5-13.0_53b3f91810
+05-28 02:17:44.035 16112-16225/com.github.beardlybread.orgestrator D/Error: ERR: TOTAL BYTES WRITTEN: 40668
+05-28 02:17:44.157 16112-16148/com.github.beardlybread.orgestrator D/OpenGLRenderer: endAllStagingAnimators on 0x7f66ede800 (RippleDrawable) with handle 0x7f737e00c0
+05-28 02:17:44.409 16112-16112/com.github.beardlybread.orgestrator E/WindowManager: android.view.WindowLeaked: Activity com.github.beardlybread.orgestrator.DriveAPIQuickstart has leaked window com.android.internal.policy.PhoneWindow$DecorView{4726e34 V.E...... R......D 0,0-1026,304} that was originally added here
+                                                                                        at android.view.ViewRootImpl.<init>(ViewRootImpl.java:372)
+                                                                                        at android.view.WindowManagerGlobal.addView(WindowManagerGlobal.java:299)
+                                                                                        at android.view.WindowManagerImpl.addView(WindowManagerImpl.java:85)
+                                                                                        at android.app.Dialog.show(Dialog.java:319)
+                                                                                        at com.github.beardlybread.orgestrator.DriveAPIQuickstart$MakeRequestTask.onPreExecute(DriveAPIQuickstart.java:374)
+                                                                                        at android.os.AsyncTask.executeOnExecutor(AsyncTask.java:604)
+                                                                                        at android.os.AsyncTask.execute(AsyncTask.java:551)
+                                                                                        at com.github.beardlybread.orgestrator.DriveAPIQuickstart.getResultsFromApi(DriveAPIQuickstart.java:132)
+                                                                                        at com.github.beardlybread.orgestrator.DriveAPIQuickstart.chooseAccount(DriveAPIQuickstart.java:154)
+                                                                                        at com.github.beardlybread.orgestrator.DriveAPIQuickstart.getResultsFromApi(DriveAPIQuickstart.java:128)
+                                                                                        at com.github.beardlybread.orgestrator.DriveAPIQuickstart.access$200(DriveAPIQuickstart.java:46)
+                                                                                        at com.github.beardlybread.orgestrator.DriveAPIQuickstart$1.onClick(DriveAPIQuickstart.java:89)
+                                                                                        at android.view.View.performClick(View.java:5204)
+                                                                                        at android.view.View$PerformClick.run(View.java:21155)
+                                                                                        at android.os.Handler.handleCallback(Handler.java:739)
+                                                                                        at android.os.Handler.dispatchMessage(Handler.java:95)
+                                                                                        at android.os.Looper.loop(Looper.java:148)
+                                                                                        at android.app.ActivityThread.main(ActivityThread.java:5422)
+                                                                                        at java.lang.reflect.Method.invoke(Native Method)
+                                                                                        at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:726)
+                                                                                        at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:616)
