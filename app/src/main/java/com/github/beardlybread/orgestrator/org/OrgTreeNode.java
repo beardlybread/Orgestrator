@@ -5,6 +5,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.List;
 
 public abstract class OrgTreeNode extends OrgNode {
 
@@ -38,7 +39,7 @@ public abstract class OrgTreeNode extends OrgNode {
         return this.children.get(index);
     }
 
-    public ArrayList<OrgNode> getChildren () { return this.children; }
+    public List<OrgNode> getChildren () { return this.children; }
 
     public OrgText getText () { return this.text; }
 

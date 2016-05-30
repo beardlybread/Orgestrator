@@ -46,8 +46,13 @@ public class OrgEvent extends OrgNode {
 
     public void setClosed () {
         this.previous = this.current;
-        this.status = OrgEvent.CLOSED;
-        this.current = new OrgDate();
+        if (this.current == null || this.current.getRepeatType() == OrgDate.REPEAT.NONE) {
+            this.status = OrgEvent.CLOSED;
+            this.current = new OrgDate();
+        } else {
+            this.status = this.eventType;
+            this.current = this.current.next();
+        }
     }
 
     public void undoClosed () {

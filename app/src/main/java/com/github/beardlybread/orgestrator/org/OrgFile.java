@@ -6,6 +6,7 @@ import com.github.beardlybread.orgestrator.util.Predicate;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 public class OrgFile extends OrgParserBaseListener {
@@ -36,14 +37,14 @@ public class OrgFile extends OrgParserBaseListener {
     /** Return the contents of the OrgFile.
      * @return the raw contents of this object
      */
-    public ArrayList<OrgNode> getRoots () { return this.roots; }
+    public List<OrgNode> getRoots () { return this.roots; }
 
     /** Return a list of nodes matching the predicate.
      * @param pred an implementation of Predicate<> to filter the contents
      * @return a list of nodes matching the predicate defined in pred
      */
-    public ArrayList<OrgNode> search (Predicate<OrgNode> pred) {
-        ArrayList<OrgNode> out = new ArrayList<>();
+    public List<OrgNode> search (Predicate<OrgNode> pred) {
+        List<OrgNode> out = new ArrayList<>();
         for (OrgNode n: this.roots) {
             this.searchNode(n, pred, out);
         }
@@ -55,7 +56,7 @@ public class OrgFile extends OrgParserBaseListener {
      * @param predicate the filtering predicate
      * @param acc the accumulator
      */
-    private void searchNode (OrgNode node, Predicate<OrgNode> predicate, ArrayList<OrgNode> acc) {
+    private void searchNode (OrgNode node, Predicate<OrgNode> predicate, List<OrgNode> acc) {
         if (predicate.call(node))
             acc.add(node);
         if (node instanceof OrgTreeNode) {

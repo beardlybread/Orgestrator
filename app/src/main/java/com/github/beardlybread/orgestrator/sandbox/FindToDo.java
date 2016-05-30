@@ -1,15 +1,15 @@
-package com.github.beardlybread.orgestrator;
+package com.github.beardlybread.orgestrator.sandbox;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.github.beardlybread.orgestrator.R;
 import com.github.beardlybread.orgestrator.org.OrgNode;
 import com.github.beardlybread.orgestrator.org.OrgToDo;
 import com.github.beardlybread.orgestrator.org.Orgestrator;
-import com.github.beardlybread.orgestrator.util.Predicate;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class FindToDo extends AppCompatActivity {
 
@@ -22,7 +22,7 @@ public class FindToDo extends AppCompatActivity {
         setContentView(R.layout.activity_find_to_do);
     }
 
-    private void logThem (String tag, ArrayList<OrgNode> them) {
+    private void logThem (String tag, List<OrgNode> them) {
         for (OrgNode n: them) {
             Log.i(tag, ((OrgToDo) n).getText().toString());
         }

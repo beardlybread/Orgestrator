@@ -1,9 +1,10 @@
-package com.github.beardlybread.orgestrator;
+package com.github.beardlybread.orgestrator.sandbox;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.github.beardlybread.orgestrator.R;
 import com.github.beardlybread.orgestrator.org.OrgFile;
 import com.github.beardlybread.orgestrator.org.Orgestrator;
 

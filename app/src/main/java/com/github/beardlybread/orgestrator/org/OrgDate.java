@@ -5,6 +5,8 @@ import com.github.beardlybread.orgestrator.org.antlr.OrgParser;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,22 +14,13 @@ public class OrgDate extends GregorianCalendar {
 
     public class REPEAT {
         public static final int NONE = -1;
-
-        public static final int NEXT = 0;
-        public static final int NOW = 1;
-        public static final int NEXT_UNTIL_NOW = 2;
-
-        public static final int HOUR = 0;
-        public static final int DAY = 1;
-        public static final int WEEK = 2;
-        public static final int MONTH = 3;
-        public static final int YEAR = 4;
+        public static final int ONCE = 1;
+        public static final int FROM_NOW = 2;
+        public static final int UNTIL_NOW = 3;
     }
 
     public static final SimpleDateFormat DEFAULT_DATE_FORMAT =
             new SimpleDateFormat("yyyy/MM/dd");
-    public static final SimpleDateFormat DEFAULT_TIME_FORMAT =
-            new SimpleDateFormat("HH:mm");
     public static final SimpleDateFormat DEFAULT_DATETIME_FORMAT =
             new SimpleDateFormat("yyyy/MM/dd HH:mm");
 
@@ -36,7 +29,7 @@ public class OrgDate extends GregorianCalendar {
     public static final Pattern MATCH_REPEAT = Pattern.compile("([.+]?)\\+(\\d+)([hdwmy])");
 
     protected int repeatTime = -1;
-    protected int repeatUnit = REPEAT.NONE;
+    protected int repeatUnit = Calendar.HOUR_OF_DAY;
     protected int repeatType = REPEAT.NONE;
     protected boolean hasTime = false;
 
@@ -46,6 +39,8 @@ public class OrgDate extends GregorianCalendar {
         super();
         this.setWithContext(ctx);
     }
+
+    public int getRepeatType () { return this.repeatType; }
 
     public void setRepeat (int time, int unit, int type) {
         this.repeatTime = time;
@@ -74,39 +69,11 @@ public class OrgDate extends GregorianCalendar {
         if (ctx.REPEAT() != null) {
             Matcher r = MATCH_REPEAT.matcher(ctx.REPEAT().getText());
             if (r.matches()) {
-                switch (r.group(1)) {
-                    case "":
-                        this.repeatType = REPEAT.NEXT;
-                        break;
-                    case ".":
-                        this.repeatType = REPEAT.NOW;
-                        break;
-                    case "+":
-                        this.repeatType = REPEAT.NEXT_UNTIL_NOW;
-                        break;
-                    default:
-                        this.repeatType = REPEAT.NONE;
-                }
+                this.repeatType = (OrgDate.REPEAT_StringToInteger.containsKey(r.group(1)))
+                        ? OrgDate.REPEAT_StringToInteger.get(r.group(1)) : REPEAT.NONE;
                 this.repeatTime = Integer.parseInt(r.group(2));
-                switch (r.group(3)) {
-                    case "h":
-                        this.repeatUnit = REPEAT.HOUR;
-                        break;
-                    case "d":
-                        this.repeatUnit = REPEAT.DAY;
-                        break;
-                    case "w":
-                        this.repeatUnit = REPEAT.WEEK;
-                        break;
-                    case "m":
-                        this.repeatUnit = REPEAT.MONTH;
-                        break;
-                    case "y":
-                        this.repeatUnit = REPEAT.YEAR;
-                        break;
-                    default:
-                        this.repeatUnit = REPEAT.NONE;
-                }
+                this.repeatUnit = (OrgDate.REPEAT_StringToInteger.containsKey(r.group(3)))
+                        ? OrgDate.REPEAT_StringToInteger.get(r.group(3)) : REPEAT.NONE;
             }
         }
 
@@ -135,6 +102,72 @@ public class OrgDate extends GregorianCalendar {
     @Override
     public String toString () {
         return OrgDate.DEFAULT_DATETIME_FORMAT.format(this.getTime());
+    }
+
+    public boolean isToday () {
+        GregorianCalendar today = new GregorianCalendar();
+        return today.get(Calendar.YEAR) == this.get(Calendar.YEAR)
+                && today.get(Calendar.DAY_OF_YEAR) == this.get(Calendar.DAY_OF_YEAR);
+    }
+
+    public OrgDate today () {
+        OrgDate now = new OrgDate();
+        now.set(Calendar.HOUR_OF_DAY, 0);
+        now.set(Calendar.MINUTE, 0);
+        now.set(Calendar.MILLISECOND, 0);
+        return now;
+    }
+
+    public OrgDate next () {
+        OrgDate nextDate = null;
+        switch (this.repeatType) {
+            case REPEAT.ONCE:
+                nextDate = (OrgDate) this.clone();
+                nextDate.add(this.repeatUnit, this.repeatTime);
+                break;
+            case REPEAT.FROM_NOW:
+                nextDate = this.today();
+                nextDate.add(this.repeatUnit, this.repeatTime);
+                break;
+            case REPEAT.UNTIL_NOW:
+                nextDate = (OrgDate) this.clone();
+                OrgDate today = this.today();
+                while (nextDate.isToday() || today.compareTo(nextDate) > 0)
+                    nextDate.add(this.repeatUnit, this.repeatTime);
+                break;
+            case REPEAT.NONE:
+            default:
+                break;
+        }
+        return nextDate;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Helpers
+    ////////////////////////////////////////////////////////////////////////////////
+
+    private static Map<String, Integer> REPEAT_StringToInteger = new HashMap<>();
+    static {
+        REPEAT_StringToInteger.put("", REPEAT.ONCE);
+        REPEAT_StringToInteger.put(".", REPEAT.FROM_NOW);
+        REPEAT_StringToInteger.put("+", REPEAT.UNTIL_NOW);
+        REPEAT_StringToInteger.put("h", Calendar.HOUR_OF_DAY);
+        REPEAT_StringToInteger.put("d", Calendar.DAY_OF_YEAR);
+        REPEAT_StringToInteger.put("w", Calendar.WEEK_OF_YEAR);
+        REPEAT_StringToInteger.put("m", Calendar.MONTH);
+        REPEAT_StringToInteger.put("y", Calendar.YEAR);
+    }
+
+    private static Map<Integer, String> REPEAT_IntegerToString = new HashMap<>();
+    static {
+        REPEAT_IntegerToString.put(REPEAT.ONCE, "");
+        REPEAT_IntegerToString.put(REPEAT.FROM_NOW, ".");
+        REPEAT_IntegerToString.put(REPEAT.UNTIL_NOW, "+");
+        REPEAT_IntegerToString.put(Calendar.HOUR_OF_DAY, "h");
+        REPEAT_IntegerToString.put(Calendar.DAY_OF_YEAR, "d");
+        REPEAT_IntegerToString.put(Calendar.WEEK_OF_YEAR, "w");
+        REPEAT_IntegerToString.put(Calendar.MONTH, "m");
+        REPEAT_IntegerToString.put(Calendar.YEAR, "y");
     }
 
     private void dateString (StringBuilder sb) {
@@ -181,41 +214,9 @@ public class OrgDate extends GregorianCalendar {
     }
 
     private void repeatString (StringBuilder sb) {
-        switch (this.repeatType) {
-            case REPEAT.NOW:
-                sb.append(".");
-                break;
-            case REPEAT.NEXT_UNTIL_NOW:
-                sb.append("+");
-                break;
-            default:
-                break;
-        }
+        sb.append(OrgDate.REPEAT_IntegerToString.get(this.repeatType));
         sb.append("+").append(this.repeatTime);
-        switch (this.repeatUnit) {
-            case REPEAT.HOUR:
-                sb.append("h");
-                break;
-            case REPEAT.DAY:
-                sb.append("d");
-                break;
-            case REPEAT.WEEK:
-                sb.append("w");
-                break;
-            case REPEAT.MONTH:
-                sb.append("m");
-                break;
-            case REPEAT.YEAR:
-                sb.append("y");
-                break;
-            default:
-                break;
-        }
+        sb.append(OrgDate.REPEAT_IntegerToString.get(this.repeatUnit));
     }
 
-    public boolean isToday () {
-        GregorianCalendar today = new GregorianCalendar();
-        return today.get(Calendar.YEAR) == this.get(Calendar.YEAR)
-                && today.get(Calendar.DAY_OF_YEAR) == this.get(Calendar.DAY_OF_YEAR);
-    }
 }

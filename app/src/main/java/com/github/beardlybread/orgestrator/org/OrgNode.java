@@ -4,7 +4,6 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
 
 public abstract class OrgNode {
 

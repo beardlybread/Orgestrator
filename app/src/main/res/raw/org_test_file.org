@@ -36,15 +36,20 @@ object.
     CLOSED: [2016-05-26 Thu 01:27]
 *** DONE display date in list view
     CLOSED: [2016-05-25 Wed 16:24]
-*** TODO convenience methods for advancing repeatable OrgDate
-    DEADLINE: <2016-05-26 Thu>
-*** TODO convenience methods for advancing date in OrgToDo
-*** TODO make repeats adjust on checking complete/incomplete
+*** DONE convenience methods for advancing repeatable OrgDate
+    CLOSED: [2016-05-29 Sun 15:10] DEADLINE: <2016-05-26 Thu>
+*** DONE convenience methods for advancing date in OrgToDo
+    CLOSED: [2016-05-29 Sun 15:11]
+*** DONE make repeats adjust on checking complete/incomplete
+    CLOSED: [2016-05-29 Sun 15:11]
+*** TODO load an existing org file from Drive
+*** TODO save an existing org file to predefined Drive location
 ** Questions
 *** TODO should search return Adapter objects?
 *** TODO is it ok to leave OrgEvents as only children of OrgToDo? 
 *** TODO model-view abstraction at the Orgestrator object level?
 ** Features
+*** TODO separate complete and incomplete items, making both adjustable?
 *** TODO make OrgToDo list sortable/filterable by OrgDate
 *** TODO Empty lines should not split lists.
 *** TODO Justify columns of tables.
@@ -52,8 +57,6 @@ object.
 * Test
 ** DONE Finish writing this dummy file.
    CLOSED: [2016-05-11 Wed 12:19] DEADLINE: <2016-05-12 Thu>
-** TODO Set up a simple Activity to test this file.
-   DEADLINE: <2016-05-11 Wed>
 ** Level 2
 - a deer, a female deer
 - a drop of golden sun

@@ -3,11 +3,18 @@ package com.github.beardlybread.orgestrator;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.github.beardlybread.orgestrator.org.OrgFile;
 import com.github.beardlybread.orgestrator.org.Orgestrator;
+import com.github.beardlybread.orgestrator.sandbox.CheckedList;
+import com.github.beardlybread.orgestrator.sandbox.DriveAPIQuickstart;
+import com.github.beardlybread.orgestrator.sandbox.FindToDo;
+import com.github.beardlybread.orgestrator.sandbox.RawFile;
+import com.github.beardlybread.orgestrator.sandbox.TextList;
 
 import java.io.InputStream;
 
@@ -21,7 +28,19 @@ public class Start extends AppCompatActivity {
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.loadTestFile();
+        Toolbar tb = (Toolbar) findViewById(R.id.start_toolbar);
+        setSupportActionBar(tb);
         setContentView(R.layout.activity_start);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected (MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.start_menu_settings:
+                return true;
+            default:
+                return super.onOptionsItemSelected(menuItem);
+        }
     }
 
     public void startRawFile (View v) {

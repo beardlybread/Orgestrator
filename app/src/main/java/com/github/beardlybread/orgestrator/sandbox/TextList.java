@@ -1,4 +1,4 @@
-package com.github.beardlybread.orgestrator;
+package com.github.beardlybread.orgestrator.sandbox;
 
 import android.app.ListActivity;
 import android.view.View;

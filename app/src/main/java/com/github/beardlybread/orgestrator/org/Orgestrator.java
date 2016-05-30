@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Orgestrator {
 
@@ -32,8 +33,8 @@ public class Orgestrator {
     public IOException getError () { return this.err; }
     public OrgFile getFile (int index) { return this.data.get(index); }
 
-    public ArrayList<OrgNode> search (Predicate<OrgNode> predicate) {
-        ArrayList<OrgNode> out = new ArrayList<>();
+    public List<OrgNode> search (Predicate<OrgNode> predicate) {
+        List<OrgNode> out = new ArrayList<>();
         for (OrgFile f: this.data) {
             out.addAll(f.search(predicate));
         }

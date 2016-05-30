@@ -1,4 +1,4 @@
-package com.github.beardlybread.orgestrator;
+package com.github.beardlybread.orgestrator.sandbox;
 
 import android.Manifest;
 import android.accounts.AccountManager;
