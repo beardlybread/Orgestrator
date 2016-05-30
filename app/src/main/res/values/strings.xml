@@ -1,13 +1,12 @@
 <resources>
     <string name="app_name">Orgestrator</string>
-    <string name="find_to_do_activity">Log To-do Search</string>
-    <string name="raw_file_activity">Log Raw File Output</string>
-    <string name="text_list_activity">Plain Text To-do List</string>
-    <string name="checked_list_activity">Checked To-do List</string>
-    <string name="drive_api_quickstart_activity">Drive: List Files</string>
     <string name="preferences_google_drive_settings_title">Google Drive</string>
     <string name="preferences_use_google_drive_title">Use Google Drive</string>
     <string name="start_menu_settings_title">Settings</string>
+
+    <string name="default_to_do_item_path">default path</string>
+    <string name="default_to_do_item_date">default date</string>
+    <string name="default_to_do_item_message">default message</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

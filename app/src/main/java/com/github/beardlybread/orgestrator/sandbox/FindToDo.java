@@ -4,7 +4,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.github.beardlybread.orgestrator.R;
 import com.github.beardlybread.orgestrator.org.OrgNode;
 import com.github.beardlybread.orgestrator.org.OrgToDo;
 import com.github.beardlybread.orgestrator.org.Orgestrator;
@@ -19,7 +18,7 @@ public class FindToDo extends AppCompatActivity {
         Orgestrator org = Orgestrator.getInstance();
         logThem("complete", org.search(OrgToDo.complete));
         logThem("incomplete", org.search(OrgToDo.incomplete));
-        setContentView(R.layout.activity_find_to_do);
+        Log.e("whatever", FindToDo.this.getLocalClassName());
     }
 
     private void logThem (String tag, List<OrgNode> them) {

@@ -30,7 +30,6 @@ public class RawFile extends AppCompatActivity {
         } catch (IOException e) {
             Log.e("OrgFile.write()", "file failed to write or Writer failed to close");
         }
-        setContentView(R.layout.activity_raw_file);
     }
 
 }

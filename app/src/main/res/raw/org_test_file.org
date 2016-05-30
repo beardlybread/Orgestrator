@@ -48,12 +48,14 @@ object.
 *** TODO should search return Adapter objects?
 *** TODO is it ok to leave OrgEvents as only children of OrgToDo? 
 *** TODO model-view abstraction at the Orgestrator object level?
-** Features
+** Features/Bugs
 *** TODO separate complete and incomplete items, making both adjustable?
 *** TODO make OrgToDo list sortable/filterable by OrgDate
 *** TODO Empty lines should not split lists.
 *** TODO Justify columns of tables.
 *** TODO Add locale and timezone settings to dates.
+*** TODO Remove newline requirement for last line in file.
+*** TODO Add error handling to .util.
 * Test
 ** DONE Finish writing this dummy file.
    CLOSED: [2016-05-11 Wed 12:19] DEADLINE: <2016-05-12 Thu>

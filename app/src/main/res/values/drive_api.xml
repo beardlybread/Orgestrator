@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="drive_api_request_permissions">
+        Orgestrator needs to access your Google account for Drive access.
+    </string>
+
+    <string name="drive_api_error_title">Google Drive Error</string>
+
+    <string name="drive_api_request_google_play_services_error">
+        Connecting to Google Drive requires Google Play Services.
+        Please install Google Play Services on your device and
+        relaunch Orgestrator.
+    </string>
+
+</resources>

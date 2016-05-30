@@ -2,7 +2,6 @@ package com.github.beardlybread.orgestrator.ui;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -30,10 +29,6 @@ public class ToDoView extends LinearLayout {
 
     public ToDoView (Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-    }
-
-    public ToDoView (Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
     }
 
     public CheckBox getCheckBox () {
@@ -66,9 +61,6 @@ public class ToDoView extends LinearLayout {
         this.getCheckBox().toggle();
         this.todo.toggle();
         this.invalidate();
-        Log.d("ToDoView", "todo.getStatus: " + this.todo.getStatus());
-        Log.d("ToDoView", "todo.event: " + this.todo.getEvent().toString());
-        Log.d("ToDoView", "todo.eventType: " + this.todo.getEvent().getEventType());
     }
 
     @Override

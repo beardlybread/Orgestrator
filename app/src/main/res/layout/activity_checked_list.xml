@@ -6,9 +6,9 @@
     android:padding="10dp"
     tools:context=".sandbox.CheckedList">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/the_recycler_view"
-        android:scrollbars="vertical"
+    <fragment
+        android:name="com.github.beardlybread.orgestrator.ui.ToDoList"
+        android:id="@+id/to_do_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

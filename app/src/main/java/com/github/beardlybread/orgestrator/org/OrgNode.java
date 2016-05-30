@@ -8,7 +8,6 @@ import java.io.Writer;
 public abstract class OrgNode {
 
     protected OrgNode parent = null;
-    public final String type;
     public final int indent;
 
     private String cachedFullPath = null;
@@ -18,20 +17,14 @@ public abstract class OrgNode {
     ////////////////////////////////////////////////////////////////////////////
 
     public OrgNode () {
-        String type = this.getClass().getName();
-        this.type = type.substring(type.lastIndexOf(".") + 1);
         this.indent = 0;
     }
 
     public OrgNode (int indent) {
-        String type = this.getClass().getName();
-        this.type = type.substring(type.lastIndexOf(".") + 1);
         this.indent = indent;
     }
 
     public OrgNode (TerminalNode indent) {
-        String type = this.getClass().getName();
-        this.type = type.substring(type.lastIndexOf(".") + 1);
         this.indent = indent == null ? 0 : indent.getText().length();
     }
 
@@ -67,7 +60,7 @@ public abstract class OrgNode {
 
     public boolean isType (String... name) {
         for (String t: name) {
-            if (this.type.equals(t))
+            if (this.getClass().getSimpleName().equals(t))
                 return true;
         }
         return false;

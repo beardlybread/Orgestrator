@@ -112,7 +112,11 @@ public class DriveAPIQuickstart extends Activity
                 .setBackOff(new ExponentialBackOff());
     }
 
-
+    @Override
+    protected void onDestroy () {
+        mProgress.dismiss();
+        super.onDestroy();
+    }
 
     /**
      * Attempt to call the API, after verifying that all the preconditions are

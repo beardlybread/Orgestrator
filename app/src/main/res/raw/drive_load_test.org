@@ -1,0 +1,4 @@
+This file should be put in a folder named org-test in Drive.
+
+* TODO Verify that loading a file works.
+

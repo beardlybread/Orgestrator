@@ -2,6 +2,7 @@ package com.github.beardlybread.orgestrator.ui;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.github.beardlybread.orgestrator.BuildConfig;
@@ -12,7 +13,8 @@ import com.github.beardlybread.orgestrator.org.OrgToDo;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder> {
+public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder>
+        implements View.OnClickListener {
 
     private ArrayList<OrgToDo> items = null;
 
@@ -35,6 +37,7 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder (ViewHolder holder, int position) {
         ToDoView v = holder.view;
+        v.setOnClickListener(this);
         v.setToDo(this.get(position));
         v.invalidate();
     }
@@ -55,4 +58,10 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder> {
             this.view = v;
         }
     }
+
+    @Override
+    public void onClick (View v) {
+        ((ToDoView) v).toggle();
+    }
+
 }
