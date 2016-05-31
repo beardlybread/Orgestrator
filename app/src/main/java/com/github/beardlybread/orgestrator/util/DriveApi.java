@@ -21,13 +21,13 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
-import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -53,16 +53,27 @@ public class DriveApi extends Fragment {
                 .setBackOff(new ExponentialBackOff());
     }
 
-    private void getResultsFromApi () {
+    public String getOrgTestFolder () {
         if (!this.isGooglePlayServicesAvailable()) {
             this.acquireGooglePlayServices();
         } else if (this.credential.getSelectedAccountName() == null) {
             this.chooseAccount();
         } else if (!this.isDeviceOnline()) {
-            // no network connection
+            Log.e("DriveApi", "no network connection");
         } else {
-            new MakeRequest(this.credential).execute();
+            DoRequest<String> request =
+                new DoRequest<>(this.credential, DriveApi.orgTestFolder);
+            request.execute();
+            try {
+                return request.get(10, TimeUnit.SECONDS);
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            } catch (TimeoutException e) {
+                Log.e("DriveApi", "request for Org folder timed out");
+                e.printStackTrace();
+            }
         }
+        return null;
     }
 
     private boolean isGooglePlayServicesAvailable () {
@@ -90,7 +101,6 @@ public class DriveApi extends Fragment {
                     .getString(DriveApi.PREF_ACCOUNT_NAME, null);
             if (accountName != null) {
                 this.credential.setSelectedAccountName(accountName);
-                this.getResultsFromApi();
             } else {
                 startActivityForResult(
                         this.credential.newChooseAccountIntent(),
@@ -118,43 +128,33 @@ public class DriveApi extends Fragment {
     // Request Logic
     ////////////////////////////////////////////////////////////////////////////////
 
-    interface Request {
-        List<String> call (MakeRequest request)
-                throws IOException;
+    interface Request<T> {
+        T call (DoRequest doRequest) throws IOException;
     }
 
-    public static final DriveApi.Request quickStart = new Request() {
+    public static final DriveApi.Request<String> orgTestFolder = new Request<String>() {
         @Override
-        public List<String> call(MakeRequest request)
-                throws IOException {
-            // Get a list of up to 10 files.
-            List<String> fileInfo = new ArrayList<>();
-            FileList result = request.service.files().list()
-                    .setPageSize(10)
+        public String call (DoRequest doRequest) throws IOException {
+            FileList result = doRequest.service.files().list()
+                    .setSpaces("drive")
+                    .setQ("mimeType='application/vnd.google-apps.folder" +
+                            " and trashed=false and name='org-test'")
+                    .setFields("nextPageToken, files(id)")
                     .execute();
-            List<File> files = result.getFiles();
-            if (files != null) {
-                for (File file : files) {
-                    fileInfo.add(String.format("%s (%s)\n",
-                            file.getName(), file.getId()));
-                }
-            }
-            return fileInfo;
+            if (result.getFiles().size() > 0)
+                return result.getFiles().get(0).getId();
+            return null;
         }
     };
 
-    public class MakeRequest extends AsyncTask<Void, Void, List<String>> {
+    public class DoRequest<T> extends AsyncTask<Void, Void, T> {
 
         private Drive service = null;
-        private DriveApi.Request request = null;
+        private DriveApi.Request<T> request = null;
         private Exception lastError = null;
         private ProgressDialog progress = null;
 
-        public MakeRequest (GoogleAccountCredential credential) {
-            this(credential, DriveApi.quickStart);
-        }
-
-        public MakeRequest (GoogleAccountCredential credential, DriveApi.Request request) {
+        public DoRequest(GoogleAccountCredential credential, DriveApi.Request<T> request) {
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
             JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
             this.service = new com.google.api.services.drive.Drive.Builder(
@@ -165,7 +165,7 @@ public class DriveApi extends Fragment {
         }
 
         @Override
-        protected List<String> doInBackground (Void... params) {
+        protected T doInBackground (Void... params) {
             try {
                 return this.request.call(this);
             } catch (Exception e) {
@@ -183,7 +183,7 @@ public class DriveApi extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(List<String> output) {
+        protected void onPostExecute(T output) {
             this.progress.dismiss();
         }
 
@@ -191,7 +191,7 @@ public class DriveApi extends Fragment {
         protected void onCancelled() {
             this.progress.dismiss();
             if (this.lastError != null) {
-                Log.e("MakeRequest", this.lastError.getMessage());
+                Log.e("DoRequest", this.lastError.getMessage());
             }
         }
     }

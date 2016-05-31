@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_to_do_item_path">default path</string>
+    <string name="default_to_do_item_date">default date</string>
+    <string name="default_to_do_item_message">default message</string>
+</resources>

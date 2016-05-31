@@ -42,6 +42,9 @@ object.
     CLOSED: [2016-05-29 Sun 15:11]
 *** DONE make repeats adjust on checking complete/incomplete
     CLOSED: [2016-05-29 Sun 15:11]
+*** DONE split string resources into meaningful files
+    CLOSED: [2016-05-30 Mon 17:08]
+*** TODO write a sandbox activity for DriveApi fragment
 *** TODO load an existing org file from Drive
 *** TODO save an existing org file to predefined Drive location
 ** Questions

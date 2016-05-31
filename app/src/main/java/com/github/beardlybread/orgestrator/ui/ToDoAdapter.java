@@ -22,7 +22,7 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder>
         this.items = new ArrayList<>();
         for (OrgNode todo: todos) {
             if (BuildConfig.DEBUG && !todo.isType("OrgToDo"))
-                throw new ClassCastException("unexpected class: " + todo.type);
+                throw new ClassCastException("unexpected class: " + todo.getClass().getSimpleName());
             this.items.add((OrgToDo) todo);
         }
     }
