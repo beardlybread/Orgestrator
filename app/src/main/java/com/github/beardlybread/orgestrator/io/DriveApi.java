@@ -65,15 +65,20 @@ public class DriveApi extends AppCompatActivity
     private GoogleAccountCredential credential;
     private int opType = DriveApi.INVALID;
     private byte[] opBody = null;
+    private Request request = null;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setContentView(R.layout.activity_drive_api);
         this.credential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(DriveApi.SCOPE))
                 .setBackOff(new ExponentialBackOff());
+    }
 
+    @Override
+    protected void onStart () {
+        super.onStart();
         Intent intent = getIntent();
         this.opType = intent.getIntExtra(DriveApi.OP_TYPE, DriveApi.INVALID);
         this.opBody = intent.getByteArrayExtra(DriveApi.OP_BODY);
@@ -84,6 +89,9 @@ public class DriveApi extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch(requestCode) {
+            case REQUEST_PERMISSION_GET_ACCOUNTS:
+                Log.v("DriveApi", "get accounts appears in onActivityResult");
+                break;
             case REQUEST_GOOGLE_PLAY_SERVICES:
                 if (resultCode != RESULT_OK) {
                     this.showErrorDialog(new Exception(
@@ -116,25 +124,25 @@ public class DriveApi extends AppCompatActivity
     }
 
     public void makeRequest () {
-        Request request = null;
-        switch (this.opType) {
-            case DriveApi.QUERY:
-                request = this.queryRequest(new String(this.opBody));
-                break;
-            case DriveApi.DOWNLOAD:
-                request = this.downloadRequest(new String(this.opBody));
-                break;
-            case DriveApi.UPLOAD:
-                request = this.uploadRequest(new String(this.opBody));
-                break;
-            case DriveApi.INVALID:
-            default:
-                break;
+        if (this.request == null) {
+            switch (this.opType) {
+                case DriveApi.QUERY:
+                    this.request = this.queryRequest(new String(this.opBody));
+                    break;
+                case DriveApi.DOWNLOAD:
+                    this.request = this.downloadRequest(new String(this.opBody));
+                    break;
+                case DriveApi.UPLOAD:
+                    this.request = this.uploadRequest(new String(this.opBody));
+                    break;
+                case DriveApi.INVALID:
+                default:
+                    break;
+            }
         }
         try {
-            if (request == null)
+            if (this.request == null)
                 throw new DriveApi.InvalidOpBody("An invalid Drive operation was sent.");
-            Log.d("DriveApi", "in makeRequest, request not null");
             if (!this.isGooglePlayServicesAvailable()) {
                 this.acquireGooglePlayServices();
             } else if (this.credential.getSelectedAccountName() == null) {
@@ -142,7 +150,7 @@ public class DriveApi extends AppCompatActivity
             } else if (this.deviceOffline()) {
                 throw new Exception("No network connection available");
             } else {
-                (new MakeRequest(request)).execute();
+                (new MakeRequest(this.request)).execute();
             }
         } catch (Exception e) {
             this.showErrorDialog(e);
