@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="drive_api_busy">Talking to Google Drive...</string>
+
     <string name="drive_api_request_permissions">
         Orgestrator needs to access your Google account for Drive access.
     </string>
