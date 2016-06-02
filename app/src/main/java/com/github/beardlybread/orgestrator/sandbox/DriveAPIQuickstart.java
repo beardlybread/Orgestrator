@@ -13,7 +13,6 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,12 +30,13 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.ExponentialBackOff;
+import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -133,7 +133,8 @@ public class DriveAPIQuickstart extends Activity
         } else if (! isDeviceOnline()) {
             mOutputText.setText("No network connection available.");
         } else {
-            new MakeRequestTask(mCredential).execute();
+            new MakeRequestTask(mCredential, this.query("trashed=false and 'root' in parents"))
+                    .execute();
         }
     }
 
@@ -316,61 +317,67 @@ public class DriveAPIQuickstart extends Activity
         dialog.show();
     }
 
+    interface Request {
+        byte[] call (MakeRequestTask makeRequestTask) throws IOException;
+    }
+
+    public Request query (final String queryString) {
+        return new Request() {
+            @Override
+            public byte[] call (MakeRequestTask makeRequestTask)
+                    throws IOException {
+                ByteArrayOutputStream fileInfo = new ByteArrayOutputStream();
+                FileList result = makeRequestTask.getService().files().list()
+                        .setQ(queryString)
+                        .execute();
+                List<File> files = result.getFiles();
+                if (files != null) {
+                    for (File file : files) {
+                        fileInfo.write(file.getName().getBytes());
+                        fileInfo.write('\t');
+                        fileInfo.write(file.getId().getBytes());
+                        fileInfo.write('\n');
+                    }
+                }
+                return fileInfo.toByteArray();
+            }
+        };
+    }
+
     /**
      * An asynchronous task that handles the Drive API call.
      * Placing the API calls in their own task ensures the UI stays responsive.
      */
-    private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
+    private class MakeRequestTask extends AsyncTask<Void, Void, byte[]> {
         private com.google.api.services.drive.Drive mService = null;
+        private Request mRequest = null;
         private Exception mLastError = null;
 
-        public MakeRequestTask(GoogleAccountCredential credential) {
+        public MakeRequestTask(GoogleAccountCredential credential, Request request) {
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
             JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
             mService = new com.google.api.services.drive.Drive.Builder(
                     transport, jsonFactory, credential)
                     .setApplicationName("Drive API Android Quickstart")
                     .build();
+            mRequest = request;
         }
 
+        public Drive getService () { return mService; }
         /**
          * Background task to call Drive API.
          * @param params no parameters needed for this task.
          */
         @Override
-        protected List<String> doInBackground(Void... params) {
+        protected byte[] doInBackground(Void... params) {
             try {
-                return getDataFromApi();
+                return mRequest.call(this);
             } catch (Exception e) {
                 mLastError = e;
                 cancel(true);
                 return null;
             }
         }
-
-        /**
-         * Fetch a list of up to 10 file names and IDs.
-         * @return List of Strings describing files, or an empty list if no files
-         *         found.
-         * @throws IOException
-         */
-        private List<String> getDataFromApi() throws IOException {
-            // Get a list of up to 10 files.
-            List<String> fileInfo = new ArrayList<>();
-            FileList result = mService.files().list()
-                    .setPageSize(10)
-                    //.setFields("nextPageToken, items(id, name)")
-                    .execute();
-            List<File> files = result.getFiles();
-            if (files != null) {
-                for (File file : files) {
-                    fileInfo.add(String.format("%s (%s)\n",
-                            file.getName(), file.getId()));
-                }
-            }
-            return fileInfo;
-        }
-
 
         @Override
         protected void onPreExecute() {
@@ -379,13 +386,15 @@ public class DriveAPIQuickstart extends Activity
         }
 
         @Override
-        protected void onPostExecute(List<String> output) {
+        protected void onPostExecute(byte[] output) {
             mProgress.hide();
-            if (output == null || output.size() == 0) {
+            if (output == null || output.length == 0) {
                 mOutputText.setText("No results returned.");
             } else {
-                output.add(0, "Data retrieved using the Drive API:");
-                mOutputText.setText(TextUtils.join("\n", output));
+                StringBuilder sb = new StringBuilder();
+                sb.append("Data retrieved using the Drive API:\n");
+                sb.append(new String(output));
+                mOutputText.setText(sb.toString());
             }
         }
 

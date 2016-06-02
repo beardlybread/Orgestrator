@@ -5,4 +5,5 @@
     <string name="text_list_activity">Plain Text To-do List</string>
     <string name="checked_list_activity">Checked To-do List</string>
     <string name="drive_api_quickstart_activity">Drive: List Files</string>
+    <string name="drive_org_folder_id">Drive: Get org-test folder id</string>
 </resources>

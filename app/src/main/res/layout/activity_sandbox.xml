@@ -51,5 +51,12 @@
         android:text="@string/drive_api_quickstart_activity"
         android:onClick="startDriveAPIQuickstart" />
 
+    <Button
+        android:id="@+id/drive_org_folder_id_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/drive_org_folder_id"
+        android:onClick="startDriveOrgFolderId" />
+
 </LinearLayout>
 

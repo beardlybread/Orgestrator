@@ -57,6 +57,10 @@ public class Sandbox extends AppCompatActivity {
         startActivity(new Intent(this, DriveAPIQuickstart.class));
     }
 
+    public void startDriveOrgFolderId (View v) {
+        startActivity(new Intent(this, DriveOrgFolderId.class));
+    }
+
     private void loadTestFile () {
         Orgestrator org = Orgestrator.getInstance();
         if (org.isEmpty()) {

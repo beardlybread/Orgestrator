@@ -31,6 +31,8 @@
         <activity android:name=".sandbox.CheckedList" />
         <activity android:name=".sandbox.DriveAPIQuickstart" />
         <activity android:name=".sandbox.Sandbox" />
+        <activity android:name=".sandbox.DriveOrgFolderId" />
+        <activity android:name=".io.DriveApi"></activity>
     </application>
 
 </manifest>
