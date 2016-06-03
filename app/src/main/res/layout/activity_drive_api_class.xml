@@ -15,7 +15,7 @@
         android:id="@+id/drive_api_class_get_text_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/drive_api_class_activity"
+        android:text="@string/sandbox_drive_api_class"
         android:onClick="getTestFolderContents" />
 
     <TextView

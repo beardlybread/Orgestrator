@@ -26,13 +26,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".sandbox.RawFile" />
-        <activity android:name=".sandbox.FindToDo" />
-        <activity android:name=".sandbox.TextList" />
         <activity android:name=".sandbox.CheckedList" />
-        <activity android:name=".sandbox.DriveAPIQuickstart" />
         <activity android:name=".sandbox.Sandbox" />
-        <activity android:name=".sandbox.DriveOrgFolderId" />
-        <activity android:name=".sandbox.DriveApiActivity" />
         <activity android:name=".sandbox.DriveApiClassActivity"></activity>
     </application>
 

@@ -41,24 +41,8 @@ public class Sandbox extends AppCompatActivity {
         startActivity(new Intent(this, RawFile.class));
     }
 
-    public void startFindToDo (View v) {
-        startActivity(new Intent(this, FindToDo.class));
-    }
-
     public void startCheckedList (View v) {
         startActivity(new Intent(this, CheckedList.class));
-    }
-
-    public void startTextList (View v) {
-        startActivity(new Intent(this, TextList.class));
-    }
-
-    public void startDriveAPIQuickstart (View v) {
-        startActivity(new Intent(this, DriveAPIQuickstart.class));
-    }
-
-    public void startDriveOrgFolderId (View v) {
-        startActivity(new Intent(this, DriveOrgFolderId.class));
     }
 
     public void startDriveApiClassActivity (View v) {

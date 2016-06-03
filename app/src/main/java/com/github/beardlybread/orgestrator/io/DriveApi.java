@@ -47,13 +47,24 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
 
     private static final String[] SCOPE = {DriveScopes.DRIVE};
 
+    private static final String ERROR_TITLE = "Google Drive Error";
+    private static final String ERROR_OFFLINE =
+            "No network connection was found. Please confirm your device is connected.";
+    private static final String ERROR_REQUEST_GOOGLE_PLAY = "" +
+            "Connecting to Google Drive requires Google Play Services. Please install Google " +
+            "Play Services on your device and relaunch this app.";
+    private static final String REQUEST_RATIONALE =
+            "This app needs to access your Google account to talk to Google Drive.";
+
     ////////////////////////////////////////////////////////////////////////////////
     // Fields
     ////////////////////////////////////////////////////////////////////////////////
 
+    private static DriveApi instance = null;
+    private boolean initialized = false;
+
     private Activity activity = null;
     private GoogleAccountCredential credential = null;
-    private boolean initialized = false;
 
     private MakeRequest lastRequest = null;
 
@@ -62,8 +73,6 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
     ////////////////////////////////////////////////////////////////////////////////
 
     private DriveApi () {}
-
-    private static DriveApi instance = null;
 
     /** DriveApi.initialize(Activity) must be called explicitly first.
      *
@@ -99,8 +108,7 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
             } else if (this.credential.getSelectedAccountName() == null) {
                 this.chooseAccount();
             } else if (this.deviceIsOffline()) {
-                this.showErrorDialog(new Exception(
-                        this.activity.getString(R.string.drive_api_offline_error)));
+                this.showErrorDialog(new Exception(DriveApi.ERROR_OFFLINE));
             } else {
                 this.initialized = true;
             }
@@ -119,8 +127,7 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
     public void onActivityResult (int requestCode, int resultCode, Intent data) {
         if (requestCode == DriveApi.REQUEST_GOOGLE_PLAY_SERVICES) {
             if (resultCode != Activity.RESULT_OK) {
-                this.showErrorDialog(new Exception(this.activity.getString(
-                        R.string.drive_api_request_google_play_error)));
+                this.showErrorDialog(new Exception(DriveApi.ERROR_REQUEST_GOOGLE_PLAY));
             } else {
                 this.initialize();
             }
@@ -278,7 +285,7 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
         } else {
             EasyPermissions.requestPermissions(
                     this,
-                    this.activity.getString(R.string.drive_api_request_rationale),
+                    DriveApi.REQUEST_RATIONALE,
                     DriveApi.REQUEST_PERMISSION_GET_ACCOUNTS,
                     Manifest.permission.GET_ACCOUNTS);
         }
@@ -331,7 +338,7 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
         e.printStackTrace();
         Log.e(tag, "--- END: " + e.getMessage());
         (new AlertDialog.Builder(this.activity.getApplicationContext()))
-                .setTitle(this.activity.getString(R.string.drive_api_error_title))
+                .setTitle(DriveApi.ERROR_TITLE)
                 .setMessage(e.getMessage())
                 .create().show();
     }

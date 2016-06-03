@@ -83,24 +83,20 @@ public class DriveApiClassActivity extends AppCompatActivity {
             }
 
             @Override
-            public void before(DriveApi.MakeRequest makeRequest) {
-
-            }
+            public void before(DriveApi.MakeRequest makeRequest) {}
 
             @Override
             public void after(DriveApi.MakeRequest makeRequest, byte[] output) {
                 folderId = new String(output);
                 if (folderId.length() > 0 && andFolderContents) {
-                    DriveApi.MakeRequest r = DriveApi.getInstance()
-                            .new MakeRequest(testFolderRequest(folderId));
-                    r.execute();
+                    DriveApi.getInstance()
+                            .new MakeRequest(testFolderRequest(folderId))
+                            .execute();
                 }
             }
 
             @Override
-            public void cancelled(DriveApi.MakeRequest makeRequest) {
-
-            }
+            public void cancelled(DriveApi.MakeRequest makeRequest) {}
         };
     }
 
@@ -108,9 +104,11 @@ public class DriveApiClassActivity extends AppCompatActivity {
         return new DriveApi.Request() {
             @Override
             public byte[] call(DriveApi.MakeRequest makeRequest) throws IOException {
+                if (folderId == null)
+                    return null;
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 FileList result = makeRequest.getService().files().list()
-                        .setQ(String.format(FOLDER_CONTENTS_QUERY_FORMAT, id))
+                        .setQ(String.format(FOLDER_CONTENTS_QUERY_FORMAT, folderId))
                         .execute();
                 List<File> files = result.getFiles();
                 if (files != null) {

@@ -20,49 +20,21 @@
         android:id="@+id/raw_file_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/raw_file_activity"
+        android:text="@string/sandbox_raw_file_activity"
         android:onClick="startRawFile" />
-
-    <Button
-        android:id="@+id/find_to_do_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/find_to_do_activity"
-        android:onClick="startFindToDo" />
-
-    <Button
-        android:id="@+id/text_list_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/text_list_activity"
-        android:onClick="startTextList" />
 
     <Button
         android:id="@+id/checked_list_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/checked_list_activity"
+        android:text="@string/sandbox_checked_list_activity"
         android:onClick="startCheckedList" />
-
-    <Button
-        android:id="@+id/drive_list_files_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/drive_api_quickstart_activity"
-        android:onClick="startDriveAPIQuickstart" />
-
-    <Button
-        android:id="@+id/drive_org_folder_id_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/drive_org_folder_id"
-        android:onClick="startDriveOrgFolderId" />
 
     <Button
         android:id="@+id/drive_api_class_activity_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/drive_api_class_activity"
+        android:text="@string/sandbox_drive_api_class"
         android:onClick="startDriveApiClassActivity" />
 
 </LinearLayout>
