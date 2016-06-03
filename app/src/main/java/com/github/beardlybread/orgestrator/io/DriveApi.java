@@ -1,3 +1,8 @@
+/*
+ * Borrowed very heavily from:
+ *  https://developers.google.com/drive/v3/web/quickstart/android#step_5_setup_the_sample
+ */
+
 package com.github.beardlybread.orgestrator.io;
 
 import android.Manifest;
@@ -19,6 +24,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
+import com.google.api.client.http.AbstractInputStreamContent;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -28,8 +34,10 @@ import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -95,6 +103,8 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
         DriveApi.instance.initialize();
     }
 
+    /** Set up credential and Google Play Services, and choose Google account.
+     */
     private void initialize () {
         if (!this.initialized) {
             if (this.credential == null) {
@@ -117,12 +127,12 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
 
     /** Hook into the Intents sent to initialize Google Drive.
      *
-     * For DriveApi to work correctly, the containing activity that invokes the requests must call
+     * For DriveApi to work correctly, the containing activity that uses DriveApi must call
      * this method in its onActivityResult implementation.
      *
-     * @param requestCode indicates the data source
-     * @param resultCode indicates whether the action was successful
-     * @param data holds necessary data returned from the action
+     * @param requestCode indicates the data source.
+     * @param resultCode indicates whether the action was successful.
+     * @param data holds necessary data returned from the action.
      */
     public void onActivityResult (int requestCode, int resultCode, Intent data) {
         if (requestCode == DriveApi.REQUEST_GOOGLE_PLAY_SERVICES) {
@@ -157,6 +167,14 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
     // Request logic
     ////////////////////////////////////////////////////////////////////////////////
 
+    public MakeRequest getLastRequest () { return this.lastRequest; }
+
+    /** Create a generic Google Drive query request without extra callbacks.
+     *
+     * @param query is a Drive...List.setQ valid string defining the query.
+     *              docs: https://developers.google.com/drive/v3/web/search-parameters
+     * @return a Request object to feed to a MakeRequest task.
+     */
     public static Request queryRequest (final String query) {
         return new Request() {
             @Override
@@ -179,26 +197,118 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
 
             @Override
             public void before(MakeRequest makeRequest) {}
-
             @Override
             public void after(MakeRequest makeRequest, byte[] output) {}
-
             @Override
             public void cancelled(MakeRequest makeRequest) {}
         };
     }
 
-    public Request downloadRequest (final String id) { return null; }
+    /** Create a generic Google Drive download request without extra callbacks.
+     *
+     * @param id uniquely identifies the resource to download.
+     * @return a Request object to feed to a MakeRequest task.
+     */
+    public static Request downloadRequest (final String id) {
+        return new Request() {
+            @Override
+            public byte[] call(MakeRequest makeRequest) throws IOException {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                makeRequest.getService().files().get(id)
+                        .executeMediaAndDownloadTo(out);
+                return out.toByteArray();
+            }
 
-    public Request uploadRequest (final byte[] data, final String id) { return null; }
+            @Override
+            public void before(MakeRequest makeRequest) {}
+            @Override
+            public void after(MakeRequest makeRequest, byte[] output) {}
+            @Override
+            public void cancelled(MakeRequest makeRequest) {}
+        };
+    }
 
+    /** Create a generic Google Drive upload request without extra callbacks.
+     *
+     * @param data is a byte array containing the data to upload.
+     * @param id uniquely identifies the resource to upload.
+     * @return a Request object to feed to a MakeRequest task.
+     */
+    public Request uploadRequest (byte[] data, final String id) {
+        final ByteArrayInputStream content = new ByteArrayInputStream(data);
+        final long dataLength = data.length;
+        return new Request() {
+            @Override
+            public byte[] call(MakeRequest makeRequest) throws IOException {
+                makeRequest.getService().files().update(id, null,
+                        new AbstractInputStreamContent(null) {
+                    @Override
+                    public InputStream getInputStream () throws IOException {
+                        return content;
+                    }
+
+                    @Override
+                    public long getLength () throws IOException {
+                        return dataLength;
+                    }
+
+                    @Override
+                    public boolean retrySupported () {
+                        return false;
+                    }
+                }).execute();
+                return null;
+            }
+
+            @Override
+            public void before (MakeRequest makeRequest) {}
+            @Override
+            public void after (MakeRequest makeRequest, byte[] output) {}
+            @Override
+            public void cancelled (MakeRequest makeRequest) {}
+        };
+    }
+
+    /** This interface plugs into a MakeRequest task to define its behavior.
+     */
     public interface Request {
+        /** A MakeRequest task invokes this method in the background.
+         *
+         * @param makeRequest is a back reference to the calling MakeRequest object.
+         * @return a byte array (or null) containing the request response.
+         * @throws IOException if something goes wrong accessing Google Drive.
+         */
         byte[] call (MakeRequest makeRequest) throws IOException;
+
+        /** This method is called before the task begins.
+         *
+         * @param makeRequest is a back reference to the calling MakeRequest object.
+         */
         void before (MakeRequest makeRequest);
+
+        /** This method is called after the task completes successfully.
+         *
+         * @param makeRequest is a back reference to the calling MakeRequest object.
+         * @param output holds the request response in a byte array.
+         */
         void after (MakeRequest makeRequest, byte[] output);
+
+        /** This method is called if a task fails or is cancelled.
+         *
+         * @param makeRequest is a back reference to the calling MakeRequest object.
+         */
         void cancelled (MakeRequest makeRequest);
     }
 
+    /** MakeRequest is an AsyncTask designed to talk to Google Drive's API.
+     *
+     * The DriveApi.Request passed to the constructor describes the actions that the instantiated
+     * task will take at each stage of its lifecycle.
+     *
+     * Every time a MakeRequest is .execute()d, it will be accessible in the DriveApi
+     * object with DriveApi.getLastRequest(). This is true regardless of whether it completes
+     * successfully or not.
+     */
     public class MakeRequest extends AsyncTask<Void, Void, byte[]> {
 
         private Drive service = null;
@@ -318,8 +428,6 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
     public void onRequestPermissionsResult (int requestCode,
                                             @NonNull String[] permissions,
                                             @NonNull int[] grantResults) {
-        // TODO not sure if I need this callback on the activity
-        // this.activity.onRequestPermissionsResult(requestCode, permissions, grantResults);
         EasyPermissions.onRequestPermissionsResult(
                 requestCode, permissions, grantResults, this);
     }

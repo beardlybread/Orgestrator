@@ -64,6 +64,8 @@ public class Orgestrator {
         return true;
     }
 
+    public void clear () { this.data.clear(); }
+
     public void clearError () {
         this.err = null;
     }
