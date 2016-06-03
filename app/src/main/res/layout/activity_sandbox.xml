@@ -58,5 +58,12 @@
         android:text="@string/drive_org_folder_id"
         android:onClick="startDriveOrgFolderId" />
 
+    <Button
+        android:id="@+id/drive_api_class_activity_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/drive_api_class_activity"
+        android:onClick="startDriveApiClassActivity" />
+
 </LinearLayout>
 

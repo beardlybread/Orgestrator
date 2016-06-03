@@ -32,7 +32,8 @@
         <activity android:name=".sandbox.DriveAPIQuickstart" />
         <activity android:name=".sandbox.Sandbox" />
         <activity android:name=".sandbox.DriveOrgFolderId" />
-        <activity android:name=".sandbox.DriveApiActivity"></activity>
+        <activity android:name=".sandbox.DriveApiActivity" />
+        <activity android:name=".sandbox.DriveApiClassActivity"></activity>
     </application>
 
 </manifest>
