@@ -22,6 +22,7 @@ import com.github.beardlybread.orgestrator.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.googleapis.batch.json.JsonBatchCallback;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.client.http.AbstractInputStreamContent;
@@ -40,6 +41,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Queue;
+import java.util.Vector;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -64,6 +67,8 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
     private static final String REQUEST_RATIONALE =
             "This app needs to access your Google account to talk to Google Drive.";
 
+    private static final int HISTORY_SIZE = 1000;
+
     ////////////////////////////////////////////////////////////////////////////////
     // Fields
     ////////////////////////////////////////////////////////////////////////////////
@@ -74,13 +79,16 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
     private Activity activity = null;
     private GoogleAccountCredential credential = null;
 
-    private MakeRequest lastRequest = null;
+    private Vector<MakeRequest> requestHistory = null;
+    private Request retry = null;
 
     ////////////////////////////////////////////////////////////////////////////////
     // Initialization
     ////////////////////////////////////////////////////////////////////////////////
 
-    private DriveApi () {}
+    private DriveApi () {
+        this.requestHistory = new Vector<>();
+    }
 
     /** DriveApi.initialize(Activity) must be called explicitly first.
      *
@@ -154,10 +162,8 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
         } else if (requestCode == REQUEST_AUTHORIZATION) {
             if (resultCode == Activity.RESULT_OK) {
                 // Try to make the request again.
-                if (this.lastRequest != null) {
-                    Request r = this.lastRequest.getRequest();
-                    this.lastRequest = new MakeRequest(r);
-                    this.lastRequest.execute();
+                if (this.retry != null) {
+                    new MakeRequest(this.retry).execute();
                 }
             }
         }
@@ -167,7 +173,18 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
     // Request logic
     ////////////////////////////////////////////////////////////////////////////////
 
-    public MakeRequest getLastRequest () { return this.lastRequest; }
+    public void addToHistory (MakeRequest r) {
+        this.requestHistory.add(r);
+        JsonBatchCallback<File> cb;
+        if (this.requestHistory.size() >= 2 * DriveApi.HISTORY_SIZE) {
+            while (this.requestHistory.size() > DriveApi.HISTORY_SIZE)
+                this.requestHistory.removeElementAt(0);
+        }
+    }
+
+    public MakeRequest getLastRequest () { return this.requestHistory.lastElement(); }
+
+    public Vector<MakeRequest> getRequestHistory () { return this.requestHistory; }
 
     /** Create a generic Google Drive query request without extra callbacks.
      *
@@ -309,11 +326,13 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
      * object with DriveApi.getLastRequest(). This is true regardless of whether it completes
      * successfully or not.
      */
-    public class MakeRequest extends AsyncTask<Void, Void, byte[]> {
+    public class MakeRequest extends AsyncTask<Queue<Request>, Void, byte[]> {
 
         private Drive service = null;
         private Request request = null;
         private Exception lastError = null;
+        private Request next = null;
+        private Queue<Request> remaining = null;
 
         public MakeRequest (Request request) {
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
@@ -327,15 +346,20 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
         public Request getRequest () { return this.request; }
         public Drive getService () { return this.service; }
 
+
         @Override
         protected void onPreExecute () {
             this.request.before(this);
-            lastRequest = this;
+            addToHistory(this);
         }
 
         @Override
-        protected byte[] doInBackground (Void... nothing) {
+        protected byte[] doInBackground (Queue<Request>... nexts) {
             try {
+                if (nexts.length > 0) {
+                    this.remaining = nexts[0];
+                    this.next = this.remaining.poll();
+                }
                 return this.request.call(this);
             } catch (Exception e) {
                 this.lastError = e;
@@ -345,13 +369,18 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
         }
 
         @Override
-        protected void onPostExecute (byte[] output) { this.request.after(this, output); }
+        protected void onPostExecute (byte[] output) {
+            this.request.after(this, output);
+            if (this.next != null)
+                new MakeRequest(this.next).execute(this.remaining);
+        }
 
         @Override
         protected void onCancelled () {
             this.request.cancelled(this);
             if (this.lastError != null) {
                 if (this.lastError instanceof UserRecoverableAuthIOException) {
+                    retry = this.request;
                     activity.startActivityForResult(
                             ((UserRecoverableAuthIOException) this.lastError).getIntent(),
                             DriveApi.REQUEST_AUTHORIZATION);

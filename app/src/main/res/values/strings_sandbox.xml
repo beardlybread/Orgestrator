@@ -2,5 +2,7 @@
 <resources>
     <string name="sandbox_raw_file_activity">Log Raw File Output</string>
     <string name="sandbox_checked_list_activity">Checked To-do List</string>
-    <string name="sandbox_drive_api_class">Get test folder content IDs</string>
+    <string name="sandbox_drive_api_class">Check DriveApi functionality</string>
+    <string name="sandbox_drive_api_class_get_ids">Get resource IDs</string>
+    <string name="sandbox_drive_api_download_files">Download and display to-do list</string>
 </resources>
