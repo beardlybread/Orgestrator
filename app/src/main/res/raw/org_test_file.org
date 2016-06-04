@@ -46,7 +46,8 @@ object.
     CLOSED: [2016-05-30 Mon 17:08]
 *** DONE convert DriveApi to a singleton class holding an Activity reference
     CLOSED: [2016-06-03 Fri 12:32]
-*** TODO load an existing org file from Drive
+*** DONE load an existing org file from Drive
+    CLOSED: [2016-06-04 Sat 17:41]
 *** TODO save an existing org file to predefined Drive location
 ** Questions
 *** TODO should search return Adapter objects?

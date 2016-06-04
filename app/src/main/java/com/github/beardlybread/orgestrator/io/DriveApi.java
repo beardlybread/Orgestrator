@@ -13,7 +13,9 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
@@ -22,7 +24,6 @@ import com.github.beardlybread.orgestrator.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.googleapis.batch.json.JsonBatchCallback;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.client.http.AbstractInputStreamContent;
@@ -39,17 +40,18 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
-import java.util.Vector;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class DriveApi implements EasyPermissions.PermissionCallbacks {
+public class DriveApi extends Fragment
+        implements  EasyPermissions.PermissionCallbacks {
 
-    public static final String tag = "io.DriveApi";
+    public static final String tag = "orgestrator.io.DriveApi";
 
     private static final int REQUEST_ACCOUNT_PICKER = 1000;
     private static final int REQUEST_AUTHORIZATION = 1001;
@@ -73,51 +75,30 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
     // Fields
     ////////////////////////////////////////////////////////////////////////////////
 
-    private static DriveApi instance = null;
     private boolean initialized = false;
-
-    private Activity activity = null;
     private GoogleAccountCredential credential = null;
 
-    private Vector<MakeRequest> requestHistory = null;
+    private ArrayDeque<MakeRequest> requestHistory = null;
     private Request retry = null;
 
     ////////////////////////////////////////////////////////////////////////////////
     // Initialization
     ////////////////////////////////////////////////////////////////////////////////
 
-    private DriveApi () {
-        this.requestHistory = new Vector<>();
-    }
-
-    /** DriveApi.initialize(Activity) must be called explicitly first.
-     *
-     * @return the DriveApi singleton
-     */
-    public static DriveApi getInstance () {
-        return DriveApi.instance;
-    }
-
-    /** Set up all necessary credentials and permissions.
-     *
-     * @param activity is the Activity to which the DriveApi singleton is bound
-     */
-    public static void initialize (Activity activity) {
-        if (DriveApi.instance == null) {
-            DriveApi.instance = new DriveApi();
-        }
-        DriveApi.instance.activity = activity;
-        DriveApi.instance.initialized = false;
-        DriveApi.instance.initialize();
+    @Override
+    public void onCreate (Bundle b) {
+        super.onCreate(b);
+        this.requestHistory = new ArrayDeque<>();
+        this.initialize();
     }
 
     /** Set up credential and Google Play Services, and choose Google account.
      */
-    private void initialize () {
+    public void initialize () {
         if (!this.initialized) {
             if (this.credential == null) {
                 this.credential = GoogleAccountCredential.usingOAuth2(
-                        this.activity.getApplicationContext(),
+                        getContext().getApplicationContext(),
                         Arrays.asList(DriveApi.SCOPE))
                         .setBackOff(new ExponentialBackOff());
             }
@@ -142,6 +123,7 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
      * @param resultCode indicates whether the action was successful.
      * @param data holds necessary data returned from the action.
      */
+    @Override
     public void onActivityResult (int requestCode, int resultCode, Intent data) {
         if (requestCode == DriveApi.REQUEST_GOOGLE_PLAY_SERVICES) {
             if (resultCode != Activity.RESULT_OK) {
@@ -153,7 +135,7 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
             if (resultCode == Activity.RESULT_OK && data != null && data.getExtras() != null) {
                 String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                 if (accountName != null) {
-                    (this.activity.getPreferences(Context.MODE_PRIVATE))
+                    (getActivity().getPreferences(Context.MODE_PRIVATE))
                             .edit().putString("accountName", accountName).apply();
                     this.credential.setSelectedAccountName(accountName);
                     this.initialize();
@@ -173,18 +155,11 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
     // Request logic
     ////////////////////////////////////////////////////////////////////////////////
 
-    public void addToHistory (MakeRequest r) {
-        this.requestHistory.add(r);
-        JsonBatchCallback<File> cb;
-        if (this.requestHistory.size() >= 2 * DriveApi.HISTORY_SIZE) {
-            while (this.requestHistory.size() > DriveApi.HISTORY_SIZE)
-                this.requestHistory.removeElementAt(0);
-        }
+    public synchronized void addToHistory (MakeRequest r) {
+        this.requestHistory.addLast(r);
+        if (this.requestHistory.size() > DriveApi.HISTORY_SIZE)
+            this.requestHistory.removeFirst();
     }
-
-    public MakeRequest getLastRequest () { return this.requestHistory.lastElement(); }
-
-    public Vector<MakeRequest> getRequestHistory () { return this.requestHistory; }
 
     /** Create a generic Google Drive query request without extra callbacks.
      *
@@ -338,14 +313,12 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
             JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
             this.service = new Drive.Builder(transport, jsonFactory, credential)
-                    .setApplicationName(activity.getString(R.string.app_name))
+                    .setApplicationName(getString(R.string.app_name))
                     .build();
             this.request = request;
         }
 
-        public Request getRequest () { return this.request; }
         public Drive getService () { return this.service; }
-
 
         @Override
         protected void onPreExecute () {
@@ -354,7 +327,7 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
         }
 
         @Override
-        protected byte[] doInBackground (Queue<Request>... nexts) {
+        protected byte[] doInBackground (Queue... nexts) {
             try {
                 if (nexts.length > 0) {
                     this.remaining = nexts[0];
@@ -381,16 +354,16 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
             if (this.lastError != null) {
                 if (this.lastError instanceof UserRecoverableAuthIOException) {
                     retry = this.request;
-                    activity.startActivityForResult(
+                    startActivityForResult(
                             ((UserRecoverableAuthIOException) this.lastError).getIntent(),
                             DriveApi.REQUEST_AUTHORIZATION);
                 } else {
                     showErrorDialog(this.lastError);
                 }
             } else {
-                Toast cancelled = new Toast(activity.getApplicationContext());
-                cancelled.setText("Google Drive action cancelled.");
-                cancelled.show();
+                Toast.makeText(getActivity(),
+                        "Google Drive action cancelled.", Toast.LENGTH_SHORT)
+                        .show();
             }
         }
     }
@@ -401,7 +374,7 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
 
     private void acquireGooglePlayServices () {
         GoogleApiAvailability gaa = GoogleApiAvailability.getInstance();
-        final int status = gaa.isGooglePlayServicesAvailable(this.activity);
+        final int status = gaa.isGooglePlayServicesAvailable(getContext());
         if (gaa.isUserResolvableError(status)) {
             this.showErrorDialog(status);
         }
@@ -410,14 +383,14 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
     @AfterPermissionGranted(DriveApi.REQUEST_PERMISSION_GET_ACCOUNTS)
     private void chooseAccount () {
         if (EasyPermissions.hasPermissions(
-                this.activity, Manifest.permission.GET_ACCOUNTS)) {
-            String accountName = this.activity.getPreferences(Context.MODE_PRIVATE)
+                getContext(), Manifest.permission.GET_ACCOUNTS)) {
+            String accountName = getActivity().getPreferences(Context.MODE_PRIVATE)
                     .getString("accountName", null);
             if (accountName != null) {
                 this.credential.setSelectedAccountName(accountName);
                 this.initialize();
             } else {
-                this.activity.startActivityForResult(
+                startActivityForResult(
                         this.credential.newChooseAccountIntent(),
                         DriveApi.REQUEST_ACCOUNT_PICKER);
             }
@@ -432,14 +405,14 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
 
     private boolean deviceIsOffline () {
         ConnectivityManager cm = (ConnectivityManager)
-                this.activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+                getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
         return (ni == null || !ni.isConnected());
     }
 
     private boolean isGooglePlayServicesAvailable () {
         GoogleApiAvailability gaa = GoogleApiAvailability.getInstance();
-        final int status = gaa.isGooglePlayServicesAvailable(this.activity);
+        final int status = gaa.isGooglePlayServicesAvailable(getContext());
         return status == ConnectionResult.SUCCESS;
     }
 
@@ -464,7 +437,7 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
     public void showErrorDialog (final int connectionStatusCode) {
         GoogleApiAvailability gaa = GoogleApiAvailability.getInstance();
         gaa.getErrorDialog(
-                this.activity,
+                getActivity(),
                 connectionStatusCode,
                 DriveApi.REQUEST_GOOGLE_PLAY_SERVICES)
                 .show();
@@ -474,9 +447,5 @@ public class DriveApi implements EasyPermissions.PermissionCallbacks {
         Log.e(tag, "--- BEGIN: " + e.getMessage());
         e.printStackTrace();
         Log.e(tag, "--- END: " + e.getMessage());
-        (new AlertDialog.Builder(this.activity.getApplicationContext()))
-                .setTitle(DriveApi.ERROR_TITLE)
-                .setMessage(e.getMessage())
-                .create().show();
     }
 }

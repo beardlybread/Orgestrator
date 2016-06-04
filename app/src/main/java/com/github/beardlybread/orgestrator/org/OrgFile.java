@@ -31,7 +31,12 @@ public class OrgFile extends OrgParserBaseListener {
         this.resourceType = type;
     }
 
-    public String getResourcePath () { return this.resourcePath; }
+    public String getResourcePath () {
+        if (this.resourceType == OrgFile.DRIVE_RESOURCE)
+            return this.resourcePath.split("\\.")[0];
+        return this.resourcePath;
+    }
+
     public int getResourceType () { return this.resourceType; }
 
     /** Return the contents of the OrgFile.
