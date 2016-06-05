@@ -14,23 +14,37 @@ import com.github.beardlybread.orgestrator.org.Orgestrator;
 
 public class ToDoList extends Fragment {
 
+    private ToDoAdapter todo = null;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_to_do_list, container, false);
         RecyclerView rv = (RecyclerView) v.findViewById(R.id.the_recycler_view);
         if (rv == null)
-            throw new NullPointerException("ToDoList:RecyclerView");
+            throw new NullPointerException("ToDoList:OnCreateView:RecyclerView");
         rv.setHasFixedSize(true);
 
         RecyclerView.LayoutManager lm = new LinearLayoutManager(getActivity());
         rv.setLayoutManager(lm);
 
-        Orgestrator org = Orgestrator.getInstance();
-        ToDoAdapter tda = new ToDoAdapter(org.search(OrgToDo.incomplete));
-        rv.setAdapter(tda);
-
         return v;
     }
 
+    @Override
+    public void onResume () {
+        super.onResume();
+        RecyclerView rv = (RecyclerView) getView().findViewById(R.id.the_recycler_view);
+        if (rv == null)
+            throw new NullPointerException("ToDoList:onResume:RecyclerView");
+        Orgestrator org = Orgestrator.getInstance();
+        this.todo = new ToDoAdapter(org.search(OrgToDo.incomplete));
+        rv.setAdapter(this.todo);
+    }
+
+    @Override
+    public void onPause () {
+        // upload any changes to Drive
+        super.onPause();
+    }
 }

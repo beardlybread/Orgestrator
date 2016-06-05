@@ -48,11 +48,15 @@ object.
     CLOSED: [2016-06-03 Fri 12:32]
 *** DONE load an existing org file from Drive
     CLOSED: [2016-06-04 Sat 17:41]
+*** TODO refactor dl functionality into Orgestrator object
 *** TODO save an existing org file to predefined Drive location
+*** TODO change DriveApi history back to MakeRequests (for data)
 ** Questions
 *** TODO should search return Adapter objects?
 *** TODO is it ok to leave OrgEvents as only children of OrgToDo? 
 *** TODO model-view abstraction at the Orgestrator object level?
+*** TODO is splitting on '.' for getFullPath ok?
+*** TODO is last_request value getting updated correctly?
 ** Features/Bugs
 *** TODO separate complete and incomplete items, making both adjustable?
 *** TODO make OrgToDo list sortable/filterable by OrgDate

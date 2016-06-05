@@ -17,7 +17,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.TimeUnit;
 
 public class DriveApiClassActivity extends AppCompatActivity {
 
@@ -26,7 +26,7 @@ public class DriveApiClassActivity extends AppCompatActivity {
     private static final String FOLDER_CONTENTS_QUERY_FORMAT =
             "trashed=false and '%s' in parents";
 
-    private DriveApi api = null;
+    private DriveApi driveApi = null;
     private String folderId = null;
     private String[] filePaths = null;
 
@@ -46,8 +46,8 @@ public class DriveApiClassActivity extends AppCompatActivity {
     protected void onStart () {
         super.onStart();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        this.api = new DriveApi();
-        ft.add(api, DriveApi.tag);
+        this.driveApi = new DriveApi();
+        ft.add(driveApi, DriveApi.tag);
         ft.commit();
     }
 
@@ -56,58 +56,45 @@ public class DriveApiClassActivity extends AppCompatActivity {
     public String[] getFilePaths () { return this.filePaths; }
 
     public void getResourceIds (View v) {
-        ConcurrentLinkedDeque<DriveApi.Request> requests = new ConcurrentLinkedDeque<>();
-        if (this.folderId == null)
-            requests.add(this.folderIdRequest());
-        requests.add(this.folderContentRequest());
-        DriveApi.Request first = requests.poll();
-        this.api.new MakeRequest(first).execute(requests);
+        this.driveApi.new RequestQueue()
+                .request(this.folderIdRequest())
+                .request(this.folderContentRequest())
+                .execute();
     }
 
     public void downloadFiles (View v) {
-        ConcurrentLinkedDeque<DriveApi.Request> requests = new ConcurrentLinkedDeque<>();
         if (this.folderId == null || this.filePaths == null) {
-            requests.add(this.folderIdRequest());
-            requests.add(this.folderContentRequest(new Runnable() {
-                @Override
-                public void run() {
-                    downloadFiles(null);
-                }
-            }));
-            DriveApi.Request first = requests.poll();
-            this.api.new MakeRequest(first).execute(requests);
+            this.driveApi.new RequestQueue()
+                    .request(this.folderIdRequest())
+                    .request(this.folderContentRequest(new Runnable() {
+                        @Override
+                        public void run() {
+                            downloadFiles(null);
+                        }
+                    })).execute();
         } else {
+            DriveApi.RequestQueue reqs = this.driveApi.new RequestQueue();
             for (String filePath: this.getFilePaths())
-                requests.add(this.downloadContentRequests(filePath));
-            DriveApi.Request first = requests.poll();
-            this.api.new MakeRequest(first).execute(requests);
+                reqs.request(this.downloadContentRequests(filePath));
+            reqs.execute();
         }
     }
 
     private DriveApi.Request folderIdRequest () {
-        return new DriveApi.Request() {
-            @Override
-            public byte[] call(DriveApi.MakeRequest makeRequest) throws IOException {
-                FileList result = makeRequest.getService().files().list()
-                        .setQ(FOLDER_ID_QUERY)
-                        .execute();
-                List<File> files = result.getFiles();
-                if (files != null) {
-                    return files.get(0).getId().getBytes();
-                }
-                return null;
-            }
-
-            @Override
-            public void after (DriveApi.MakeRequest makeRequest, byte[] output) {
-                folderId = new String(output);
-            }
-
-            @Override
-            public void before (DriveApi.MakeRequest makeRequest) {}
-            @Override
-            public void cancelled (DriveApi.MakeRequest makeRequest) {}
-        };
+        return this.driveApi.queryRequest(
+                FOLDER_ID_QUERY,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            String raw = new String(
+                                    driveApi.getLastRequest().get(5, TimeUnit.SECONDS));
+                            folderId = raw.trim().split("\t")[1];
+                        } catch (Exception e) {
+                            driveApi.getLastRequest().cancel(true);
+                        }
+                    }
+                }, null);
     }
 
     private DriveApi.Request folderContentRequest () {
@@ -115,7 +102,7 @@ public class DriveApiClassActivity extends AppCompatActivity {
     }
 
     private DriveApi.Request folderContentRequest (final Runnable then) {
-        return new DriveApi.Request() {
+        return this.driveApi.new Request(then) {
             @Override
             public byte[] call(DriveApi.MakeRequest makeRequest) throws IOException {
                 if (getFolderId() == null)
@@ -143,9 +130,6 @@ public class DriveApiClassActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),
                         "Content located on Google Drive.", Toast.LENGTH_SHORT)
                         .show();
-                if (then != null) {
-                    then.run();
-                }
             }
 
             @Override
@@ -158,7 +142,7 @@ public class DriveApiClassActivity extends AppCompatActivity {
     private DriveApi.Request downloadContentRequests (final String filePath) {
         String[] nameAndId = filePath.split("\t");
         final String name = nameAndId[0], id = nameAndId[1];
-        return new DriveApi.Request() {
+        return this.driveApi.new Request() {
             @Override
             public byte[] call(DriveApi.MakeRequest makeRequest) throws IOException {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
