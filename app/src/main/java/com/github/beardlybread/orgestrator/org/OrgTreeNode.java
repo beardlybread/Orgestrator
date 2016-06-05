@@ -41,6 +41,17 @@ public abstract class OrgTreeNode extends OrgNode {
 
     public List<OrgNode> getChildren () { return this.children; }
 
+    public List<OrgNode> getChildren (String... types) {
+        List<OrgNode> out = new ArrayList<>();
+        for (OrgNode child: this.children) {
+            for (String type: types) {
+                if (child.isType(type) && out.indexOf(child) < 0)
+                    out.add(child);
+            }
+        }
+        return out;
+    }
+
     public OrgText getText () { return this.text; }
 
     public int indexOf (OrgNode node) {

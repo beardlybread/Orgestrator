@@ -145,10 +145,6 @@ public class DriveApi extends Fragment
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // Request logic
-    ////////////////////////////////////////////////////////////////////////////////
-
     private synchronized void addToHistory (MakeRequest r) {
         this.requestHistory.addLast(r);
         if (this.requestHistory.size() > DriveApi.HISTORY_SIZE)
@@ -158,6 +154,10 @@ public class DriveApi extends Fragment
     public synchronized MakeRequest getLastRequest () {
         return this.requestHistory.peekLast();
     }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Request logic
+    ////////////////////////////////////////////////////////////////////////////////
 
     /** Create a generic Google Drive query request without extra callbacks.
      *
@@ -184,13 +184,6 @@ public class DriveApi extends Fragment
                 }
                 return fileInfo.toByteArray();
             }
-
-            @Override
-            public void before(MakeRequest makeRequest) {}
-            @Override
-            public void after(MakeRequest makeRequest, byte[] output) {}
-            @Override
-            public void cancelled(MakeRequest makeRequest) {}
         };
     }
 
@@ -208,13 +201,6 @@ public class DriveApi extends Fragment
                         .executeMediaAndDownloadTo(out);
                 return out.toByteArray();
             }
-
-            @Override
-            public void before(MakeRequest makeRequest) {}
-            @Override
-            public void after(MakeRequest makeRequest, byte[] output) {}
-            @Override
-            public void cancelled(MakeRequest makeRequest) {}
         };
     }
 
@@ -249,13 +235,6 @@ public class DriveApi extends Fragment
                 }).execute();
                 return null;
             }
-
-            @Override
-            public void before (MakeRequest makeRequest) {}
-            @Override
-            public void after (MakeRequest makeRequest, byte[] output) {}
-            @Override
-            public void cancelled (MakeRequest makeRequest) {}
         };
     }
 
@@ -263,8 +242,9 @@ public class DriveApi extends Fragment
      *
      * If a Request successfully passes to onPostExecute in a MakeRequest, it will be marked as
      * completed. In a RequestQueue, this means that it will not be executed again. Also, if it
-     * was passed a Runnable on instantiation, it will be invoked on completion before any further
-     * Requests in a RequestQueue are made.
+     * was passed a "then" on instantiation, it will be invoked on completion before any further
+     * Requests in a RequestQueue are made. An "otherwise" will be called in onCancelled in the
+     * finally clause of the try block wrapping everything else.
      */
     public abstract class Request implements RequestInterface {
         private boolean incomplete = true;
@@ -288,6 +268,10 @@ public class DriveApi extends Fragment
 
         public boolean isIncomplete () { return this.incomplete; }
         public void setCompleted () { this.incomplete = false; }
+
+        public void before (MakeRequest makeRequest) {}
+        public void after (MakeRequest makeRequest, byte[] output) {}
+        public void cancelled (MakeRequest makeRequest) {}
     }
 
     /** This interface plugs into a MakeRequest task to define its behavior.

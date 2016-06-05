@@ -20,12 +20,11 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
-import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class Orgestrator {
 
     private Vector<OrgFile> data = null;
-    private IOException err = null;
+    private IOException err = new IOException("Unknown error");
 
     private Orgestrator () { this.data = new Vector<>(); }
     private static final Orgestrator theInstance = new Orgestrator();
@@ -35,10 +34,19 @@ public class Orgestrator {
     // Getters
     ////////////////////////////////////////////////////////////////////////////
 
-    public boolean isEmpty () { return this.data.isEmpty(); }
+    public OrgFile find (String path, int type) {
+        for (OrgFile file: this.data) {
+            if (file.getResourcePath().equals(path) && file.getResourceType() == type) {
+                return file;
+            }
+        }
+        return null;
+    }
 
     public IOException getError () { return this.err; }
     public OrgFile getFile (int index) { return this.data.get(index); }
+
+    public boolean isEmpty () { return this.data.isEmpty(); }
 
     public List<OrgNode> search (Predicate<OrgNode> predicate) {
         List<OrgNode> out = new ArrayList<>();
@@ -53,27 +61,30 @@ public class Orgestrator {
     ////////////////////////////////////////////////////////////////////////////
 
     public boolean add (InputStream inStream, String path, int type) {
-        try (InputStreamReader r = new InputStreamReader(inStream)) {
-            ParseTree tree;
-            OrgLexer lexer = new OrgLexer(null);
-            ANTLRInputStream ais = new ANTLRInputStream(r);
-            lexer.setInputStream(ais);
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
-            tree = (new OrgParser(tokens).file());
-            OrgFile file = new OrgFile(path, type);
-            ParseTreeWalker walker = new ParseTreeWalker();
-            walker.walk(file, tree);
-            this.data.add(file);
-        } catch (IOException e) {
-            this.err = e;
-            return false;
+        if (this.find(path, type) == null) {
+            try (InputStreamReader r = new InputStreamReader(inStream)) {
+                ParseTree tree;
+                OrgLexer lexer = new OrgLexer(null);
+                ANTLRInputStream ais = new ANTLRInputStream(r);
+                lexer.setInputStream(ais);
+                CommonTokenStream tokens = new CommonTokenStream(lexer);
+                tree = (new OrgParser(tokens).file());
+                OrgFile file = new OrgFile(path, type);
+                ParseTreeWalker walker = new ParseTreeWalker();
+                walker.walk(file, tree);
+                this.data.add(file);
+            } catch (IOException e) {
+                this.err = e;
+                return false;
+            }
+            return true;
         }
-        return true;
+        return false;
     }
 
     public void clear () { this.data.clear(); }
 
-    public void clearError () { this.err = null; }
+    public void clearError () { this.err = new IOException("Unknown error"); }
 
     ////////////////////////////////////////////////////////////////////////////////
     // DriveApi stuff
@@ -87,10 +98,10 @@ public class Orgestrator {
 
     public void loadFilesFromDriveApi (String[] filePaths) {
         if (filePaths != null && filePaths.length > 0) {
-            ConcurrentLinkedDeque<DriveApi.Request> requests = new ConcurrentLinkedDeque<>();
+            DriveApi.RequestQueue requests = this.driveApi.new RequestQueue();
             for (String filePath : filePaths)
-                requests.add(this.downloadRequestFromDriveApi(filePath));
-            this.driveApi.new MakeRequest(requests.poll()).execute(requests);
+                requests.request(this.downloadRequestFromDriveApi(filePath));
+            requests.execute();
         }
     }
 

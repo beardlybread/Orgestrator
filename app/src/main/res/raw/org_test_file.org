@@ -50,9 +50,11 @@ object.
     CLOSED: [2016-06-04 Sat 17:41]
 *** TODO refactor dl functionality into Orgestrator object
 *** TODO save an existing org file to predefined Drive location
-*** TODO change DriveApi history back to MakeRequests (for data)
+*** DONE change DriveApi history back to MakeRequests (for data)
+    CLOSED: [2016-06-05 Sun 14:12]
 ** Questions
-*** TODO should search return Adapter objects?
+*** DONE should search return Adapter objects? No.
+    CLOSED: [2016-06-05 Sun 13:39]
 *** TODO is it ok to leave OrgEvents as only children of OrgToDo? 
 *** TODO model-view abstraction at the Orgestrator object level?
 *** TODO is splitting on '.' for getFullPath ok?
@@ -65,6 +67,7 @@ object.
 *** TODO Add locale and timezone settings to dates.
 *** TODO Remove newline requirement for last line in file.
 *** TODO Add error handling to .util.
+*** TODO LAST_REQUEST is almost certainly borked.
 * Test
 ** DONE Finish writing this dummy file.
    CLOSED: [2016-05-11 Wed 12:19] DEADLINE: <2016-05-12 Thu>

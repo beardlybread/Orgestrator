@@ -6,4 +6,6 @@
     <string name="sandbox_drive_api_class_get_ids">Get resource IDs</string>
     <string name="sandbox_drive_api_download_files">Download and display to-do list</string>
     <string name="sandbox_drive_api_class_download">Download from Google Drive</string>
+    <string name="sandbox_load_raw_resources">Load Raw Resources</string>
+    <string name="sandbox_clear_loaded_files">Clear all loaded files</string>
 </resources>

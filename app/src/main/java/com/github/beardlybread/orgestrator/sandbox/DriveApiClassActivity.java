@@ -131,11 +131,6 @@ public class DriveApiClassActivity extends AppCompatActivity {
                         "Content located on Google Drive.", Toast.LENGTH_SHORT)
                         .show();
             }
-
-            @Override
-            public void before(DriveApi.MakeRequest makeRequest) {}
-            @Override
-            public void cancelled(DriveApi.MakeRequest makeRequest) {}
         };
     }
 

@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.github.beardlybread.orgestrator.util.Predicate;
 
+import java.util.List;
+
 public class OrgToDo extends OrgHeading {
 
     public static final boolean TODO = false;
@@ -63,6 +65,11 @@ public class OrgToDo extends OrgHeading {
         return this.cachedEvent;
     }
 
+    public OrgProperty getProperties () {
+        List<OrgNode> props = this.getChildren("OrgProperty");
+        return (props.size() > 0 ? (OrgProperty) props.get(0) : null);
+    }
+
     @Override
     public String toOrgString () {
         String prefix = "*";
@@ -90,8 +97,14 @@ public class OrgToDo extends OrgHeading {
             Log.d("OrgToDo", "Event added: " + this);
         }
         if (this.status) { // DONE
+            if (this.cachedEvent.getCurrent() != null
+                    && this.cachedEvent.getCurrent().getRepeatType() != OrgDate.REPEAT.NONE)
+                this.getProperties().setLastRepeat(this.cachedEvent.getCurrent());
             this.cachedEvent.setClosed();
         } else {
+            if (this.cachedEvent.getPrevious() != null
+                    && this.cachedEvent.getPrevious().getRepeatType() != OrgDate.REPEAT.NONE)
+                this.getProperties().setLastRepeat(this.cachedEvent.getPrevious());
             this.cachedEvent.undoClosed();
         }
         return this.status;

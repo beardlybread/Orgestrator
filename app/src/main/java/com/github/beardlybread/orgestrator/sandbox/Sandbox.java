@@ -21,7 +21,6 @@ public class Sandbox extends AppCompatActivity {
     @Override
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.loadTestFile();
         Toolbar tb = (Toolbar) findViewById(R.id.start_toolbar);
         setSupportActionBar(tb);
         setContentView(R.layout.activity_sandbox);
@@ -49,7 +48,11 @@ public class Sandbox extends AppCompatActivity {
         startActivity(new Intent(this, DriveApiClassActivity.class));
     }
 
-    private void loadTestFile () {
+    public void clearLoadedFiles (View v) {
+        Orgestrator.getInstance().clear();
+    }
+
+    public void loadRawResources (View v) {
         Orgestrator org = Orgestrator.getInstance();
         if (org.isEmpty()) {
             InputStream inStream = getResources().openRawResource(R.raw.org_test_file);

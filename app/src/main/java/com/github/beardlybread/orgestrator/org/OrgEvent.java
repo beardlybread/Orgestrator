@@ -41,7 +41,12 @@ public class OrgEvent extends OrgNode {
         this.previous = previous;
     }
 
+    public OrgDate getCurrent () { return this.current; }
+
     public int getEventType () { return this.eventType; }
+
+    public OrgDate getPrevious () { return this.previous; }
+
     public int getStatus () { return this.status; }
 
     public void setClosed () {

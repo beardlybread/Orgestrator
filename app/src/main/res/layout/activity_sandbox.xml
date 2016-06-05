@@ -17,6 +17,20 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     <Button
+        android:id="@+id/sandbox_load_raw_resources_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/sandbox_load_raw_resources"
+        android:onClick="loadRawResources" />
+
+    <Button
+        android:id="@+id/sandbox_clear_loaded_files_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/sandbox_clear_loaded_files"
+        android:onClick="clearLoadedFiles" />
+
+    <Button
         android:id="@+id/raw_file_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
