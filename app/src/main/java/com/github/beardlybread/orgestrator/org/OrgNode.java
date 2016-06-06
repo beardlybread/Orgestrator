@@ -3,7 +3,7 @@ package com.github.beardlybread.orgestrator.org;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.io.IOException;
-import java.io.Writer;
+import java.io.OutputStream;
 
 public abstract class OrgNode {
 
@@ -87,9 +87,8 @@ public abstract class OrgNode {
             sb.append(" ");
     }
 
-    public void write (Writer target) throws IOException {
-        target.append(this.toOrgString());
-        // target.append("type: " + this.type + "\n\n");
+    public void write (OutputStream target) throws IOException {
+        target.write(this.toOrgString().getBytes());
     }
 
 }

@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
 
@@ -23,7 +24,7 @@ public class OrgFileRun {
         OrgFile file = new OrgFile();
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(file, tree);
-        OutputStreamWriter outStream = new OutputStreamWriter(System.out);
+        OutputStream outStream = System.out;
         file.write(outStream);
         outStream.flush();
             // something something

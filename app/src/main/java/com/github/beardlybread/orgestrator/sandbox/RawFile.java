@@ -8,6 +8,7 @@ import com.github.beardlybread.orgestrator.R;
 import com.github.beardlybread.orgestrator.org.OrgFile;
 import com.github.beardlybread.orgestrator.org.Orgestrator;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 
@@ -22,11 +23,13 @@ public class RawFile extends AppCompatActivity {
         OrgFile file = org.getFile(0);
         Log.i("getResourcePath()", file.getResourcePath());
         Log.i("getResourceType()", "" + file.getResourceType());
-        StringWriter w = new StringWriter();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
-            file.write(w);
-            Log.i("RAW", w.toString());
-            w.close();
+            file.write(baos);
+            for (String line: new String(baos.toByteArray()).trim().split("\n")) {
+                Log.i("RAW", line);
+            }
+            baos.close();
         } catch (IOException e) {
             Log.e("OrgFile.write()", "file failed to write or Writer failed to close");
         }

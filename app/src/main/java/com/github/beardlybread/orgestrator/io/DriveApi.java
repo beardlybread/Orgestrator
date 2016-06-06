@@ -35,6 +35,7 @@ import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -42,7 +43,6 @@ import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
@@ -211,7 +211,8 @@ public class DriveApi extends Fragment
      * @return a Request object to feed to a MakeRequest task.
      */
     public Request uploadRequest (byte[] data, final String id) {
-        final ByteArrayInputStream content = new ByteArrayInputStream(data);
+        final BufferedInputStream content =
+                new BufferedInputStream(new ByteArrayInputStream(data));
         final long dataLength = data.length;
         return new Request() {
             @Override
@@ -315,13 +316,13 @@ public class DriveApi extends Fragment
      * object with DriveApi.getLastRequest(). This is true regardless of whether it completes
      * successfully or not.
      */
-    public class MakeRequest extends AsyncTask<Queue<Request>, Void, byte[]> {
+    public class MakeRequest extends AsyncTask<RequestQueue, Void, byte[]> {
 
         private Drive service = null;
         private Request request = null;
         private Exception lastError = null;
         private Request next = null;
-        private Queue<Request> remaining = null;
+        private RequestQueue remaining = null;
 
         public MakeRequest (Request request) {
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
@@ -342,7 +343,7 @@ public class DriveApi extends Fragment
         }
 
         @Override
-        protected byte[] doInBackground (Queue... nexts) {
+        protected byte[] doInBackground (RequestQueue... nexts) {
             try {
                 if (nexts.length > 0) {
                     this.remaining = nexts[0];
@@ -382,9 +383,7 @@ public class DriveApi extends Fragment
                         showErrorDialog(this.lastError);
                     }
                 } else {
-                    Toast.makeText(getActivity(),
-                            "Google Drive action cancelled.", Toast.LENGTH_SHORT)
-                            .show();
+                    makeToast("Google Drive action cancelled.");
                 }
             } finally {
                 if (this.request.otherwise != null)
@@ -392,6 +391,7 @@ public class DriveApi extends Fragment
             }
         }
     }
+
 
     public class RequestQueue extends ConcurrentLinkedDeque<Request> {
 
@@ -410,10 +410,6 @@ public class DriveApi extends Fragment
     ////////////////////////////////////////////////////////////////////////////////
     // Helpers
     ////////////////////////////////////////////////////////////////////////////////
-
-    public ConcurrentLinkedDeque<Request> newRequestQueue () {
-        return new ConcurrentLinkedDeque<>();
-    }
 
     private void acquireGooglePlayServices () {
         GoogleApiAvailability gaa = GoogleApiAvailability.getInstance();
@@ -490,5 +486,9 @@ public class DriveApi extends Fragment
         Log.e(tag, "--- BEGIN: " + e.getMessage());
         e.printStackTrace();
         Log.e(tag, "--- END: " + e.getMessage());
+    }
+
+    public void makeToast (CharSequence text) {
+        Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
     }
 }

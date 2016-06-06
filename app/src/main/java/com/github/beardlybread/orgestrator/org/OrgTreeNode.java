@@ -3,7 +3,7 @@ package com.github.beardlybread.orgestrator.org;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.io.IOException;
-import java.io.Writer;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,7 +81,7 @@ public abstract class OrgTreeNode extends OrgNode {
     ////////////////////////////////////////////////////////////////////////////
     
     @Override
-    public void write (Writer target) throws IOException {
+    public void write (OutputStream target) throws IOException {
         super.write(target);
         for (OrgNode n: this.children) {
             n.write(target);

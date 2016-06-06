@@ -3,8 +3,8 @@ package com.github.beardlybread.orgestrator.org;
 import com.github.beardlybread.orgestrator.org.antlr.*;
 import com.github.beardlybread.orgestrator.util.Predicate;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -15,7 +15,7 @@ public class OrgFile extends OrgParserBaseListener {
     public static final int UNKNOWN_SOURCE = -1;
     public static final int OTHER_RESOURCE = 0;
     public static final int RAW_RESOURCE = 1;
-    public static final int DRIVE_RESOURCE = 2;
+    public static final int GOOGLE_DRIVE_RESOURCE = 2;
 
     private ArrayList<OrgNode> roots = null;
     private Stack<OrgTreeNode> lastParent = null;
@@ -32,7 +32,7 @@ public class OrgFile extends OrgParserBaseListener {
     }
 
     public String getResourcePath () {
-        if (this.resourceType == OrgFile.DRIVE_RESOURCE)
+        if (this.resourceType == OrgFile.GOOGLE_DRIVE_RESOURCE)
             return this.resourcePath.split("\\.")[0];
         return this.resourcePath;
     }
@@ -75,7 +75,7 @@ public class OrgFile extends OrgParserBaseListener {
      * @param target the output object for constructing the text
      * @throws IOException
      */
-    public void write (Writer target) throws IOException {
+    public void write (ByteArrayOutputStream target) throws IOException {
         for (OrgNode n: this.roots) {
             n.write(target);
         }

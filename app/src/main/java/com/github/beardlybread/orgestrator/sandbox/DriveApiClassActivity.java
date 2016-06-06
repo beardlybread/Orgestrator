@@ -149,7 +149,7 @@ public class DriveApiClassActivity extends AppCompatActivity {
             @Override
             public void after(DriveApi.MakeRequest makeRequest, byte[] output) {
                 ByteArrayInputStream input = new ByteArrayInputStream(output);
-                Orgestrator.getInstance().add(input, filePath, OrgFile.DRIVE_RESOURCE);
+                Orgestrator.getInstance().add(input, filePath, OrgFile.GOOGLE_DRIVE_RESOURCE);
                 Toast.makeText(getApplicationContext(),
                         "file added: " + name, Toast.LENGTH_SHORT)
                         .show();
