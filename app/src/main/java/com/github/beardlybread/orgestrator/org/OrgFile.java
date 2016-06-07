@@ -31,6 +31,9 @@ public class OrgFile extends OrgParserBaseListener {
         this.resourceType = type;
     }
 
+    public String getRawPath () { return this.resourcePath; }
+    public void setRawPath (String path) { this.resourcePath = path; }
+
     public String getResourcePath () {
         if (this.resourceType == OrgFile.GOOGLE_DRIVE_RESOURCE)
             return this.resourcePath.split("\\.")[0];

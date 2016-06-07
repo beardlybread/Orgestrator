@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="5dp" >
+
+    <Button
+        android:id="@+id/start_sandbox_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/start_sandbox_button"
+        android:onClick="startSandbox" />
+
+    <Button
+        android:id="@+id/start_download_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/start_download_button"
+        android:onClick="downloadFromDrive" />
+
+    <Button
+        android:id="@+id/start_upload_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/start_upload_button"
+        android:onClick="uploadToDrive" />
+
+    <fragment
+        android:name="com.github.beardlybread.orgestrator.ui.ToDoList"
+        android:id="@+id/start_to_do_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

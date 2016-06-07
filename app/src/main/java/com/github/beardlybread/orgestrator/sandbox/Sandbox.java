@@ -1,6 +1,7 @@
 package com.github.beardlybread.orgestrator.sandbox;
 
 import android.content.Intent;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -9,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.github.beardlybread.orgestrator.R;
+import com.github.beardlybread.orgestrator.io.DriveApi;
 import com.github.beardlybread.orgestrator.org.OrgFile;
 import com.github.beardlybread.orgestrator.org.Orgestrator;
 
@@ -23,6 +25,9 @@ public class Sandbox extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Toolbar tb = (Toolbar) findViewById(R.id.start_toolbar);
         setSupportActionBar(tb);
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(new DriveApi(), DriveApi.tag);
+        ft.commit();
         setContentView(R.layout.activity_sandbox);
     }
 

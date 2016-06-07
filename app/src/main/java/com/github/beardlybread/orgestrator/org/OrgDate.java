@@ -14,9 +14,9 @@ public class OrgDate extends GregorianCalendar {
 
     public class REPEAT {
         public static final int NONE = -1;
-        public static final int ONCE = 1;
-        public static final int FROM_NOW = 2;
-        public static final int UNTIL_NOW = 3;
+        public static final int ONCE = -2;
+        public static final int FROM_NOW = -3;
+        public static final int UNTIL_NOW = -4;
     }
 
     public static final SimpleDateFormat DEFAULT_DATE_FORMAT =

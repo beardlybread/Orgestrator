@@ -28,7 +28,8 @@
         <activity android:name=".sandbox.RawFile" />
         <activity android:name=".sandbox.CheckedList" />
         <activity android:name=".sandbox.Sandbox" />
-        <activity android:name=".sandbox.DriveApiClassActivity"></activity>
+        <activity android:name=".sandbox.DriveApiClassActivity" />
+
     </application>
 
 </manifest>

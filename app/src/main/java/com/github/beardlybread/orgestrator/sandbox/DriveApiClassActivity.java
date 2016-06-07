@@ -45,10 +45,11 @@ public class DriveApiClassActivity extends AppCompatActivity {
     @Override
     protected void onStart () {
         super.onStart();
+        this.driveApi = (DriveApi)
+                getSupportFragmentManager().findFragmentByTag(DriveApi.tag);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        this.driveApi = new DriveApi();
-        ft.add(driveApi, DriveApi.tag);
-        ft.commit();
+        ft.add(this.driveApi, DriveApi.tag);
+        Orgestrator.getInstance().setDriveApi(this.driveApi);
     }
 
     public String getFolderId () { return this.folderId; }
@@ -73,10 +74,7 @@ public class DriveApiClassActivity extends AppCompatActivity {
                         }
                     })).execute();
         } else {
-            DriveApi.RequestQueue reqs = this.driveApi.new RequestQueue();
-            for (String filePath: this.getFilePaths())
-                reqs.request(this.downloadContentRequests(filePath));
-            reqs.execute();
+            Orgestrator.getInstance().loadFilesFromGoogleDrive(this.getFilePaths());
         }
     }
 

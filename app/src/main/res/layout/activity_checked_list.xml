@@ -8,7 +8,7 @@
 
     <fragment
         android:name="com.github.beardlybread.orgestrator.ui.ToDoList"
-        android:id="@+id/to_do_list"
+        android:id="@+id/checked_list_to_do_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
