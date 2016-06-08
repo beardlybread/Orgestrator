@@ -33,7 +33,10 @@ public class OrgDate extends GregorianCalendar {
     protected int repeatType = REPEAT.NONE;
     protected boolean hasTime = false;
 
-    public OrgDate() { super(); }
+    public OrgDate() {
+        super();
+        this.hasTime = true;
+    }
 
     public OrgDate(OrgParser.DateContext ctx) {
         super();

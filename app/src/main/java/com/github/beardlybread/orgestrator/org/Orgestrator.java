@@ -104,19 +104,27 @@ public class Orgestrator {
     }
 
     public void loadFilesFromGoogleDrive (String[] filePaths) {
+        this.loadFilesFromGoogleDrive(filePaths, null);
+    }
+
+    public void loadFilesFromGoogleDrive (String[] filePaths, Runnable then) {
         if (this.driveApi != null) {
             if (filePaths != null && filePaths.length > 0) {
                 DriveApi.RequestQueue downloads = this.driveApi.new RequestQueue();
                 for (String filePath : filePaths) {
-                    Log.d("wjwj", filePath);
                     downloads.request(this.driveApiDownloadRequest(filePath));
                 }
+                downloads.request(this.driveApi.emptyRequest(then));
                 downloads.execute();
             }
         }
     }
 
     public void saveFilesToGoogleDrive () {
+        this.saveFilesToGoogleDrive(null);
+    }
+
+    public void saveFilesToGoogleDrive (Runnable then) {
         if (this.driveApi != null) {
             DriveApi.RequestQueue uploads = this.driveApi.new RequestQueue();
             for (OrgFile file : this.data) {
@@ -128,6 +136,7 @@ public class Orgestrator {
                                 "File upload failed:" + file.getRawPath().split("\t")[0]);
                     }
             }
+            uploads.request(this.driveApi.emptyRequest(then));
             uploads.execute();
         }
     }

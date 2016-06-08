@@ -1,6 +1,5 @@
 package com.github.beardlybread.orgestrator;
 
-import android.content.Intent;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,7 +7,7 @@ import android.view.View;
 
 import com.github.beardlybread.orgestrator.io.DriveApi;
 import com.github.beardlybread.orgestrator.org.Orgestrator;
-import com.github.beardlybread.orgestrator.sandbox.Sandbox;
+import com.github.beardlybread.orgestrator.ui.ToDoList;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
@@ -39,10 +38,6 @@ public class Start extends AppCompatActivity {
         setContentView(R.layout.activity_start);
     }
 
-    public void startSandbox (View v) {
-        startActivity(new Intent(this, Sandbox.class));
-    }
-
     public void downloadFromDrive (View v) {
         if (this.folderId == null || this.filePaths == null) {
             this.driveApi.new RequestQueue()
@@ -54,12 +49,28 @@ public class Start extends AppCompatActivity {
                         }
                     })).execute();
         } else {
-            Orgestrator.getInstance().loadFilesFromGoogleDrive(this.getFilePaths());
+            Orgestrator.getInstance().loadFilesFromGoogleDrive(this.getFilePaths(),
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            ((ToDoList) getSupportFragmentManager()
+                                    .findFragmentById(R.id.start_to_do_list))
+                                    .refresh();
+                        }
+                    });
         }
     }
 
     public void uploadToDrive (View v) {
-        Orgestrator.getInstance().saveFilesToGoogleDrive();
+        Orgestrator.getInstance().saveFilesToGoogleDrive(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        ((ToDoList) getSupportFragmentManager()
+                                .findFragmentById(R.id.start_to_do_list))
+                                .refresh();
+                    }
+                });
     }
 
     private DriveApi.Request folderIdRequest () {

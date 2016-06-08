@@ -160,6 +160,17 @@ public class DriveApi extends Fragment
     // Request logic
     ////////////////////////////////////////////////////////////////////////////////
 
+    public Request emptyRequest (Runnable then) {
+        return new Request(then) {
+            @Override
+            public byte[] call(MakeRequest makeRequest) throws IOException {
+                return null;
+            }
+        };
+    }
+
+    public final Request EMPTY_REQUEST = emptyRequest(null);
+
     /** Create a generic Google Drive query request without extra callbacks.
      *
      * @param query is a Drive...List.setQ valid string defining the query.

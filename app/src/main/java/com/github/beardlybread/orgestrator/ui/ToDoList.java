@@ -1,7 +1,7 @@
 package com.github.beardlybread.orgestrator.ui;
 
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -34,17 +34,21 @@ public class ToDoList extends Fragment {
     @Override
     public void onResume () {
         super.onResume();
-        RecyclerView rv = (RecyclerView) getView().findViewById(R.id.the_recycler_view);
-        if (rv == null)
-            throw new NullPointerException("ToDoList:onResume:RecyclerView");
-        Orgestrator org = Orgestrator.getInstance();
-        this.todo = new ToDoAdapter(org.search(OrgToDo.incomplete));
-        rv.setAdapter(this.todo);
+        this.refresh();
     }
 
     @Override
     public void onPause () {
         // upload any changes to Drive
         super.onPause();
+    }
+
+    public void refresh () {
+        RecyclerView rv = (RecyclerView) getView().findViewById(R.id.the_recycler_view);
+        if (rv == null)
+            throw new NullPointerException("ToDoList:onResume:RecyclerView");
+        Orgestrator org = Orgestrator.getInstance();
+        this.todo = new ToDoAdapter(org.search(OrgToDo.incomplete));
+        rv.setAdapter(this.todo);
     }
 }
