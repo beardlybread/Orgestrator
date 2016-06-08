@@ -1,7 +1,5 @@
 package com.github.beardlybread.orgestrator.org;
 
-import android.util.Log;
-
 import com.github.beardlybread.orgestrator.io.DriveApi;
 import com.github.beardlybread.orgestrator.org.antlr.OrgLexer;
 import com.github.beardlybread.orgestrator.org.antlr.OrgParser;

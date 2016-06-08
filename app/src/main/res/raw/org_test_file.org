@@ -48,16 +48,21 @@ object.
     CLOSED: [2016-06-03 Fri 12:32]
 *** DONE load an existing org file from Drive
     CLOSED: [2016-06-04 Sat 17:41]
-*** TODO refactor dl functionality into Orgestrator object
-*** TODO save an existing org file to predefined Drive location
+*** DONE refactor dl functionality into Orgestrator object
+    CLOSED: [2016-06-08 Wed 12:10]
+*** DONE save an existing org file to predefined Drive location
+    CLOSED: [2016-06-08 Wed 12:10]
 *** DONE change DriveApi history back to MakeRequests (for data)
     CLOSED: [2016-06-05 Sun 14:12]
 ** Questions
 *** DONE should search return Adapter objects? No.
     CLOSED: [2016-06-05 Sun 13:39]
-*** TODO is it ok to leave OrgEvents as only children of OrgToDo? 
-*** TODO model-view abstraction at the Orgestrator object level?
-*** TODO is splitting on '.' for getFullPath ok?
+*** DONE is it ok to leave OrgEvents as only children of OrgToDo? Seems ok.
+    CLOSED: [2016-06-08 Wed 12:10]
+*** DONE model-view abstraction at the Orgestrator object level? nah
+    CLOSED: [2016-06-08 Wed 12:11]
+*** DONE is splitting on '.' for getFullPath ok? change to allow file names with multiple '.'?
+    CLOSED: [2016-06-08 Wed 12:12]
 *** TODO is last_request value getting updated correctly?
 ** Features/Bugs
 *** TODO separate complete and incomplete items, making both adjustable?

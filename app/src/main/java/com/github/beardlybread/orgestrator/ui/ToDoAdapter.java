@@ -1,7 +1,6 @@
 package com.github.beardlybread.orgestrator.ui;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +36,6 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder>
 
     @Override
     public void onBindViewHolder (ViewHolder holder, int position) {
-        Log.d("ToDoAdapter", "bind complete, index: " + position);
         ToDoView v = holder.view;
         v.setOnClickListener(this);
         v.setToDo(this.get(position));
