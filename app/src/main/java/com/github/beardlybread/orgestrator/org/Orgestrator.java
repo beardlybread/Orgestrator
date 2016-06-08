@@ -134,7 +134,8 @@ public class Orgestrator {
             if (filePaths != null && filePaths.length > 0) {
                 DriveApi.RequestQueue downloads = this.driveApi.new RequestQueue();
                 for (String filePath : filePaths) {
-                    downloads.request(this.driveApiDownloadRequest(filePath));
+                    if (this.find(filePath, OrgFile.GOOGLE_DRIVE_RESOURCE) == null)
+                        downloads.request(this.driveApiDownloadRequest(filePath));
                 }
                 downloads.request(this.driveApi.emptyRequest(then));
                 downloads.execute();

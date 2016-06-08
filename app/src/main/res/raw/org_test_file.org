@@ -54,6 +54,7 @@ object.
     CLOSED: [2016-06-08 Wed 12:10]
 *** DONE change DriveApi history back to MakeRequests (for data)
     CLOSED: [2016-06-05 Sun 14:12]
+*** TODO eliminate NullPointerException on OrgProperty.setLastRepeat
 ** Questions
 *** DONE should search return Adapter objects? No.
     CLOSED: [2016-06-05 Sun 13:39]

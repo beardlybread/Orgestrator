@@ -36,6 +36,8 @@ import com.github.beardlybread.orgestrator.R;
 import com.github.beardlybread.orgestrator.org.OrgToDo;
 import com.github.beardlybread.orgestrator.org.Orgestrator;
 
+import java.util.Comparator;
+
 public class ToDoList extends Fragment {
 
     private ToDoAdapter todo = null;

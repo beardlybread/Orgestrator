@@ -42,6 +42,7 @@ public class ToDoView extends LinearLayout {
     private TextView date = null;
     private TextView message = null;
     private TextView path = null;
+    private ToDoAdapter parent = null;
 
     public ToDoView (Context context) {
         super(context);
@@ -79,12 +80,22 @@ public class ToDoView extends LinearLayout {
         return this.path;
     }
 
+    public void setParent (ToDoAdapter parent) { this.parent = parent; }
     public void setToDo (OrgToDo todo) { this.todo = todo; }
 
     public void toggle () {
         this.getCheckBox().toggle();
         this.todo.toggle();
         this.invalidate();
+    }
+
+    public void initialize () {
+        this.getMessage().setText(this.todo.toString());
+        this.getCheckBox().setChecked(this.todo.getStatus());
+        this.getDate().setText(this.todo.getEvent().toString());
+        this.getPath().setText(this.todo.getFullPath());
+        this.updateColors();
+        super.invalidate();
     }
 
     @Override
@@ -94,6 +105,7 @@ public class ToDoView extends LinearLayout {
         this.getDate().setText(this.todo.getEvent().toString());
         this.getPath().setText(this.todo.getFullPath());
         this.updateColors();
+        this.parent.notifyDataSetChanged();
         super.invalidate();
     }
 

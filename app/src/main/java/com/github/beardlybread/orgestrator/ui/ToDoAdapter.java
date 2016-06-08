@@ -25,20 +25,44 @@ SOFTWARE.
 package com.github.beardlybread.orgestrator.ui;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.github.beardlybread.orgestrator.BuildConfig;
 import com.github.beardlybread.orgestrator.R;
+import com.github.beardlybread.orgestrator.org.OrgEvent;
 import com.github.beardlybread.orgestrator.org.OrgNode;
 import com.github.beardlybread.orgestrator.org.OrgToDo;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder>
         implements View.OnClickListener {
+
+    /** Orders list "to-do < done" and chronologically.
+     */
+    public static final Comparator<OrgToDo> byStatusAndDate = new Comparator<OrgToDo>() {
+        @Override
+        public int compare(OrgToDo lhs, OrgToDo rhs) {
+            if (lhs.getStatus() != rhs.getStatus()) {
+                if (lhs.getStatus())
+                    return 1;
+                return -1;
+            }
+            if (lhs.getEvent() == rhs.getEvent())
+                return 0;
+            if (lhs.getEvent() == OrgEvent.NO_EVENT || lhs.getEvent().getCurrent() == null)
+                return 1;
+            if (rhs.getEvent() == OrgEvent.NO_EVENT || rhs.getEvent().getCurrent() == null)
+                return -1;
+            return lhs.getEvent().getCurrent().compareTo(rhs.getEvent().getCurrent());
+        }
+    };
 
     private ArrayList<OrgToDo> items = null;
 
@@ -49,6 +73,8 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder>
                 throw new ClassCastException("unexpected class: " + todo.getClass().getSimpleName());
             this.items.add((OrgToDo) todo);
         }
+        this.sort();
+        this.registerAdapterDataObserver(new Sorter());
     }
 
     @Override
@@ -62,8 +88,9 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder>
     public void onBindViewHolder (ViewHolder holder, int position) {
         ToDoView v = holder.view;
         v.setOnClickListener(this);
+        v.setParent(this);
         v.setToDo(this.get(position));
-        v.invalidate();
+        v.initialize();
     }
 
     @Override
@@ -88,4 +115,14 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder>
         ((ToDoView) v).toggle();
     }
 
+    public void sort () {
+        Collections.sort(this.items, ToDoAdapter.byStatusAndDate);
+    }
+
+    public class Sorter extends RecyclerView.AdapterDataObserver {
+        @Override
+        public void onChanged () {
+            sort();
+        }
+    }
 }

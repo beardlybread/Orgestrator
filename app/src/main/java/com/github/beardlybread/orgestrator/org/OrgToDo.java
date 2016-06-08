@@ -89,7 +89,11 @@ public class OrgToDo extends OrgHeading {
 
     public OrgProperty getProperties () {
         List<OrgNode> props = this.getChildren("OrgProperty");
-        return (props.size() > 0 ? (OrgProperty) props.get(0) : null);
+        if (props.size() > 0)
+            return (OrgProperty) props.get(0);
+        OrgProperty out = new OrgProperty(this);
+        this.add(out);
+        return out;
     }
 
     @Override
@@ -98,7 +102,9 @@ public class OrgToDo extends OrgHeading {
         for (int i = 1; i < this.level; i++) {
             prefix += "*";
         }
-        String status = this.status ? "DONE" : "TODO";
+        int eventType = this.getEvent().getEventType();
+        String status = (eventType == OrgEvent.UNDEFINED && this.status)
+                ? "DONE" : "TODO";
         return prefix + " " + status + " " + this.text.toOrgString() + "\n";
     }
 
@@ -120,7 +126,7 @@ public class OrgToDo extends OrgHeading {
         if (this.status) { // DONE
             if (this.cachedEvent.getCurrent() != null
                     && this.cachedEvent.getCurrent().getRepeatType() != OrgDate.REPEAT.NONE)
-                this.getProperties().setLastRepeat(this.cachedEvent.getCurrent());
+                this.getProperties().setLastRepeat(new OrgDate());
             this.cachedEvent.setClosed();
         } else {
             if (this.cachedEvent.getPrevious() != null
