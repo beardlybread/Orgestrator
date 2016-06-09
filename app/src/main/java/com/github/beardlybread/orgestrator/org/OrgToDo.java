@@ -24,6 +24,8 @@ SOFTWARE.
 
 package com.github.beardlybread.orgestrator.org;
 
+import android.util.Log;
+
 import com.github.beardlybread.orgestrator.util.Predicate;
 
 import java.util.List;
@@ -102,8 +104,8 @@ public class OrgToDo extends OrgHeading {
         for (int i = 1; i < this.level; i++) {
             prefix += "*";
         }
-        int eventType = this.getEvent().getEventType();
-        String status = (eventType == OrgEvent.UNDEFINED && this.status)
+        int eventStatus = this.getEvent().getStatus();
+        String status = this.status && eventStatus == OrgEvent.CLOSED
                 ? "DONE" : "TODO";
         return prefix + " " + status + " " + this.text.toOrgString() + "\n";
     }

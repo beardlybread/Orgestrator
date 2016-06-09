@@ -40,6 +40,7 @@ public class OrgProperty extends OrgNode {
 
     public OrgProperty (OrgToDo parent) {
         super(parent.level + 1);
+        this.properties = new HashMap<>();
     }
 
     public void setLastRepeat (OrgDate d) {
