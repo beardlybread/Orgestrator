@@ -54,7 +54,8 @@ object.
     CLOSED: [2016-06-08 Wed 12:10]
 *** DONE change DriveApi history back to MakeRequests (for data)
     CLOSED: [2016-06-05 Sun 14:12]
-*** TODO eliminate NullPointerException on OrgProperty.setLastRepeat
+*** DONE eliminate NullPointerException on OrgProperty.setLastRepeat
+    CLOSED: [2016-06-10 Fri 21:04]
 ** Questions
 *** DONE should search return Adapter objects? No.
     CLOSED: [2016-06-05 Sun 13:39]
@@ -64,7 +65,8 @@ object.
     CLOSED: [2016-06-08 Wed 12:11]
 *** DONE is splitting on '.' for getFullPath ok? change to allow file names with multiple '.'?
     CLOSED: [2016-06-08 Wed 12:12]
-*** TODO is last_request value getting updated correctly?
+*** DONE is last_request value getting updated correctly? Not sure
+    CLOSED: [2016-06-10 Fri 21:05]
 ** Features/Bugs
 *** TODO separate complete and incomplete items, making both adjustable?
 *** TODO make OrgToDo list sortable/filterable by OrgDate

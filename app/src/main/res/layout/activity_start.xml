@@ -6,19 +6,15 @@
     android:layout_height="match_parent"
     android:padding="5dp" >
 
-    <Button
-        android:id="@+id/start_download_button"
+    <android.support.v7.widget.Toolbar
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/activity_start_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/start_download_button"
-        android:onClick="downloadFromDrive" />
-
-    <Button
-        android:id="@+id/start_upload_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/start_upload_button"
-        android:onClick="uploadToDrive" />
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        app:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/Theme.AppCompat.Light" />
 
     <fragment
         android:name="com.github.beardlybread.orgestrator.ui.ToDoList"

@@ -27,126 +27,245 @@ package com.github.beardlybread.orgestrator;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 
-import com.github.beardlybread.orgestrator.io.DriveApi;
+import com.github.beardlybread.orgestrator.io.GoogleDriveApi;
+import com.github.beardlybread.orgestrator.org.OrgFile;
 import com.github.beardlybread.orgestrator.org.Orgestrator;
 import com.github.beardlybread.orgestrator.ui.ToDoList;
-import com.google.api.services.drive.model.File;
-import com.google.api.services.drive.model.FileList;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class Start extends AppCompatActivity {
 
+    ////////////////////////////////////////////////////////////////////////////////
+    // Static fields
+    ////////////////////////////////////////////////////////////////////////////////
+
     private static final String FOLDER_ID_QUERY =
-            "trashed=false and 'root' in parents and name='orgestrator-test'";
-    private static final String FOLDER_CONTENTS_QUERY_FORMAT =
+            "trashed=false and 'root' in parents and name='%s'";
+    private static final String FOLDER_CONTENTS_QUERY =
             "trashed=false and '%s' in parents";
 
-    private DriveApi driveApi = null;
+    ////////////////////////////////////////////////////////////////////////////////
+    // Fields
+    ////////////////////////////////////////////////////////////////////////////////
+
+    private GoogleDriveApi driveApi = null;
+    private String folderName = "orgestrator";
     private String folderId = null;
     private String[] filePaths = null;
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Lifecycle callbacks
+    ////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.driveApi = new DriveApi();
-        Orgestrator.getInstance().setDriveApi(this.driveApi);
+        this.driveApi = new GoogleDriveApi();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.add(this.driveApi, DriveApi.tag);
+        ft.add(this.driveApi, GoogleDriveApi.tag);
         ft.commit();
         setContentView(R.layout.activity_start);
+        Toolbar tb = (Toolbar) findViewById(R.id.activity_start_toolbar);
+        setSupportActionBar(tb);
     }
 
-    public void downloadFromDrive (View v) {
-        if (this.folderId == null || this.filePaths == null) {
-            this.driveApi.new RequestQueue()
-                    .request(this.folderIdRequest())
-                    .request(this.folderContentRequest(new Runnable() {
-                        @Override
-                        public void run() {
-                            downloadFromDrive(null);
-                        }
-                    })).execute();
-        } else {
-            Orgestrator.getInstance().loadFilesFromGoogleDrive(this.getFilePaths(),
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            ((ToDoList) getSupportFragmentManager()
-                                    .findFragmentById(R.id.start_to_do_list))
-                                    .refresh();
-                        }
-                    });
+    @Override
+    public boolean onCreateOptionsMenu (Menu menu) {
+        getMenuInflater().inflate(R.menu.start_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected (MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_start_menu_upload:
+                this.uploadToDrive();
+                return true;
+            case R.id.action_start_menu_download:
+                this.downloadFromDrive();
+                return true;
+            case R.id.action_start_menu_settings:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
-    public void uploadToDrive (View v) {
-        Orgestrator.getInstance().saveFilesToGoogleDrive(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        ((ToDoList) getSupportFragmentManager()
-                                .findFragmentById(R.id.start_to_do_list))
-                                .refresh();
-                    }
-                });
+    ////////////////////////////////////////////////////////////////////////////////
+    // Actions
+    ////////////////////////////////////////////////////////////////////////////////
+
+    /** Download files in the base folder.
+     *
+     * If the base folder id is unknown, Google Drive is queried for it. After files are found,
+     * another call to downloadFromDrive will not download them again.
+     */
+    public void downloadFromDrive () {
+        if (this.folderId == null) {
+            this.driveApi.new RequestQueue()
+                    .enqueue(this.folderIdRequest())
+                    .whenFinished(this.restartDownload)
+                    .execute();
+        } else if (this.filePaths == null) {
+            this.driveApi.new RequestQueue()
+                    .enqueue(this.folderContentRequest())
+                    .whenFinished(this.restartDownload)
+                    .execute();
+        } else {
+            Orgestrator org = Orgestrator.getInstance();
+            if (this.filePaths.length > 0) {
+                GoogleDriveApi.RequestQueue downloads = this.driveApi.new RequestQueue();
+                for (String filePath: this.filePaths) {
+                    if (org.find(filePath, OrgFile.GOOGLE_DRIVE_RESOURCE) == null)
+                        downloads.enqueue(this.downloadRequest(filePath));
+                }
+                downloads.whenFinished(this.refreshList).execute();
+            }
+        }
     }
 
-    private DriveApi.Request folderIdRequest () {
-        return this.driveApi.queryRequest(
-                FOLDER_ID_QUERY,
-                new Runnable() {
+    /** Upload all files to the base folder.
+     *
+     * The upload process deletes and replaces the existing file.
+     */
+    public void uploadToDrive () {
+        List<OrgFile> files = Orgestrator.getInstance().getFiles();
+        if (this.driveApi != null && files.size() > 0) {
+            GoogleDriveApi.RequestQueue uploads = this.driveApi.new RequestQueue();
+            for (OrgFile file : files) {
+                if (file.getResourceType() == OrgFile.GOOGLE_DRIVE_RESOURCE)
+                    try {
+                        uploads.enqueue(this.uploadRequest(file));
+                    } catch (IOException e) {
+                        driveApi.makeToast(
+                                "File upload failed:" + file.getRawPath().split("\t")[0]);
+                    }
+            }
+            uploads.whenFinished(this.refreshList).execute();
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Action helpers
+    ////////////////////////////////////////////////////////////////////////////////
+
+    /** The restartDownload field is a callback to restart the download method if it fails.
+     */
+    private final GoogleDriveApi.Afterwards restartDownload =
+            new GoogleDriveApi.Afterwards() {
+                @Override
+                public void run(GoogleDriveApi.MakeRequest makeRequest, byte[] output) {
+                    downloadFromDrive();
+                }
+            };
+
+    /** The refreshList field is a callback to refresh the list view.
+     */
+    private final GoogleDriveApi.Afterwards refreshList =
+            new GoogleDriveApi.Afterwards() {
+                @Override
+                public void run(GoogleDriveApi.MakeRequest makeRequest, byte[] output) {
+                    ((ToDoList) getSupportFragmentManager()
+                            .findFragmentById(R.id.start_to_do_list))
+                            .refresh();
+                }
+            };
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Google Drive Requests
+    ////////////////////////////////////////////////////////////////////////////////
+
+    /** Return a query for the id of Orgestrator's folder name.
+     *
+     * @return a Request object defining a query for thd id of Orgestrator's folder name.
+     */
+    private GoogleDriveApi.Request folderIdRequest () {
+        return this.driveApi.listQuery(
+                String.format(FOLDER_ID_QUERY, getFolderName()),
+                new GoogleDriveApi.Afterwards() {
                     @Override
-                    public void run() {
-                        try {
-                            String raw = new String(
-                                    driveApi.getLastRequest().get(5, TimeUnit.SECONDS));
-                            folderId = raw.trim().split("\t")[1];
-                            Orgestrator.getInstance().setDriveApiFolderId(folderId);
-                        } catch (Exception e) {
-                            driveApi.getLastRequest().cancel(true);
-                        }
+                    public void run(GoogleDriveApi.MakeRequest makeRequest, byte[] output) {
+                        String raw = new String(output);
+                        folderId = raw.trim().split("\t")[1];
                     }
                 }, null);
     }
 
-    private DriveApi.Request folderContentRequest (final Runnable then) {
-        return this.driveApi.new Request(then) {
-            @Override
-            public byte[] call(DriveApi.MakeRequest makeRequest) throws IOException {
-                if (getFolderId() == null)
-                    return null;
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                FileList result = makeRequest.getService().files().list()
-                        .setQ(String.format(FOLDER_CONTENTS_QUERY_FORMAT, getFolderId()))
-                        .execute();
-                List<File> files = result.getFiles();
-                if (files != null) {
-                    for (File file: files) {
-                        out.write(file.getName().getBytes());
-                        out.write('\t');
-                        out.write(file.getId().getBytes());
-                        out.write('\n');
+    /** Return a query for the name and id of all files in the base folder.
+     *
+     * @return a Request object defining a query for all files in the base folder.
+     */
+    private GoogleDriveApi.Request folderContentRequest () {
+        return this.driveApi.listQuery(
+                String.format(FOLDER_CONTENTS_QUERY, getFolderId()),
+                new GoogleDriveApi.Afterwards() {
+                    @Override
+                    public void run(GoogleDriveApi.MakeRequest makeRequest, byte[] output) {
+                        String response = new String(output);
+                        filePaths = response.trim().split("\n");
+                        driveApi.makeToast(filePaths.length + " files located on Google Drive.");
                     }
-                }
-                return out.toByteArray();
-            }
-
-            @Override
-            public void after(DriveApi.MakeRequest makeRequest, byte[] output) {
-                String response = new String(output);
-                filePaths = response.trim().split("\n");
-                driveApi.makeToast("Content located on Google Drive.");
-            }
-        };
+                }, null);
     }
 
+    /** Return a download request.
+     *
+     * @param filePath is a tab delimited name/id pair identifying the download target.
+     * @return a Request object defining a download for the given file path.
+     */
+    public GoogleDriveApi.Request downloadRequest (final String filePath) {
+        String[] nameAndId = filePath.split("\t");
+        final String name = nameAndId[0], id = nameAndId[1];
+        return this.driveApi.downloadRequest(id,
+                new GoogleDriveApi.Afterwards() {
+                    @Override
+                    public void run(GoogleDriveApi.MakeRequest makeRequest, byte[] output) {
+                        ByteArrayInputStream input = new ByteArrayInputStream(output);
+                        Orgestrator.getInstance()
+                                .add(input, filePath, OrgFile.GOOGLE_DRIVE_RESOURCE);
+                        driveApi.makeToast("Loaded: " + name);
+                    }
+                }, null);
+    }
+
+    /** Return an upload request.
+     *
+     * @param file is the OrgFile object to upload to Google Drive.
+     * @return a Request object defining an upload for the given file.
+     * @throws IOException if reconstructing the target file fails.
+     */
+    public GoogleDriveApi.Request uploadRequest (final OrgFile file) throws IOException {
+        String[] nameAndId = file.getRawPath().split("\t");
+        final String name = nameAndId[0], id = nameAndId[1];
+        final ArrayList<String> parents = new ArrayList<>();
+        parents.add(folderId);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        file.write(out);
+        final byte[] data = out.toByteArray();
+        return this.driveApi.uploadRequest(name, id, parents, data,
+                new GoogleDriveApi.Afterwards() {
+                    @Override
+                    public void run(GoogleDriveApi.MakeRequest makeRequest, byte[] output) {
+                        driveApi.makeToast("Saved: " + name);
+                    }
+                }, null);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Getters
+    ////////////////////////////////////////////////////////////////////////////////
+
+    public String getFolderName () { return this.folderName; }
     public String getFolderId () { return this.folderId; }
-    public String[] getFilePaths () { return this.filePaths; }
+
 }
 

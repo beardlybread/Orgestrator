@@ -40,7 +40,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
-import com.google.api.client.http.AbstractInputStreamContent;
+import com.google.api.client.http.ByteArrayContent;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -50,11 +50,8 @@ import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.List;
@@ -63,10 +60,14 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class DriveApi extends Fragment
+public class GoogleDriveApi extends Fragment
         implements  EasyPermissions.PermissionCallbacks {
 
-    public static final String tag = "orgestrator.io.DriveApi";
+    ////////////////////////////////////////////////////////////////////////////////
+    // Static fields
+    ////////////////////////////////////////////////////////////////////////////////
+
+    public static final String tag = GoogleDriveApi.class.getSimpleName();
 
     private static final int REQUEST_ACCOUNT_PICKER = 1000;
     private static final int REQUEST_AUTHORIZATION = 1001;
@@ -75,7 +76,6 @@ public class DriveApi extends Fragment
 
     private static final String[] SCOPE = {DriveScopes.DRIVE};
 
-    private static final String ERROR_TITLE = "Google Drive Error";
     private static final String ERROR_OFFLINE =
             "No network connection was found. Please confirm your device is connected.";
     private static final String ERROR_REQUEST_GOOGLE_PLAY = "" +
@@ -113,7 +113,7 @@ public class DriveApi extends Fragment
             if (this.credential == null) {
                 this.credential = GoogleAccountCredential.usingOAuth2(
                         getContext().getApplicationContext(),
-                        Arrays.asList(DriveApi.SCOPE))
+                        Arrays.asList(GoogleDriveApi.SCOPE))
                         .setBackOff(new ExponentialBackOff());
             }
             if (!this.isGooglePlayServicesAvailable()) {
@@ -121,7 +121,7 @@ public class DriveApi extends Fragment
             } else if (this.credential.getSelectedAccountName() == null) {
                 this.chooseAccount();
             } else if (this.deviceIsOffline()) {
-                this.showErrorDialog(new Exception(DriveApi.ERROR_OFFLINE));
+                this.showErrorDialog(new Exception(GoogleDriveApi.ERROR_OFFLINE));
             } else {
                 this.initialized = true;
             }
@@ -136,13 +136,13 @@ public class DriveApi extends Fragment
      */
     @Override
     public void onActivityResult (int requestCode, int resultCode, Intent data) {
-        if (requestCode == DriveApi.REQUEST_GOOGLE_PLAY_SERVICES) {
+        if (requestCode == GoogleDriveApi.REQUEST_GOOGLE_PLAY_SERVICES) {
             if (resultCode != Activity.RESULT_OK) {
-                this.showErrorDialog(new Exception(DriveApi.ERROR_REQUEST_GOOGLE_PLAY));
+                this.showErrorDialog(new Exception(GoogleDriveApi.ERROR_REQUEST_GOOGLE_PLAY));
             } else {
                 this.initialize();
             }
-        } else if (requestCode == DriveApi.REQUEST_ACCOUNT_PICKER) {
+        } else if (requestCode == GoogleDriveApi.REQUEST_ACCOUNT_PICKER) {
             if (resultCode == Activity.RESULT_OK && data != null && data.getExtras() != null) {
                 String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                 if (accountName != null) {
@@ -160,9 +160,16 @@ public class DriveApi extends Fragment
         }
     }
 
-    private synchronized void addToHistory (MakeRequest r) {
-        this.requestHistory.addLast(r);
-        if (this.requestHistory.size() > DriveApi.HISTORY_SIZE)
+    ////////////////////////////////////////////////////////////////////////////////
+    // History
+    ////////////////////////////////////////////////////////////////////////////////
+
+    /** Add a request to the history of calls.
+     * @param request is a MakeRequest to log into the history.
+     */
+    private synchronized void addToHistory (MakeRequest request) {
+        this.requestHistory.addLast(request);
+        if (this.requestHistory.size() > GoogleDriveApi.HISTORY_SIZE)
             this.requestHistory.removeFirst();
     }
 
@@ -171,27 +178,18 @@ public class DriveApi extends Fragment
     }
 
     ////////////////////////////////////////////////////////////////////////////////
-    // Request logic
+    // Request generators
     ////////////////////////////////////////////////////////////////////////////////
-
-    public Request emptyRequest (Runnable then) {
-        return new Request(then) {
-            @Override
-            public byte[] call(MakeRequest makeRequest) throws IOException {
-                return null;
-            }
-        };
-    }
-
-    public final Request EMPTY_REQUEST = emptyRequest(null);
 
     /** Create a generic Google Drive query request without extra callbacks.
      *
      * @param query is a Drive...List.setQ valid string defining the query.
      *              docs: https://developers.google.com/drive/v3/web/search-parameters
+     * @param then is run after the request if it succeeds.
+     * @param otherwise is run after the request if it fails.
      * @return a Request object to feed to a MakeRequest task.
      */
-    public Request queryRequest (final String query, Runnable then, Runnable otherwise) {
+    public Request listQuery (final String query, Afterwards then, Afterwards otherwise) {
         return new Request(then, otherwise) {
             @Override
             public byte[] call(MakeRequest makeRequest) throws IOException {
@@ -216,9 +214,11 @@ public class DriveApi extends Fragment
     /** Create a generic Google Drive download request without extra callbacks.
      *
      * @param id uniquely identifies the resource to download.
+     * @param then is run after the request if it succeeds.
+     * @param otherwise is run after the request if it fails.
      * @return a Request object to feed to a MakeRequest task.
      */
-    public Request downloadRequest (final String id, Runnable then, Runnable otherwise) {
+    public Request downloadRequest (final String id, Afterwards then, Afterwards otherwise) {
         return new Request(then, otherwise) {
             @Override
             public byte[] call(MakeRequest makeRequest) throws IOException {
@@ -232,63 +232,59 @@ public class DriveApi extends Fragment
 
     /** Create a generic Google Drive upload request without extra callbacks.
      *
-     * @param data is a byte array containing the data to upload.
-     * @param id uniquely identifies the resource to upload.
+     * @param name will be assigned to the resource on Google Drive.
+     * @param id uniquely identifies the resource to be replaced.
+     * @param parents is a normally one element list containing the parent id.
+     * @param data holds the raw data to push to Google Drive.
+     * @param then will get called if the request succeeds.
+     * @param otherwise will get called if the request fails.
      * @return a Request object to feed to a MakeRequest task.
      */
-    public Request uploadRequest (byte[] data, final String id) {
-        final BufferedInputStream content =
-                new BufferedInputStream(new ByteArrayInputStream(data));
-        final long dataLength = data.length;
-        return new Request() {
+    public Request uploadRequest (final String name, final String id,
+                                  final List<String> parents, final byte[] data,
+                                  final Afterwards then, final Afterwards otherwise) {
+        return new Request(then, otherwise) {
             @Override
             public byte[] call(MakeRequest makeRequest) throws IOException {
-                makeRequest.getService().files().update(id, null,
-                        new AbstractInputStreamContent(null) {
-                    @Override
-                    public InputStream getInputStream () throws IOException {
-                        return content;
-                    }
-
-                    @Override
-                    public long getLength () throws IOException {
-                        return dataLength;
-                    }
-
-                    @Override
-                    public boolean retrySupported () {
-                        return false;
-                    }
-                }).execute();
+                makeRequest.getService().files().delete(id).execute();
+                File meta = new File();
+                meta.setName(name);
+                meta.setParents(parents);
+                makeRequest.getService().files()
+                        .create(meta, new ByteArrayContent("text/plain; charset=utf-8", data))
+                        .execute();
                 return null;
             }
         };
     }
 
-    /** The Request class adds functionality to the request interface.
+    ////////////////////////////////////////////////////////////////////////////////
+    // Request logic
+    ////////////////////////////////////////////////////////////////////////////////
+
+    /** The Request class plugs into a MakeRequest to define its behavior.
      *
      * If a Request successfully passes to onPostExecute in a MakeRequest, it will be marked as
      * completed. In a RequestQueue, this means that it will not be executed again. Also, if it
      * was passed a "then" on instantiation, it will be invoked on completion before any further
      * Requests in a RequestQueue are made. An "otherwise" will be called in onCancelled in the
-     * finally clause of the try block wrapping everything else.
+     * finally clause of the try block wrapping everything else. Both "then" and "otherwise" are
+     * implementations of the Afterwards interface.
      */
-    public abstract class Request implements RequestInterface {
+    public abstract class Request {
         private boolean incomplete = true;
-        public final Runnable then;
-        public final Runnable otherwise;
+        public final Afterwards then;
+        public final Afterwards otherwise;
 
         public Request () {
-            this.then = null;
-            this.otherwise = null;
+            this(null, null);
         }
 
-        public Request (Runnable then) {
-            this.then = then;
-            this.otherwise = null;
+        public Request (Afterwards then) {
+            this(then, null);
         }
 
-        public Request (Runnable then, Runnable otherwise) {
+        public Request (Afterwards then, Afterwards otherwise) {
             this.then = then;
             this.otherwise = otherwise;
         }
@@ -296,50 +292,47 @@ public class DriveApi extends Fragment
         public boolean isIncomplete () { return this.incomplete; }
         public void setCompleted () { this.incomplete = false; }
 
-        public void before (MakeRequest makeRequest) {}
-        public void after (MakeRequest makeRequest, byte[] output) {}
-        public void cancelled (MakeRequest makeRequest) {}
-    }
-
-    /** This interface plugs into a MakeRequest task to define its behavior.
-     */
-    public interface RequestInterface {
-
         /** A MakeRequest task invokes this method in the background.
          *
          * @param makeRequest is a back reference to the calling MakeRequest object.
          * @return a byte array (or null) containing the request response.
          * @throws IOException if something goes wrong accessing Google Drive.
          */
-        byte[] call (MakeRequest makeRequest) throws IOException;
+        public abstract byte[] call (MakeRequest makeRequest) throws IOException;
 
         /** This method is called before the task begins.
          *
          * @param makeRequest is a back reference to the calling MakeRequest object.
          */
-        void before (MakeRequest makeRequest);
+        public void before (MakeRequest makeRequest) {}
 
         /** This method is called after the task completes successfully.
          *
          * @param makeRequest is a back reference to the calling MakeRequest object.
          * @param output holds the request response in a byte array.
          */
-        void after (MakeRequest makeRequest, byte[] output);
+        public void after (MakeRequest makeRequest, byte[] output) {}
 
         /** This method is called if a task fails or is cancelled.
          *
          * @param makeRequest is a back reference to the calling MakeRequest object.
          */
-        void cancelled (MakeRequest makeRequest);
+        public void cancelled (MakeRequest makeRequest) {}
+    }
+
+    /** Afterwards is a parameterized Runnable-like interface consumed by Request objects.
+     */
+    public interface Afterwards {
+        void run (MakeRequest makeRequest, byte[] output);
     }
 
     /** MakeRequest is an AsyncTask designed to talk to Google Drive's API.
      *
-     * The DriveApi.Request passed to the constructor describes the actions that the instantiated
-     * task will take at each stage of its lifecycle.
+     * The GoogleDriveApi.Request passed to the constructor describes the actions that the
+     * instantiated task will take at each stage of its lifecycle.
      *
-     * Every time a MakeRequest is .execute()d, it will be accessible in the DriveApi
-     * object with DriveApi.getLastRequest(). This is true regardless of whether it completes
+     * Every time a MakeRequest is .execute()d, it will be accessible in the GoogleDriveApi
+     * object with GoogleDriveApi.getLastRequest(). This is true regardless of whether it completes
      * successfully or not.
      */
     public class MakeRequest extends AsyncTask<RequestQueue, Void, byte[]> {
@@ -347,7 +340,6 @@ public class DriveApi extends Fragment
         private Drive service = null;
         private Request request = null;
         private Exception lastError = null;
-        private Request next = null;
         private RequestQueue remaining = null;
 
         public MakeRequest (Request request) {
@@ -373,7 +365,6 @@ public class DriveApi extends Fragment
             try {
                 if (nexts.length > 0) {
                     this.remaining = nexts[0];
-                    this.next = this.remaining.poll();
                 }
                 return this.request.call(this);
             } catch (Exception e) {
@@ -389,11 +380,11 @@ public class DriveApi extends Fragment
                 this.request.after(this, output);
                 this.request.setCompleted();
                 if (this.request.then != null) {
-                    this.request.then.run();
+                    this.request.then.run(this, output);
                 }
             }
-            if (this.next != null)
-                new MakeRequest(this.next).execute(this.remaining);
+            if (this.remaining != null)
+                this.remaining.next();
         }
 
         @Override
@@ -404,7 +395,7 @@ public class DriveApi extends Fragment
                     if (this.lastError instanceof UserRecoverableAuthIOException) {
                         startActivityForResult(
                                 ((UserRecoverableAuthIOException) this.lastError).getIntent(),
-                                DriveApi.REQUEST_AUTHORIZATION);
+                                GoogleDriveApi.REQUEST_AUTHORIZATION);
                     } else {
                         showErrorDialog(this.lastError);
                     }
@@ -413,28 +404,79 @@ public class DriveApi extends Fragment
                 }
             } finally {
                 if (this.request.otherwise != null)
-                    this.request.otherwise.run();
+                    this.request.otherwise.run(this, null);
             }
         }
     }
 
+    private final Request EMPTY_REQUEST = new Request() {
+        @Override
+        public byte[] call(MakeRequest makeRequest) throws IOException {
+            return null;
+        }
+    };
 
     public class RequestQueue extends ConcurrentLinkedDeque<Request> {
 
-        public RequestQueue request(Request request) {
+        private boolean executing = false;
+        private Request afterwards = null;
+
+        public RequestQueue enqueue(Request request) {
             this.add(request);
             return this;
         }
 
+        public RequestQueue whenFinished(Afterwards then) {
+            this.afterwards = new Request(then) {
+                @Override
+                public byte[] call(MakeRequest makeRequest) throws IOException {
+                    return null;
+                }
+            };
+            return this;
+        }
+
+        public void reset () {
+            this.remove(this.afterwards);
+            if (this.afterwards != null)
+                this.add(this.afterwards);
+            this.remove(EMPTY_REQUEST);
+            this.add(EMPTY_REQUEST);
+            this.executing = false;
+        }
+
         public void execute () {
-            Request first = this.poll();
-            if (first != null)
-                new MakeRequest(first).execute(this);
+            if (!this.executing) {
+                this.reset();
+                this.executing = true;
+                this.next();
+            } else {
+                throw new RuntimeException("RequestQueue running or not reset.");
+            }
+        }
+
+        private void next () {
+            if (this.executing) {
+                Request first = this.poll();
+                if (first != null) {
+                    this.add(first);
+                    if (first != EMPTY_REQUEST) {
+                        new MakeRequest(first).execute(this);
+                    } else {
+                        this.executing = false;
+                    }
+                } else {
+                    // EMPTY_REQUEST should always be the "end" of the queue.
+                    throw new RuntimeException("Found null at end of queue.");
+                }
+            } else {
+                throw new RuntimeException("Cannot call next() before execute().");
+            }
         }
     }
 
     ////////////////////////////////////////////////////////////////////////////////
-    // Helpers
+    // Google credential and account initialization
     ////////////////////////////////////////////////////////////////////////////////
 
     private void acquireGooglePlayServices () {
@@ -445,7 +487,7 @@ public class DriveApi extends Fragment
         }
     }
 
-    @AfterPermissionGranted(DriveApi.REQUEST_PERMISSION_GET_ACCOUNTS)
+    @AfterPermissionGranted(GoogleDriveApi.REQUEST_PERMISSION_GET_ACCOUNTS)
     private void chooseAccount () {
         if (EasyPermissions.hasPermissions(
                 getContext(), Manifest.permission.GET_ACCOUNTS)) {
@@ -457,13 +499,13 @@ public class DriveApi extends Fragment
             } else {
                 startActivityForResult(
                         this.credential.newChooseAccountIntent(),
-                        DriveApi.REQUEST_ACCOUNT_PICKER);
+                        GoogleDriveApi.REQUEST_ACCOUNT_PICKER);
             }
         } else {
             EasyPermissions.requestPermissions(
                     this,
-                    DriveApi.REQUEST_RATIONALE,
-                    DriveApi.REQUEST_PERMISSION_GET_ACCOUNTS,
+                    GoogleDriveApi.REQUEST_RATIONALE,
+                    GoogleDriveApi.REQUEST_PERMISSION_GET_ACCOUNTS,
                     Manifest.permission.GET_ACCOUNTS);
         }
     }
@@ -499,12 +541,16 @@ public class DriveApi extends Fragment
                 requestCode, permissions, grantResults, this);
     }
 
+    ////////////////////////////////////////////////////////////////////////////////
+    // Helpers
+    ////////////////////////////////////////////////////////////////////////////////
+
     public void showErrorDialog (final int connectionStatusCode) {
         GoogleApiAvailability gaa = GoogleApiAvailability.getInstance();
         gaa.getErrorDialog(
                 getActivity(),
                 connectionStatusCode,
-                DriveApi.REQUEST_GOOGLE_PLAY_SERVICES)
+                GoogleDriveApi.REQUEST_GOOGLE_PLAY_SERVICES)
                 .show();
     }
 
@@ -514,6 +560,10 @@ public class DriveApi extends Fragment
         Log.e(tag, "--- END: " + e.getMessage());
     }
 
+    /** Create and show a toast with short duration.
+     *
+     * @param text is the message to put in the toast.
+     */
     public void makeToast (CharSequence text) {
         Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
     }
