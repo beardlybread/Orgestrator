@@ -164,7 +164,7 @@ public class GoogleDriveApi extends Fragment
     // History
     ////////////////////////////////////////////////////////////////////////////////
 
-    /** Add a request to the history of calls.
+    /** Add a request to the history of calls attempted.
      * @param request is a MakeRequest to log into the history.
      */
     private synchronized void addToHistory (MakeRequest request) {
@@ -290,6 +290,13 @@ public class GoogleDriveApi extends Fragment
         }
 
         public boolean isIncomplete () { return this.incomplete; }
+
+        /** Reset the request to incomplete so it can be run again.
+         */
+        public void reset () { this.incomplete = true; }
+
+        /** Flag the request as complete so that it will not be run again.
+         */
         public void setCompleted () { this.incomplete = false; }
 
         /** A MakeRequest task invokes this method in the background.
@@ -416,16 +423,33 @@ public class GoogleDriveApi extends Fragment
         }
     };
 
+    /** This class holds Requests and executes them in the order in which they were added.
+     *
+     * If a series of requests fails, the queue can be reset. When it is executed again, it will
+     * only run the requests that did not complete.
+     */
     public class RequestQueue extends ConcurrentLinkedDeque<Request> {
 
         private boolean executing = false;
         private Request afterwards = null;
 
+        /** Add a Request to the queue.
+         *
+         * @param request is the Request object to be added.
+         * @return the RequestQueue to allow for method chaining.
+         */
         public RequestQueue enqueue(Request request) {
             this.add(request);
             return this;
         }
 
+        /** Add an Afterwards callback to execute on successful completion of all requests.
+         *
+         * Multiple calls to whenFinished will overwrite previous ones.
+         *
+         * @param then is a callback definition
+         * @return the RequestQueue to allow for method chaining.
+         */
         public RequestQueue whenFinished(Afterwards then) {
             this.afterwards = new Request(then) {
                 @Override
@@ -436,6 +460,8 @@ public class GoogleDriveApi extends Fragment
             return this;
         }
 
+        /** Reset the queue so that it can be run again.
+         */
         public void reset () {
             this.remove(this.afterwards);
             if (this.afterwards != null)
@@ -445,6 +471,8 @@ public class GoogleDriveApi extends Fragment
             this.executing = false;
         }
 
+        /** Run all of the requests in the queue and a whenFinished callback if present.
+         */
         public void execute () {
             if (!this.executing) {
                 this.reset();

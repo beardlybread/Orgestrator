@@ -141,7 +141,7 @@ public class Start extends AppCompatActivity {
         List<OrgFile> files = Orgestrator.getInstance().getFiles();
         if (this.driveApi != null && files.size() > 0) {
             GoogleDriveApi.RequestQueue uploads = this.driveApi.new RequestQueue();
-            for (OrgFile file : files) {
+            for (OrgFile file: files) {
                 if (file.getResourceType() == OrgFile.GOOGLE_DRIVE_RESOURCE)
                     try {
                         uploads.enqueue(this.uploadRequest(file));
